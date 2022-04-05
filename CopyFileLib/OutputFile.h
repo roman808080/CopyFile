@@ -7,11 +7,11 @@
 struct FileInfo;
 
 
-class WriteFile
+class OutputFile
 {
 public:
-	WriteFile(const std::string& fileName);
-	~WriteFile();
+	OutputFile(const std::string& fileName);
+	~OutputFile();
 
 	void write(const std::vector<char>& block);
 

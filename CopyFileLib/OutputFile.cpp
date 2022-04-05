@@ -1,9 +1,9 @@
 #include "pch.h"
-#include "WriteFile.h"
+#include "OutputFile.h"
 #include "FileInfo.h"
 #include "Exceptions.h"
 
-WriteFile::WriteFile(const std::string& fileName)
+OutputFile::OutputFile(const std::string& fileName)
 	: outputFile(fileName, std::ofstream::binary)
 {
 	if (!outputFile.is_open())
@@ -12,13 +12,13 @@ WriteFile::WriteFile(const std::string& fileName)
 	}
 }
 
-WriteFile::~WriteFile()
+OutputFile::~OutputFile()
 {
 	outputFile.close();
 }
 
-void WriteFile::write(const std::vector<char>& block)
+void OutputFile::write(const std::vector<char>& block)
 {
-	outputFile << &block[0];
+	outputFile.write(&block[0], block.size());
 	outputFile.flush();
 }

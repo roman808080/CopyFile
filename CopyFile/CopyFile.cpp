@@ -2,12 +2,11 @@
 //
 
 #include <iostream>
-#include "WriteFile.h"
+#include "OutputFile.h"
 
 int main()
 {
-    std::cout << "Hello World!\n";
-    WriteFile file("file.txt");
+    OutputFile file("file.txt");
     std::vector<char> data{'R', 'o', 'm', 'a', 'n'};
 
     file.write(data);
