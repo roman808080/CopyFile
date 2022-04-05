@@ -3,15 +3,29 @@
 
 #include <iostream>
 #include "OutputFile.h"
+#include "InputFile.h"
+#include "FileUtils.h"
+#include "FileInfo.h"
 
 int main()
 {
-    OutputFile file("file.txt");
-    std::vector<char> data{'R', 'o', 'm', 'a', 'n'};
+    OutputFile outputFile("file.txt");
 
-    file.write(data);
-    file.write(data);
-    file.write(data);
+    const std::string filePath("CopyFile.cpp"); // copying itself
+    const size_t blockSize = Constants::Kilobyte;
+    const auto numberOfBlocks = FileUtils::getPossibleBlocksAmount(filePath, blockSize);
+
+    const size_t startBlock = 0;
+    const uintmax_t endBlock = numberOfBlocks;
+
+    auto fileInfo = std::make_unique<FileInfo>(filePath, startBlock, endBlock, blockSize);
+    auto file = std::make_unique<InputFile>(std::move(fileInfo));
+
+    while (!file->isFinished())
+    {
+        std::vector<char> block = file->readBlock();
+        outputFile.write(block);
+    }
 
     return 0;
 }
