@@ -155,11 +155,14 @@
   <ItemGroup>
     <ClInclude Include="Constants.h" />
     <ClInclude Include="Exceptions.h" />
+    <ClInclude Include="FileInfo.h" />
+    <ClInclude Include="FileUtils.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="InputFile.h" />
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="FileUtils.cpp" />
     <ClCompile Include="InputFile.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

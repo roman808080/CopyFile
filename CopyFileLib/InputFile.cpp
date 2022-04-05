@@ -2,25 +2,9 @@
 #include "InputFile.h"
 
 #include <filesystem>
+
 #include "Exceptions.h"
-
-uintmax_t FileUtils::getFileSize(const std::string& filePath)
-{
-	try
-	{
-		return std::filesystem::file_size(filePath);
-	}
-	catch (std::filesystem::filesystem_error& error)
-	{
-		throw FileException(error.what());
-	}
-}
-
-uintmax_t FileUtils::getPossibleBlocksAmount(const std::string& filePath, const size_t blockSize)
-{
-	return static_cast<uintmax_t>(std::ceil(FileUtils::getFileSize(filePath) * 1.0 / blockSize));
-}
-
+#include "FileInfo.h"
 
 
 InputFile::InputFile(std::unique_ptr<FileInfo> fileInfo)
