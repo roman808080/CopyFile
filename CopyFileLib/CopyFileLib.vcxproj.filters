@@ -24,12 +24,24 @@
     <ClInclude Include="TestClass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="InputFile.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Exceptions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Constants.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="TestClass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="InputFile.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
