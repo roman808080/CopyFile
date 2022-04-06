@@ -2,10 +2,13 @@
 //
 
 #include <iostream>
+
 #include "OutputFile.h"
 #include "InputFile.h"
 #include "FileUtils.h"
 #include "FileInfo.h"
+
+#include "ThreadsafeQueue.h"
 
 int main()
 {
@@ -21,11 +24,13 @@ int main()
     auto fileInfo = std::make_unique<FileInfo>(filePath, startBlock, endBlock, blockSize);
     auto file = std::make_unique<InputFile>(std::move(fileInfo));
 
+
     while (!file->isFinished())
     {
         std::vector<char> block = file->readBlock();
         outputFile.write(block);
     }
+    ThreadsafeQueue<char> queue;
 
     return 0;
 }

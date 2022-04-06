@@ -161,6 +161,7 @@
     <ClInclude Include="InputFile.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="OutputFile.h" />
+    <ClInclude Include="ThreadsafeQueue.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="FileUtils.cpp" />

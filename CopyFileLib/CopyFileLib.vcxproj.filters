@@ -39,6 +39,9 @@
     <ClInclude Include="OutputFile.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ThreadsafeQueue.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
