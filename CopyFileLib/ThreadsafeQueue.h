@@ -55,6 +55,19 @@ private:
 		return popHead();
 	}
 
+	void lockAndPush(std::unique_ptr<T> newData)
+	{
+		std::lock_guard<std::mutex> tailLock(tailMutex);
+
+		tail->data = std::move(newData);
+
+		std::unique_ptr<Node> newEmptyNode(new Node);
+		Node* const newTail = newEmptyNode.get();
+
+		tail->next = std::move(newEmptyNode);
+		tail = newTail;
+	}
+
 public:
 	ThreadsafeQueue()
 		: head(new Node)
@@ -84,18 +97,7 @@ public:
 
 	void push(std::unique_ptr<T> newData)
 	{
-		{
-			std::lock_guard<std::mutex> tailLock(tailMutex);
-
-			tail->data = std::move(newData);
-
-			std::unique_ptr<Node> newEmptyNode(new Node);
-			Node* const newTail = newEmptyNode.get();
-
-			tail->next = std::move(newEmptyNode);
-			tail = newTail;
-		}
-
+		lockAndPush(std::move(newData));
 		dataCond.notify_one();
 	}
 
