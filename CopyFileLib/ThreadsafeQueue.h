@@ -47,13 +47,6 @@ private:
 		return popHead();
 	}
 
-	std::unique_ptr<Node> waitPopHead(T& value)
-	{
-		std::unique_lock<std::mutex> headLock(waitForData());
-		value = std::move(*head->data);
-		return popHead();
-	}
-
 	std::unique_ptr<Node> tryPopHead()
 	{
 		std::lock_guard<std::mutex> headLock(headMutex);
@@ -62,18 +55,6 @@ private:
 			return std::unique_ptr<Node>();
 		}
 
-		return popHead();
-	}
-
-	std::unique_ptr<Node> tryPopHead(T& value)
-	{
-		std::lock_guard<std::mutex> headLock(headMutex);
-		if (head.get() == getTail())
-		{
-			return std::unique_ptr<Node>();
-		}
-
-		value = std::move(*head->data);
 		return popHead();
 	}
 
@@ -89,24 +70,13 @@ public:
 	std::unique_ptr<T> waitAndPop()
 	{
 		std::unique_ptr<Node> const oldHead = waitPopHead();
-		return oldHead->data;
-	}
-
-	void waitAndPop(T& value)
-	{
-		std::unique_ptr<Node> const oldHead = waitPopHead(value);
+		return std::move(oldHead->data);
 	}
 
 	std::unique_ptr<T> tryPop()
 	{
 		std::unique_ptr<Node> oldHead = tryPopHead();
 		return oldHead ? std::move(oldHead->data) : std::unique_ptr<T>();
-	}
-
-	bool tryPop(T& value)
-	{
-		std::unique_ptr<Node> const oldHead = tryPopHead(value);
-		return oldHead.get() != nullptr;
 	}
 
 	bool empty()
