@@ -2,6 +2,7 @@
 //
 
 #include <iostream>
+#include <thread>
 
 #include "OutputFile.h"
 #include "InputFile.h"
@@ -10,9 +11,34 @@
 
 #include "ThreadsafeQueue.h"
 
+namespace
+{
+    void readFromFile(std::shared_ptr<InputFile> inputFile,
+                    std::shared_ptr<ThreadsafeQueue<std::vector<char>>> queue)
+    {
+		while (!inputFile->isFinished())
+		{
+			auto block = std::move(inputFile->readBlock());
+			queue->push(std::move(block));
+		}
+
+        queue->finalize();
+    }
+
+    void writeToFile(std::shared_ptr<OutputFile> outputFile,
+        std::shared_ptr<ThreadsafeQueue<std::vector<char>>> queue)
+    {
+		while (!queue->isFinished())
+		{
+			auto block = std::move(queue->waitAndPop());
+			outputFile->write(std::move(block));
+		}
+    }
+}
+
 int main()
 {
-    OutputFile outputFile("file.txt");
+    std::shared_ptr<OutputFile> outputFile(std::make_shared<OutputFile>("file.txt"));
 
     const std::string filePath("CopyFile.cpp"); // copying itself
     const size_t blockSize = Constants::Kilobyte;
@@ -22,20 +48,15 @@ int main()
     const uintmax_t endBlock = numberOfBlocks;
 
     auto fileInfo = std::make_unique<FileInfo>(filePath, startBlock, endBlock, blockSize);
-    auto file = std::make_unique<InputFile>(std::move(fileInfo));
+    auto inputFile = std::make_shared<InputFile>(std::move(fileInfo));
 
-    ThreadsafeQueue<std::vector<char> > queue;
-    while (!file->isFinished())
-    {
-        auto block = std::move(file->readBlock());
-        queue.push(std::move(block));
-    }
+    std::shared_ptr<ThreadsafeQueue<std::vector<char>>> queue(std::make_shared<ThreadsafeQueue<std::vector<char>>>());
 
-    while (!queue.empty())
-    {
-        auto block = std::move(queue.waitAndPop());
-        outputFile.write(std::move(block));
-    }
+    std::thread readThread(readFromFile, inputFile, queue);
+    std::thread writeThread(writeToFile, outputFile, queue);
+
+    readThread.join();
+    writeThread.join();
 
     return 0;
 }

@@ -21,6 +21,8 @@ private:
 
 	std::condition_variable dataCond;
 
+	std::atomic<bool> finalized = false;
+
 	Node* getTail()
 	{
 		std::lock_guard<std::mutex> tailLock(tailMutex);
@@ -99,5 +101,14 @@ public:
 		}
 	}
 
+	void finalize()
+	{
+		finalized = true;
+	}
+
+	bool isFinished()
+	{
+		return (empty() && finalized);
+	}
 };
 
