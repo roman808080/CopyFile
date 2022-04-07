@@ -36,16 +36,11 @@ private:
 		return oldHead;
 	}
 
-	std::unique_lock<std::mutex> waitForData()
+	std::unique_ptr<Node> waitPopHead()
 	{
 		std::unique_lock<std::mutex> headLock(headMutex);
 		dataCond.wait(headLock, [&] {return head.get() != getTail(); });
-		return std::move(headLock);
-	}
 
-	std::unique_ptr<Node> waitPopHead()
-	{
-		std::unique_lock<std::mutex> headLock(waitForData());
 		return popHead();
 	}
 
@@ -89,16 +84,19 @@ public:
 
 	void push(std::unique_ptr<T> newData)
 	{
-		std::unique_ptr<Node> newEmptyNode(new Node);
 		{
 			std::lock_guard<std::mutex> tailLock(tailMutex);
 
 			tail->data = std::move(newData);
+
+			std::unique_ptr<Node> newEmptyNode(new Node);
 			Node* const newTail = newEmptyNode.get();
 
 			tail->next = std::move(newEmptyNode);
 			tail = newTail;
 		}
+
+		dataCond.notify_one();
 	}
 
 	void finalize()
