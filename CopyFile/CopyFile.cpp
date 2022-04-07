@@ -24,13 +24,20 @@ int main()
     auto fileInfo = std::make_unique<FileInfo>(filePath, startBlock, endBlock, blockSize);
     auto file = std::make_unique<InputFile>(std::move(fileInfo));
 
-
+    ThreadsafeQueue<std::vector<char> > queue;
     while (!file->isFinished())
     {
         std::vector<char> block = file->readBlock();
+        queue.push(block);
+    }
+
+    while (!queue.empty())
+    {
+        std::vector<char> block;
+        queue.tryPop(block);
+
         outputFile.write(block);
     }
-    ThreadsafeQueue<char> queue;
 
     return 0;
 }

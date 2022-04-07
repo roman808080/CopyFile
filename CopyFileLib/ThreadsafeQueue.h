@@ -106,10 +106,10 @@ public:
 	bool tryPop(T& value)
 	{
 		std::unique_ptr<Node> const oldHead = tryPopHead(value);
-		return oldHead;
+		return oldHead.get() != nullptr;
 	}
 
-	void empty()
+	bool empty()
 	{
 		std::lock_guard<std::mutex> headLock(headMutex);
 		return (head.get() == getTail());
