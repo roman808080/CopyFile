@@ -9,7 +9,7 @@ class ThreadsafeQueue
 private:
 	struct Node
 	{
-		std::shared_ptr<T> data;
+		std::unique_ptr<T> data;
 		std::unique_ptr<Node> next;
 	};
 
@@ -86,7 +86,7 @@ public:
 	ThreadsafeQueue(const ThreadsafeQueue& other) = delete;
 	ThreadsafeQueue& operator=(const ThreadsafeQueue& other) = delete;
 
-	std::shared_ptr<T> waitAndPop()
+	std::unique_ptr<T> waitAndPop()
 	{
 		std::unique_ptr<Node> const oldHead = waitPopHead();
 		return oldHead->data;
@@ -97,7 +97,7 @@ public:
 		std::unique_ptr<Node> const oldHead = waitPopHead(value);
 	}
 
-	std::shared_ptr<T> tryPop()
+	std::unique_ptr<T> tryPop()
 	{
 		std::unique_ptr<Node> oldHead = tryPopHead();
 		return oldHead ? oldHead->data : std::shared_ptr<T>();
@@ -117,12 +117,12 @@ public:
 
 	void push(T newValue)
 	{
-		std::shared_ptr<T> newData(std::make_shared<T>(std::move(newValue)));
+		std::unique_ptr<T> newData(std::make_unique<T>(std::move(newValue)));
 		std::unique_ptr<Node> newEmptyNode(new Node);
 		{
 			std::lock_guard<std::mutex> tailLock(tailMutex);
 
-			tail->data = newData;
+			tail->data = std::move(newData);
 			Node* const newTail = newEmptyNode.get();
 
 			tail->next = std::move(newEmptyNode);
