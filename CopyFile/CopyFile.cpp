@@ -33,10 +33,9 @@ int main()
 
     while (!queue.empty())
     {
-        std::vector<char> block;
-        queue.tryPop(block);
+        std::unique_ptr<std::vector<char>> block = std::move(queue.tryPop());
 
-        outputFile.write(block);
+        outputFile.write(*block);
     }
 
     return 0;

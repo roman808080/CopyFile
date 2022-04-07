@@ -100,7 +100,7 @@ public:
 	std::unique_ptr<T> tryPop()
 	{
 		std::unique_ptr<Node> oldHead = tryPopHead();
-		return oldHead ? oldHead->data : std::shared_ptr<T>();
+		return oldHead ? std::move(oldHead->data) : std::unique_ptr<T>();
 	}
 
 	bool tryPop(T& value)
