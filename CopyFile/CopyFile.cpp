@@ -27,15 +27,14 @@ int main()
     ThreadsafeQueue<std::vector<char> > queue;
     while (!file->isFinished())
     {
-        std::vector<char> block = file->readBlock();
-        queue.push(block);
+        auto block = std::move(file->readBlock());
+        queue.push(std::move(block));
     }
 
     while (!queue.empty())
     {
-        std::unique_ptr<std::vector<char>> block = std::move(queue.waitAndPop());
-
-        outputFile.write(*block);
+        auto block = std::move(queue.waitAndPop());
+        outputFile.write(std::move(block));
     }
 
     return 0;

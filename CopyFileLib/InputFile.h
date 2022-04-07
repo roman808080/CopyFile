@@ -2,6 +2,7 @@
 
 #include <fstream>
 #include <vector>
+#include <memory>
 
 #include "Constants.h"
 
@@ -13,8 +14,7 @@ public:
 	InputFile(std::unique_ptr<FileInfo> fileInfo);
 	~InputFile();
 
-	std::vector<char> readAll();
-	std::vector<char> readBlock();
+	std::unique_ptr<std::vector<char>> readBlock();
 
 	bool isFinished();
 	uintmax_t getCurrentPosition();

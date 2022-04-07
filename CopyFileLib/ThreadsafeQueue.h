@@ -85,9 +85,8 @@ public:
 		return (head.get() == getTail());
 	}
 
-	void push(T newValue)
+	void push(std::unique_ptr<T> newData)
 	{
-		std::unique_ptr<T> newData(std::make_unique<T>(std::move(newValue)));
 		std::unique_ptr<Node> newEmptyNode(new Node);
 		{
 			std::lock_guard<std::mutex> tailLock(tailMutex);

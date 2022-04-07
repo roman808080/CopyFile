@@ -13,7 +13,7 @@ public:
 	OutputFile(const std::string& fileName);
 	~OutputFile();
 
-	void write(const std::vector<char>& block);
+	void write(std::unique_ptr<std::vector<char>> block);
 
 private:
 	std::ofstream outputFile;

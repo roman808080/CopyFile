@@ -17,8 +17,8 @@ OutputFile::~OutputFile()
 	outputFile.close();
 }
 
-void OutputFile::write(const std::vector<char>& block)
+void OutputFile::write(std::unique_ptr<std::vector<char>> block)
 {
-	outputFile.write(&block[0], block.size());
+	outputFile.write(&(*block)[0], block->size());
 	outputFile.flush();
 }

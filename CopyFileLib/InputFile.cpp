@@ -43,24 +43,7 @@ uintmax_t InputFile::calculateBlockSize()
 	return fileInfo->blockSize;
 }
 
-std::vector<char> InputFile::readAll()
-{
-	try
-	{
-		std::vector<char> fileContent;
-
-		fileContent.resize(static_cast<size_t>(fileInfo->fileSize));
-		fileContent.assign((std::istreambuf_iterator<char>(inputFile)), std::istreambuf_iterator<char>());
-
-		return fileContent;
-	}
-	catch (std::exception& error)
-	{
-		throw FileException(error.what());
-	}
-}
-
-std::vector<char> InputFile::readBlock()
+std::unique_ptr<std::vector<char>> InputFile::readBlock()
 {
 	auto currentBlockSize = calculateBlockSize();
 	if (currentBlockSize == 0)
@@ -68,11 +51,12 @@ std::vector<char> InputFile::readBlock()
 		throw EmptyBlock("Nothing to read.");
 	}
 
-	std::vector<char> fileContent;
-	fileContent.resize(static_cast<size_t>(currentBlockSize));
-	inputFile.read(&fileContent[0], currentBlockSize);
+	std::unique_ptr<std::vector<char>> fileContent(std::make_unique<std::vector<char>>());
+	fileContent->resize(static_cast<size_t>(currentBlockSize));
 
-	return fileContent;
+	inputFile.read(&(*fileContent)[0], currentBlockSize);
+
+	return std::move(fileContent);
 }
 
 bool InputFile::isFinished()
