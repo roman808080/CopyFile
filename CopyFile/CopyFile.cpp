@@ -10,21 +10,10 @@
 #include "FileInfo.h"
 
 #include "ThreadsafeQueue.h"
+#include "ReadThread.h"
 
 namespace
 {
-    void readFromFile(std::shared_ptr<InputFile> inputFile,
-                    std::shared_ptr<ThreadsafeQueue<std::vector<char>>> queue)
-    {
-		while (!inputFile->isFinished())
-		{
-			auto block = std::move(inputFile->readBlock());
-			queue->push(std::move(block));
-		}
-
-        queue->finalize();
-    }
-
     void writeToFile(std::shared_ptr<OutputFile> outputFile,
         std::shared_ptr<ThreadsafeQueue<std::vector<char>>> queue)
     {
@@ -48,10 +37,12 @@ int main()
 
     std::shared_ptr<ThreadsafeQueue<std::vector<char>>> queue(std::make_shared<ThreadsafeQueue<std::vector<char>>>());
 
-    std::thread readThread(readFromFile, inputFile, queue);
+    ReadThread readThread(inputFile, queue);
+    std::thread readThreadWrapper(readThread);
+
     std::thread writeThread(writeToFile, outputFile, queue);
 
-    readThread.join();
+    readThreadWrapper.join();
     writeThread.join();
 
     return 0;
