@@ -1,20 +1,20 @@
 #include "pch.h"
-#include "ReadThread.h"
+#include "Reader.h"
 
 #include "InputFile.h"
 
-ReadThread::ReadThread(std::shared_ptr<InputFile> inputFile, std::shared_ptr<ThreadsafeQueue<std::vector<char>>> queue)
+Reader::Reader(std::shared_ptr<InputFile> inputFile, std::shared_ptr<ThreadsafeQueue<std::vector<char>>> queue)
 	: inputFile(inputFile)
 	, queue(queue)
 {
 }
 
-void ReadThread::operator()()
+void Reader::operator()()
 {
 	readFromFile();
 }
 
-void ReadThread::readFromFile()
+void Reader::readFromFile()
 {    
 	while (!inputFile->isFinished())
 	{

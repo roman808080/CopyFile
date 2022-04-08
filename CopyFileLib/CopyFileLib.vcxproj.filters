@@ -42,7 +42,7 @@
     <ClInclude Include="ThreadsafeQueue.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ReadThread.h">
+    <ClInclude Include="Reader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -59,7 +59,7 @@
     <ClCompile Include="OutputFile.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ReadThread.cpp">
+    <ClCompile Include="Reader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

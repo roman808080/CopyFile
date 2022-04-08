@@ -8,10 +8,10 @@
 class InputFile;
 
 
-class ReadThread
+class Reader
 {
 public:
-	ReadThread(std::shared_ptr<InputFile> inputFile,
+	Reader(std::shared_ptr<InputFile> inputFile,
                std::shared_ptr<ThreadsafeQueue<std::vector<char>>> queue);
 
 	void operator()();
@@ -22,5 +22,7 @@ private:
 private:
 	std::shared_ptr<InputFile> inputFile;
 	std::shared_ptr<ThreadsafeQueue<std::vector<char>>> queue;
+
+	std::shared_ptr<std::thread> innerThread;
 };
 

@@ -10,7 +10,7 @@
 #include "FileInfo.h"
 
 #include "ThreadsafeQueue.h"
-#include "ReadThread.h"
+#include "Reader.h"
 
 namespace
 {
@@ -37,12 +37,12 @@ int main()
 
     std::shared_ptr<ThreadsafeQueue<std::vector<char>>> queue(std::make_shared<ThreadsafeQueue<std::vector<char>>>());
 
-    ReadThread readThread(inputFile, queue);
-    std::thread readThreadWrapper(readThread);
+    Reader reader(inputFile, queue);
+    std::thread readThread(reader);
 
     std::thread writeThread(writeToFile, outputFile, queue);
 
-    readThreadWrapper.join();
+    readThread.join();
     writeThread.join();
 
     return 0;
