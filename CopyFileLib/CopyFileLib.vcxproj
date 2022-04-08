@@ -163,6 +163,7 @@
     <ClInclude Include="OutputFile.h" />
     <ClInclude Include="Reader.h" />
     <ClInclude Include="ThreadsafeQueue.h" />
+    <ClInclude Include="Writer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="FileUtils.cpp" />
@@ -175,6 +176,7 @@
     </ClCompile>
     <ClCompile Include="OutputFile.cpp" />
     <ClCompile Include="Reader.cpp" />
+    <ClCompile Include="Writer.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

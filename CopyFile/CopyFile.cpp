@@ -11,19 +11,8 @@
 
 #include "ThreadsafeQueue.h"
 #include "Reader.h"
+#include "Writer.h"
 
-namespace
-{
-    void writeToFile(std::shared_ptr<OutputFile> outputFile,
-        std::shared_ptr<ThreadsafeQueue<std::vector<char>>> queue)
-    {
-		while (!queue->isFinished())
-		{
-			auto block = std::move(queue->waitAndPop());
-			outputFile->write(std::move(block));
-		}
-    }
-}
 
 int main()
 {
@@ -40,7 +29,8 @@ int main()
     Reader reader(inputFile, queue);
     std::thread readThread(reader);
 
-    std::thread writeThread(writeToFile, outputFile, queue);
+    Writer writer(outputFile, queue);
+    std::thread writeThread(writer);
 
     readThread.join();
     writeThread.join();
