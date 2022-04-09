@@ -12,6 +12,7 @@ public:
 		   std::shared_ptr<ThreadsafeQueue<std::vector<char>>> queue);
 
 	void operator()();
+	void write();
 
 private:
 	void writeToFile();

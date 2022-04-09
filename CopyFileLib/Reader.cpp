@@ -6,12 +6,23 @@
 Reader::Reader(std::shared_ptr<InputFile> inputFile, std::shared_ptr<ThreadsafeQueue<std::vector<char>>> queue)
 	: inputFile(inputFile)
 	, queue(queue)
+	//, errorHappend(false)
 {
 }
 
 void Reader::operator()()
 {
 	readFromFile();
+}
+
+void Reader::read()
+{
+	readFromFile();
+}
+
+void Reader::notifyAboutError()
+{
+	errorHappend = true;
 }
 
 void Reader::readFromFile()

@@ -15,6 +15,11 @@ void Writer::operator()()
 	writeToFile();
 }
 
+void Writer::write()
+{
+	writeToFile();
+}
+
 void Writer::writeToFile()
 {
 	while (!queue->isFinished())
