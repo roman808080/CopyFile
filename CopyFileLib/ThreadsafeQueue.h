@@ -20,9 +20,12 @@ private:
 	Node* tail;
 
 	std::condition_variable dataCond;
+	std::condition_variable fullQueueCond;
 
 	std::atomic<bool> finalized = false;
 	std::atomic<unsigned int> size = 0;
+
+	const unsigned int maxQueueSize = 1000;
 
 	Node* getTail()
 	{
@@ -44,6 +47,7 @@ private:
 		std::unique_lock<std::mutex> headLock(headMutex);
 		dataCond.wait(headLock, [&] {return head.get() != getTail(); });
 
+		fullQueueCond.notify_one();
 		return popHead();
 	}
 
@@ -55,12 +59,14 @@ private:
 			return std::unique_ptr<Node>();
 		}
 
+		fullQueueCond.notify_one();
 		return popHead();
 	}
 
 	void lockAndPush(std::unique_ptr<T> newData)
 	{
-		std::lock_guard<std::mutex> tailLock(tailMutex);
+		std::unique_lock<std::mutex> tailLock(tailMutex);
+		fullQueueCond.wait(tailLock, [&] {return size < maxQueueSize; });
 
 		tail->data = std::move(newData);
 
