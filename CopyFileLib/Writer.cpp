@@ -1,13 +1,15 @@
 #include "pch.h"
 #include "Writer.h"
 
-#include <iostream>
 #include "OutputFile.h"
+#include "Messanger.h"
 
 Writer::Writer(std::shared_ptr<OutputFile> outputFile,
 			   std::shared_ptr<ThreadsafeQueue<std::vector<char>>> queue)
 	: outputFile(outputFile)
 	, queue(queue)
+	, errorHappend(false)
+	, messanger(nullptr)
 {
 }
 
@@ -19,6 +21,10 @@ void Writer::operator()()
 void Writer::write()
 {
 	writeToFile();
+}
+
+void Writer::setMessenger(std::shared_ptr<Messanger> messanger)
+{
 }
 
 void Writer::notifyAboutError()
@@ -34,7 +40,7 @@ void Writer::writeToFile()
 	}
 	catch (const std::exception& exc)
 	{
-		std::cout << "An error has happend: " << exc.what() << std::endl;
+		notifyMessangerAboutError(exc.what());
 	}
 }
 
@@ -45,5 +51,13 @@ void Writer::tryWriteToFile()
 	{
 		auto block = std::move(queue->waitAndPop());
 		outputFile->write(std::move(block));
+	}
+}
+
+void Writer::notifyMessangerAboutError(const std::string& errorString)
+{
+	if (messanger.get() != nullptr)
+	{
+		messanger->notifyAboutError(errorString);
 	}
 }

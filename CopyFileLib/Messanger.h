@@ -9,7 +9,7 @@ class Messanger
 {
 public:
 	void subscribe(std::shared_ptr<MessageListenerInterface> listener);
-	void notifyAboutError();
+	void notifyAboutError(const std::string& errorString);
 
 private:
 	std::vector<std::shared_ptr<MessageListenerInterface>> listeners;
