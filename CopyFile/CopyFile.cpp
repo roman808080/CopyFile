@@ -27,17 +27,14 @@ int main()
     std::shared_ptr<ThreadsafeQueue<std::vector<char>>> queue(std::make_shared<ThreadsafeQueue<std::vector<char>>>());
 
     std::shared_ptr<Reader> reader(std::make_shared<Reader>(inputFile, queue));
-    std::thread readThread([reader]() {
+    std::jthread readThread([reader]() {
 			reader->read();
         });
 
     std::shared_ptr<Writer> writer(std::make_shared<Writer>(outputFile, queue));
-    std::thread writeThread([writer]() {
+    std::jthread writeThread([writer]() {
             writer->write();
         });
-
-    readThread.join();
-    writeThread.join();
 
     return 0;
 }
