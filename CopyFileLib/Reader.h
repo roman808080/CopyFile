@@ -15,6 +15,11 @@ public:
 	Reader(std::shared_ptr<InputFile> inputFile,
                std::shared_ptr<ThreadsafeQueue<std::vector<char>>> queue);
 
+	Reader(const Reader&) = delete;
+    Reader& operator=(const Reader&) = delete;
+    Reader(Reader&&) = delete;
+    Reader& operator=(Reader&&) = delete;
+
 	void operator()();
 	void read();
 

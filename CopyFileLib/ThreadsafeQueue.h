@@ -74,8 +74,10 @@ public:
 		, tail(head.get())
 	{}
 
-	ThreadsafeQueue(const ThreadsafeQueue& other) = delete;
-	ThreadsafeQueue& operator=(const ThreadsafeQueue& other) = delete;
+	ThreadsafeQueue(const ThreadsafeQueue&) = delete;
+    ThreadsafeQueue& operator=(const ThreadsafeQueue&) = delete;
+    ThreadsafeQueue(ThreadsafeQueue&&) = delete;
+    ThreadsafeQueue& operator=(ThreadsafeQueue&&) = delete;
 
 	std::unique_ptr<T> waitAndPop()
 	{
