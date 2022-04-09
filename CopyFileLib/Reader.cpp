@@ -6,7 +6,7 @@
 Reader::Reader(std::shared_ptr<InputFile> inputFile, std::shared_ptr<ThreadsafeQueue<std::vector<char>>> queue)
 	: inputFile(inputFile)
 	, queue(queue)
-	//, errorHappend(false)
+	, errorHappend(false)
 {
 }
 
