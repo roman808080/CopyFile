@@ -5,13 +5,13 @@
 #include "Messanger.h"
 #include "MessageListenerInterface.h"
 
-void Messanger::subscribe(std::shared_ptr<MessageListenerInterface> listener)
+void Messenger::subscribe(std::shared_ptr<MessageListenerInterface> listener)
 {
 	std::unique_lock<std::mutex> listenerLock(listenerMutex);
 	listeners.push_back(listener);
 }
 
-void Messanger::notifyAboutError(const std::string& errorString)
+void Messenger::notifyAboutError(const std::string& errorString)
 {
 	std::unique_lock<std::mutex> listenerLock(listenerMutex);
 

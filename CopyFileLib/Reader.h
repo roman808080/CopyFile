@@ -8,7 +8,7 @@
 #include "MessageListenerInterface.h"
 
 class InputFile;
-class Messanger;
+class Messenger;
 
 class Reader: public MessageListenerInterface
 {
@@ -24,7 +24,7 @@ public:
 	void operator()();
 	void read();
 
-	void setMessenger(std::shared_ptr<Messanger> messanger);
+	void setMessenger(std::shared_ptr<Messenger> messenger);
 	virtual void notifyAboutError() override;
 
 private:
@@ -38,6 +38,6 @@ private:
 	std::shared_ptr<ThreadsafeQueue<std::vector<char>>> queue;
 
 	std::atomic<bool> errorHappend = false;
-	std::shared_ptr<Messanger> messanger;
+	std::shared_ptr<Messenger> messenger;
 };
 

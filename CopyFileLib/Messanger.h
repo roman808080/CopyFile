@@ -5,7 +5,7 @@
 
 class MessageListenerInterface;
 
-class Messanger
+class Messenger
 {
 public:
 	void subscribe(std::shared_ptr<MessageListenerInterface> listener);

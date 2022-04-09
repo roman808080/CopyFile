@@ -9,7 +9,7 @@ Writer::Writer(std::shared_ptr<OutputFile> outputFile,
 	: outputFile(outputFile)
 	, queue(queue)
 	, errorHappend(false)
-	, messanger(nullptr)
+	, messenger(nullptr)
 {
 }
 
@@ -23,9 +23,9 @@ void Writer::write()
 	writeToFile();
 }
 
-void Writer::setMessenger(std::shared_ptr<Messanger> messanger)
+void Writer::setMessenger(std::shared_ptr<Messenger> meseanger)
 {
-	this->messanger = messanger;
+	this->messenger = messenger;
 }
 
 void Writer::notifyAboutError()
@@ -57,8 +57,8 @@ void Writer::tryWriteToFile()
 
 void Writer::notifyMessangerAboutError(const std::string& errorString)
 {
-	if (messanger.get() != nullptr)
+	if (messenger.get() != nullptr)
 	{
-		messanger->notifyAboutError(errorString);
+		messenger->notifyAboutError(errorString);
 	}
 }

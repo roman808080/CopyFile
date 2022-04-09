@@ -8,7 +8,7 @@ Reader::Reader(std::shared_ptr<InputFile> inputFile, std::shared_ptr<ThreadsafeQ
 	: inputFile(inputFile)
 	, queue(queue)
 	, errorHappend(false)
-	, messanger(nullptr)
+	, messenger(nullptr)
 {
 }
 
@@ -22,9 +22,9 @@ void Reader::read()
 	readFromFile();
 }
 
-void Reader::setMessenger(std::shared_ptr<Messanger> messanger)
+void Reader::setMessenger(std::shared_ptr<Messenger> messenger)
 {
-	this->messanger = messanger;
+	this->messenger = messenger;
 }
 
 void Reader::notifyAboutError()
@@ -58,8 +58,8 @@ void Reader::tryReadFromFile()
 
 void Reader::notifyMessangerAboutError(const std::string& errorString)
 {
-	if (messanger.get() != nullptr)
+	if (messenger.get() != nullptr)
 	{
-		messanger->notifyAboutError(errorString);
+		messenger->notifyAboutError(errorString);
 	}
 }

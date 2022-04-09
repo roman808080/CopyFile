@@ -5,7 +5,7 @@
 #include "MessageListenerInterface.h"
 
 class OutputFile;
-class Messanger;
+class Messenger;
 
 class Writer: MessageListenerInterface
 {
@@ -21,7 +21,7 @@ public:
 	void operator()();
 	void write();
 
-	void setMessenger(std::shared_ptr<Messanger> messanger);
+	void setMessenger(std::shared_ptr<Messenger> messenger);
 	virtual void notifyAboutError() override;
 
 private:
@@ -35,6 +35,6 @@ private:
 	std::shared_ptr<ThreadsafeQueue<std::vector<char>>> queue;
 
 	std::atomic<bool> errorHappend = false;
-	std::shared_ptr<Messanger> messanger;
+	std::shared_ptr<Messenger> messenger;
 };
 
