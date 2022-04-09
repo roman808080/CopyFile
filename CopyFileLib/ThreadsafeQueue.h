@@ -25,7 +25,7 @@ private:
 	std::atomic<bool> finalized = false;
 	std::atomic<unsigned int> size = 0;
 
-	const unsigned int maxQueueSize = 1000;
+	const unsigned int maxQueueSize;
 
 	Node* getTail()
 	{
@@ -80,9 +80,10 @@ private:
 	}
 
 public:
-	ThreadsafeQueue()
+	ThreadsafeQueue(size_t maxSize)
 		: head(new Node)
 		, tail(head.get())
+		, maxQueueSize(maxSize)
 	{}
 
 	ThreadsafeQueue(const ThreadsafeQueue&) = delete;

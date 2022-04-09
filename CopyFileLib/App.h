@@ -11,7 +11,7 @@ class App
 {
 public:
 	App(const std::string& inputFileName, const std::string& outputFileName,
-		const size_t blockSize = Constants::Kilobyte);
+		const size_t blockSize = Constants::Megabyte);
 	
 	void run();
 

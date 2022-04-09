@@ -39,7 +39,8 @@ void App::tryRun()
     auto fileInfo = std::make_unique<FileInfo>(inputFileName, blockSize);
     auto inputFile = std::make_shared<InputFile>(std::move(fileInfo));
 
-    std::shared_ptr<ThreadsafeQueue<std::vector<char>>> queue(std::make_shared<ThreadsafeQueue<std::vector<char>>>());
+	size_t maxQueueSize = Constants::MaxOccupiedMemory / blockSize;
+    std::shared_ptr<ThreadsafeQueue<std::vector<char>>> queue(std::make_shared<ThreadsafeQueue<std::vector<char>>>(maxQueueSize));
 
     std::shared_ptr<Reader> reader(std::make_shared<Reader>(inputFile, queue));
 	reader->setMessenger(messenger);

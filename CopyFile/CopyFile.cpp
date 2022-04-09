@@ -8,7 +8,7 @@ int main()
 {
 	try
 	{
-		App app("CopyFile.cpp", "file.txt", Constants::Kilobyte);
+		App app("CopyFile.cpp", "file.txt", Constants::Megabyte);
 		app.run();
 	}
 	catch (const std::exception& exc)
