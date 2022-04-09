@@ -25,6 +25,7 @@ void Writer::write()
 
 void Writer::setMessenger(std::shared_ptr<Messanger> messanger)
 {
+	this->messanger = messanger;
 }
 
 void Writer::notifyAboutError()
