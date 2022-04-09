@@ -153,6 +153,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="App.h" />
     <ClInclude Include="Constants.h" />
     <ClInclude Include="MessageListenerInterface.h" />
     <ClInclude Include="Messenger.h" />
@@ -168,6 +169,7 @@
     <ClInclude Include="Writer.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="App.cpp" />
     <ClCompile Include="Messenger.cpp" />
     <ClCompile Include="FileUtils.cpp" />
     <ClCompile Include="InputFile.cpp" />
