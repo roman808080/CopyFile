@@ -27,6 +27,7 @@ public:
 
 private:
 	void readFromFile();
+	void tryReadFromFile();
 
 private:
 	std::shared_ptr<InputFile> inputFile;

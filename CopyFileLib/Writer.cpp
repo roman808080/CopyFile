@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "Writer.h"
 
+#include <iostream>
 #include "OutputFile.h"
 
 Writer::Writer(std::shared_ptr<OutputFile> outputFile,
@@ -26,6 +27,18 @@ void Writer::notifyAboutError()
 }
 
 void Writer::writeToFile()
+{
+	try
+	{
+		tryWriteToFile();
+	}
+	catch (const std::exception& exc)
+	{
+		std::cout << "An error has happend: " << exc.what() << std::endl;
+	}
+}
+
+void Writer::tryWriteToFile()
 {
 	while (!queue->isFinished() &&
 		   !errorHappend)

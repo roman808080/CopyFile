@@ -24,6 +24,7 @@ public:
 
 private:
 	void writeToFile();
+	void tryWriteToFile();
 
 private:
 	std::shared_ptr<OutputFile> outputFile;

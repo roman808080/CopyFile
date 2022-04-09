@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "Reader.h"
 
+#include <iostream>
 #include "InputFile.h"
 
 Reader::Reader(std::shared_ptr<InputFile> inputFile, std::shared_ptr<ThreadsafeQueue<std::vector<char>>> queue)
@@ -26,6 +27,18 @@ void Reader::notifyAboutError()
 }
 
 void Reader::readFromFile()
+{
+	try
+	{
+		tryReadFromFile();
+	}
+	catch (const std::exception& exc)
+	{
+		std::cout << "An error has happend: " << exc.what() << std::endl;
+	}
+}
+
+void Reader::tryReadFromFile()
 {    
 	while (!inputFile->isFinished() &&
 		   !errorHappend)
