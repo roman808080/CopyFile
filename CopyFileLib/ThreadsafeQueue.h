@@ -22,6 +22,7 @@ private:
 	std::condition_variable dataCond;
 
 	std::atomic<bool> finalized = false;
+	std::atomic<unsigned int> size = 0;
 
 	Node* getTail()
 	{
@@ -33,6 +34,8 @@ private:
 	{
 		std::unique_ptr<Node> oldHead = std::move(head);
 		head = std::move(oldHead->next);
+
+		--size;
 		return oldHead;
 	}
 
@@ -66,6 +69,8 @@ private:
 
 		tail->next = std::move(newEmptyNode);
 		tail = newTail;
+
+		++size;
 	}
 
 public:
