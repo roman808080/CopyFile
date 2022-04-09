@@ -39,6 +39,8 @@ private:
 		head = std::move(oldHead->next);
 
 		--size;
+		fullQueueCond.notify_one();
+
 		return oldHead;
 	}
 
@@ -47,7 +49,6 @@ private:
 		std::unique_lock<std::mutex> headLock(headMutex);
 		dataCond.wait(headLock, [&] {return head.get() != getTail(); });
 
-		fullQueueCond.notify_one();
 		return popHead();
 	}
 
@@ -59,7 +60,6 @@ private:
 			return std::unique_ptr<Node>();
 		}
 
-		fullQueueCond.notify_one();
 		return popHead();
 	}
 
