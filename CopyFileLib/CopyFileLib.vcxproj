@@ -155,7 +155,7 @@
   <ItemGroup>
     <ClInclude Include="Constants.h" />
     <ClInclude Include="MessageListenerInterface.h" />
-    <ClInclude Include="Messanger.h" />
+    <ClInclude Include="Messenger.h" />
     <ClInclude Include="Exceptions.h" />
     <ClInclude Include="FileInfo.h" />
     <ClInclude Include="FileUtils.h" />
@@ -168,7 +168,7 @@
     <ClInclude Include="Writer.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Messanger.cpp" />
+    <ClCompile Include="Messenger.cpp" />
     <ClCompile Include="FileUtils.cpp" />
     <ClCompile Include="InputFile.cpp" />
     <ClCompile Include="pch.cpp">

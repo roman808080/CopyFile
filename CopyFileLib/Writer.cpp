@@ -2,7 +2,7 @@
 #include "Writer.h"
 
 #include "OutputFile.h"
-#include "Messanger.h"
+#include "Messenger.h"
 
 Writer::Writer(std::shared_ptr<OutputFile> outputFile,
 			   std::shared_ptr<ThreadsafeQueue<std::vector<char>>> queue)

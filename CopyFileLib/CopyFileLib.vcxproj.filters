@@ -48,7 +48,7 @@
     <ClInclude Include="Writer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Messanger.h">
+    <ClInclude Include="Messenger.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="MessageListenerInterface.h">
@@ -74,7 +74,7 @@
     <ClCompile Include="Writer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Messanger.cpp">
+    <ClCompile Include="Messenger.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

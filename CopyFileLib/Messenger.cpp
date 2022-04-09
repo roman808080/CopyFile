@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-#include "Messanger.h"
+#include "Messenger.h"
 #include "MessageListenerInterface.h"
 
 void Messenger::subscribe(std::shared_ptr<MessageListenerInterface> listener)
