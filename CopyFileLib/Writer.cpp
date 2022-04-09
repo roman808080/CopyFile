@@ -20,9 +20,15 @@ void Writer::write()
 	writeToFile();
 }
 
+void Writer::notifyAboutError()
+{
+	errorHappend = true;
+}
+
 void Writer::writeToFile()
 {
-	while (!queue->isFinished())
+	while (!queue->isFinished() &&
+		   !errorHappend)
 	{
 		auto block = std::move(queue->waitAndPop());
 		outputFile->write(std::move(block));

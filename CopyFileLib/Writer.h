@@ -2,10 +2,11 @@
 #include <memory>
 
 #include "ThreadsafeQueue.h"
+#include "MessageListenerInterface.h"
 
 class OutputFile;
 
-class Writer
+class Writer: MessageListenerInterface
 {
 public:
 	Writer(std::shared_ptr<OutputFile> outputFile,
@@ -19,11 +20,15 @@ public:
 	void operator()();
 	void write();
 
+	virtual void notifyAboutError() override;
+
 private:
 	void writeToFile();
 
 private:
 	std::shared_ptr<OutputFile> outputFile;
 	std::shared_ptr<ThreadsafeQueue<std::vector<char>>> queue;
+
+	std::atomic<bool> errorHappend = false;
 };
 

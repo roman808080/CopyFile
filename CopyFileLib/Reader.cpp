@@ -27,7 +27,8 @@ void Reader::notifyAboutError()
 
 void Reader::readFromFile()
 {    
-	while (!inputFile->isFinished())
+	while (!inputFile->isFinished() &&
+		   !errorHappend)
 	{
 		auto block = std::move(inputFile->readBlock());
 		queue->push(std::move(block));
