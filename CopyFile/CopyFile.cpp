@@ -6,11 +6,16 @@
 
 int main()
 {
-    // input file CopyFile.cpp
-    // output file file.txt
-    // Constants::Kilobyte
-    App app("CopyFile.cpp", "file.txt", Constants::Kilobyte);
-    app.run();
+	try
+	{
+		App app("CopyFile.cpp", "file.txt", Constants::Kilobyte);
+		app.run();
+	}
+	catch (const std::exception& exc)
+	{
+		std::cout << "An exception has happened: " << exc.what() << std::endl;
+		return 1;
+	}
 
     return 0;
 }
