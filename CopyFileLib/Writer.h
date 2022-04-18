@@ -2,13 +2,10 @@
 #include <memory>
 #include <string>
 
-#include "MessageListenerInterface.h"
-
 class OutputFile;
-class Messenger;
 class Router;
 
-class Writer: MessageListenerInterface
+class Writer
 {
 public:
 	Writer(std::shared_ptr<OutputFile> outputFile,
@@ -22,19 +19,11 @@ public:
 
 	void write();
 
-	void setMessenger(std::shared_ptr<Messenger> messenger);
-	virtual void notifyAboutError() override;
-
 private:
 	void tryWriteToFile();
-
-	void notifyMessangerAboutError(const std::string& errorString);
 
 private:
 	std::shared_ptr<OutputFile> outputFile;
 	std::shared_ptr<Router> router;
-
-	std::atomic<bool> errorHappend = false;
-	std::shared_ptr<Messenger> messenger;
 };
 

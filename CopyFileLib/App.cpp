@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "App.h"
 
-#include "Messenger.h"
+#include <iostream>
 
 #include "OutputFile.h"
 #include "InputFile.h"
@@ -14,7 +14,6 @@ App::App(const std::string& inputFileName, const std::string& outputFileName, co
 	: inputFileName(inputFileName)
 	, outputFileName(outputFileName)
 	, blockSize(blockSize)
-	, messenger(std::make_shared<Messenger>())
 {
 }
 
@@ -26,7 +25,8 @@ void App::run()
 	}
 	catch (const std::exception& exc)
 	{
-		messenger->notifyAboutError(exc.what());
+		// Ideally should be replaced by a logger. Before partially this role executed Messanger, but I removed it to simplify the code.
+		std::cout << "An error has happend: " << exc.what() << std::endl;
 	}
 }
 
@@ -38,13 +38,11 @@ void App::tryRun()
 	std::shared_ptr<Router> router(std::make_shared<Router>());
 
     std::shared_ptr<Reader> reader(std::make_shared<Reader>(inputFile, router));
-	reader->setMessenger(messenger);
     std::jthread readThread([reader]() {
 			reader->read();
         });
 
     std::shared_ptr<Writer> writer(std::make_shared<Writer>(outputFile, router));
-	writer->setMessenger(messenger);
     std::jthread writeThread([writer]() {
             writer->write();
         });

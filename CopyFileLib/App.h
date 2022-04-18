@@ -11,7 +11,7 @@ class App
 {
 public:
 	App(const std::string& inputFileName, const std::string& outputFileName,
-		const size_t blockSize = Constants::Megabyte);
+		const size_t blockSize = Constants::Kilobyte);
 	
 	void run();
 
@@ -22,7 +22,5 @@ private:
 	const std::string inputFileName;
 	const std::string outputFileName;
 	const size_t blockSize;
-
-	std::shared_ptr<Messenger> messenger;
 };
 

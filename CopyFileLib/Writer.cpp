@@ -1,16 +1,15 @@
 #include "pch.h"
 #include "Writer.h"
 
+#include <iostream>
+
 #include "OutputFile.h"
-#include "Messenger.h"
 #include "Router.h"
 
 Writer::Writer(std::shared_ptr<OutputFile> outputFile,
 			   std::shared_ptr<Router> router)
 	: outputFile(outputFile)
 	, router(router)
-	, errorHappend(false)
-	, messenger(nullptr)
 {
 }
 
@@ -26,18 +25,12 @@ void Writer::write()
 	}
 	catch (const std::exception& exc)
 	{
-		notifyMessangerAboutError(exc.what());
+		// Ideally should be replaced by a logger. Before partially this role executed Messanger, but I removed it to simplify the code.
+		std::cout << "An error has happend: " << exc.what() << std::endl;
+
+		// Stop rotation in case of an error.
+		router->stopRotation();
 	}
-}
-
-void Writer::setMessenger(std::shared_ptr<Messenger> meseanger)
-{
-	this->messenger = messenger;
-}
-
-void Writer::notifyAboutError()
-{
-	errorHappend = true;
 }
 
 void Writer::tryWriteToFile()
@@ -45,7 +38,7 @@ void Writer::tryWriteToFile()
 	std::vector<char>* previousBlock = nullptr;
 
 	bool isFinished = router->isRotationStopped() && previousBlock == nullptr;
-	while (!isFinished && !errorHappend)
+	while (!isFinished)
 	{
 		std::vector<char>* currentBlock = router->rotateOutputBlocks(previousBlock);
 		if (currentBlock != nullptr)
@@ -58,10 +51,3 @@ void Writer::tryWriteToFile()
 	}
 }
 
-void Writer::notifyMessangerAboutError(const std::string& errorString)
-{
-	if (messenger.get() != nullptr)
-	{
-		messenger->notifyAboutError(errorString);
-	}
-}
