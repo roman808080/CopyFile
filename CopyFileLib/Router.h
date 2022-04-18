@@ -9,6 +9,14 @@ class Router
 {
 public:
 	Router();
+	~Router();
+
+	// The class has an std::atomic_bool variable which cannot be moved or copied.
+	// So, it is a good idea to block the same behavior for the whole class to avoid strange errors.
+	Router(const Router&) = delete;
+    Router& operator=(const Router&) = delete;
+    Router(Router&&) = delete;
+    Router& operator=(Router&&) = delete;
 
 	// The method gets a block of memory which can be used for writing.
 	// This method for reading thread. 
@@ -17,6 +25,9 @@ public:
 	// The method utilizes a used block and gives a new block to write.
 	// This method for writing thread.
 	std::vector<char>* rotateOutputBlocks(std::vector<char>* usedBlock);
+	
+	void stopRotation();
+	bool isRotationStopped();
 
 private:
 	// locks and rotates blocks
@@ -34,5 +45,8 @@ private:
 	std::list<std::vector<char>*> usedOutputBlocks;
 
 	std::mutex criticalSection;
+
+	// to stop yielding if necessary
+	std::atomic_bool stopped = false;
 };
 

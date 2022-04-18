@@ -86,6 +86,9 @@ public:
 		, maxQueueSize(maxSize)
 	{}
 
+	~ThreadsafeQueue()
+	{}
+
 	ThreadsafeQueue(const ThreadsafeQueue&) = delete;
     ThreadsafeQueue& operator=(const ThreadsafeQueue&) = delete;
     ThreadsafeQueue(ThreadsafeQueue&&) = delete;

@@ -17,12 +17,21 @@ Router::Router()
 	}
 }
 
+Router::~Router()
+{
+}
+
 
 std::vector<char>* Router::rotateInputBlocks(std::vector<char>* readyBlock)
 {
 	std::vector<char>* newBlock = nullptr;
 	while ((newBlock = tryRotateInputBlocks(readyBlock)) == nullptr)
 	{
+		if (stopped)
+		{
+			return nullptr;
+		}
+
 		std::this_thread::yield();
 	}
 
@@ -34,10 +43,25 @@ std::vector<char>* Router::rotateOutputBlocks(std::vector<char>* usedBlock)
 	std::vector<char>* newBlock = nullptr;
 	while ((newBlock = tryRotateOutputBlocks(usedBlock)) == nullptr)
 	{
+		if (stopped)
+		{
+			return nullptr;
+		}
+
 		std::this_thread::yield();
 	}
 
 	return newBlock;
+}
+
+void Router::stopRotation()
+{
+	stopped = true;
+}
+
+bool Router::isRotationStopped()
+{
+	return stopped;
 }
 
 std::vector<char>* Router::tryRotateInputBlocks(std::vector<char>* readyBlock)
