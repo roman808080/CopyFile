@@ -16,31 +16,18 @@ namespace
 	}
 }
 
-struct FileInfo
-{
-	const uintmax_t blockSize = Constants::Kilobyte;
-	const uintmax_t fileSize = 0;
-
-	FileInfo(const std::string& filePath,
-			 const uintmax_t blockSize = Constants::Kilobyte)
-		: blockSize(blockSize)
-		, fileSize(getFileSize(filePath))
-	{
-	}
-};
-
-
 InputFile::InputFile(const std::string& fileName,
 					 const size_t blockSize)
-	: inputFile(fileName, std::ifstream::binary),
-	  fileInfo(std::make_unique<FileInfo>(fileName, blockSize))
+	: inputFile(fileName, std::ifstream::binary)
+	, blockSize(blockSize)
+	, fileSize(getFileSize(fileName))
 {
 	if (!inputFile.is_open())
 	{
 		throw std::runtime_error("Failed to open the file.");
 	}
 
-	if (this->fileInfo->fileSize == 0)
+	if (fileSize == 0)
 	{
 		throw std::runtime_error("End position is equel to zero.");
 	}
@@ -53,17 +40,17 @@ InputFile::~InputFile()
 
 uintmax_t InputFile::size()
 {
-	return fileInfo->fileSize;
+	return fileSize;
 }
 
 uintmax_t InputFile::calculateBlockSize()
 {
-	if ((getCurrentPosition() + fileInfo->blockSize) > fileInfo->fileSize)
+	if ((getCurrentPosition() + blockSize) > fileSize)
 	{
-		return fileInfo->fileSize - getCurrentPosition();
+		return fileSize - getCurrentPosition();
 	}
 
-	return fileInfo->blockSize;
+	return blockSize;
 }
 
 void InputFile::readBlock(std::vector<char>* block)
@@ -85,12 +72,12 @@ bool InputFile::isFinished()
 		return true;
 	}
 
-	if (getCurrentPosition() > fileInfo->fileSize)
+	if (getCurrentPosition() > fileSize)
 	{
 		throw std::runtime_error("A wrong position in the input file.");
 	}
 
-	if (getCurrentPosition() == fileInfo->fileSize)
+	if (getCurrentPosition() == fileSize)
 	{
 		return true;
 	}

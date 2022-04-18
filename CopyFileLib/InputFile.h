@@ -6,8 +6,6 @@
 
 #include "Constants.h"
 
-struct FileInfo;
-
 class InputFile
 {
 public:
@@ -30,6 +28,8 @@ private:
 	uintmax_t calculateBlockSize();
 
 private:
-	std::unique_ptr<FileInfo> fileInfo;
 	std::ifstream inputFile;
+
+	const uintmax_t blockSize;
+	const uintmax_t fileSize;
 };
