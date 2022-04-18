@@ -29,6 +29,5 @@ private:
 	std::list<std::vector<char>*> usedBlocks;
 
 	std::mutex criticalSection;
-	std::atomic_bool readyBlocksEmpty;
 };
 
