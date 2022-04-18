@@ -3,7 +3,6 @@
 
 #include <filesystem>
 
-#include "Exceptions.h"
 #include "FileInfo.h"
 
 
@@ -13,13 +12,13 @@ InputFile::InputFile(std::unique_ptr<FileInfo> fileInfo)
 {
 	if (!inputFile.is_open())
 	{
-		throw FileException("Failed to open the file.");
+		throw std::runtime_error("Failed to open the file.");
 	}
 
 	inputFile.seekg(this->fileInfo->startPosition, inputFile.beg);
 	if (this->fileInfo->endPosition == 0)
 	{
-		throw FileException("End position is equel to zero.");
+		throw std::runtime_error("End position is equel to zero.");
 	}
 }
 
@@ -48,7 +47,7 @@ void InputFile::readBlock(std::vector<char>* block)
 	auto currentBlockSize = calculateBlockSize();
 	if (currentBlockSize == 0)
 	{
-		throw EmptyBlock("Nothing to read.");
+		throw std::runtime_error("Nothing to read.");
 	}
 
 	block->resize(static_cast<size_t>(currentBlockSize));
@@ -64,7 +63,7 @@ bool InputFile::isFinished()
 
 	if (getCurrentPosition() > fileInfo->endPosition)
 	{
-		throw FileException("A wrong position in the input file.");
+		throw std::runtime_error("A wrong position in the input file.");
 	}
 
 	if (getCurrentPosition() == fileInfo->endPosition)
@@ -81,7 +80,7 @@ uintmax_t InputFile::getCurrentPosition()
 
 	if (currentPosition == -1)
 	{
-		throw FileException("Failed to get the current position.");
+		throw std::runtime_error("Failed to get the current position.");
 	}
 
 	return static_cast<const uintmax_t>(currentPosition);

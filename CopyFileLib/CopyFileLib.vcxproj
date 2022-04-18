@@ -157,7 +157,6 @@
     <ClInclude Include="Constants.h" />
     <ClInclude Include="MessageListenerInterface.h" />
     <ClInclude Include="Messenger.h" />
-    <ClInclude Include="Exceptions.h" />
     <ClInclude Include="FileInfo.h" />
     <ClInclude Include="FileUtils.h" />
     <ClInclude Include="framework.h" />
@@ -166,7 +165,6 @@
     <ClInclude Include="OutputFile.h" />
     <ClInclude Include="Reader.h" />
     <ClInclude Include="Router.h" />
-    <ClInclude Include="ThreadsafeQueue.h" />
     <ClInclude Include="Writer.h" />
   </ItemGroup>
   <ItemGroup>

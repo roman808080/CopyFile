@@ -1,7 +1,7 @@
 #pragma once
 #include <memory>
+#include <string>
 
-#include "ThreadsafeQueue.h"
 #include "MessageListenerInterface.h"
 
 class OutputFile;

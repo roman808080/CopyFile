@@ -1,14 +1,13 @@
 #include "pch.h"
 #include "OutputFile.h"
 #include "FileInfo.h"
-#include "Exceptions.h"
 
 OutputFile::OutputFile(const std::string& fileName)
 	: outputFile(fileName, std::ofstream::binary)
 {
 	if (!outputFile.is_open())
 	{
-		throw FileException("An output file cannot be opened");
+		throw std::runtime_error("An output file cannot be opened");
 	}
 }
 
