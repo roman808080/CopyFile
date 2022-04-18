@@ -3,12 +3,62 @@
 
 #include <filesystem>
 
-#include "FileInfo.h"
+namespace
+{
+	uintmax_t getFileSize(const std::string& filePath)
+	{
+		return std::filesystem::file_size(filePath);
+	}
+
+	uintmax_t getPossibleBlocksAmount(const std::string& filePath, const size_t blockSize)
+	{
+		return static_cast<uintmax_t>(std::ceil(getFileSize(filePath) * 1.0 / blockSize));
+	}
+}
+
+struct FileInfo
+{
+	const std::string filePath;
+
+	const uintmax_t startBlock = 0;
+	uintmax_t endBlock = 0;
+
+	const uintmax_t blockSize = Constants::Megabyte;
+	const uintmax_t fileSize = getFileSize(filePath);
+
+	const uintmax_t startPosition = startBlock * blockSize;
+	uintmax_t endPosition = endBlock * blockSize;
+
+	FileInfo(const std::string& filePath,
+		const uintmax_t blockSize = Constants::Megabyte,
+		const uintmax_t startBlock = 0,
+		const uintmax_t endBlock = 0)
+		: filePath(filePath),
+		startBlock(startBlock),
+		endBlock(endBlock),
+		blockSize(blockSize),
+		fileSize(getFileSize(filePath)),
+		startPosition(startBlock * blockSize),
+		endPosition(endBlock * blockSize)
+	{
+		if (this->endBlock == 0)
+		{
+			const auto numberOfBlocks = getPossibleBlocksAmount(filePath, blockSize);
+			this->endBlock = numberOfBlocks;
+			endPosition = this->endBlock * blockSize;
+		}
+
+		if (endPosition > fileSize)
+		{
+			endPosition = fileSize;
+		}
+	}
+};
 
 
-InputFile::InputFile(std::unique_ptr<FileInfo> fileInfo)
-	: inputFile(fileInfo->filePath, std::ifstream::binary),
-	fileInfo(std::move(fileInfo))
+InputFile::InputFile(const std::string& fileName)
+	: inputFile(fileName, std::ifstream::binary),
+	  fileInfo(std::make_unique<FileInfo>(fileName))
 {
 	if (!inputFile.is_open())
 	{

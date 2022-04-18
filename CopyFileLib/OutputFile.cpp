@@ -1,6 +1,5 @@
 #include "pch.h"
 #include "OutputFile.h"
-#include "FileInfo.h"
 
 OutputFile::OutputFile(const std::string& fileName)
 	: outputFile(fileName, std::ofstream::binary)

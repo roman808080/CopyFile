@@ -5,8 +5,6 @@
 
 #include "OutputFile.h"
 #include "InputFile.h"
-#include "FileUtils.h"
-#include "FileInfo.h"
 
 #include "Reader.h"
 #include "Writer.h"
@@ -35,9 +33,7 @@ void App::run()
 void App::tryRun()
 {
 	std::shared_ptr<OutputFile> outputFile(std::make_shared<OutputFile>(outputFileName));
-
-    auto fileInfo = std::make_unique<FileInfo>(inputFileName, blockSize);
-    auto inputFile = std::make_shared<InputFile>(std::move(fileInfo));
+    auto inputFile = std::make_shared<InputFile>(inputFileName);
 
 	size_t maxQueueSize = Constants::MaxOccupiedMemory / blockSize;
 	std::shared_ptr<Router> router(std::make_shared<Router>());

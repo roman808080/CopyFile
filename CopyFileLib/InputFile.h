@@ -11,7 +11,7 @@ struct FileInfo;
 class InputFile
 {
 public:
-	InputFile(std::unique_ptr<FileInfo> fileInfo);
+	InputFile(const std::string& fileName);
 	~InputFile();
 
 	InputFile(const InputFile&) = delete;
@@ -30,6 +30,6 @@ private:
 	uintmax_t calculateBlockSize();
 
 private:
-	std::ifstream inputFile;
 	std::unique_ptr<FileInfo> fileInfo;
+	std::ifstream inputFile;
 };
