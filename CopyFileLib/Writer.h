@@ -20,14 +20,12 @@ public:
     Writer(Writer&&) = delete;
     Writer& operator=(Writer&&) = delete;
 
-	void operator()();
 	void write();
 
 	void setMessenger(std::shared_ptr<Messenger> messenger);
 	virtual void notifyAboutError() override;
 
 private:
-	void writeToFile();
 	void tryWriteToFile();
 
 	void notifyMessangerAboutError(const std::string& errorString);

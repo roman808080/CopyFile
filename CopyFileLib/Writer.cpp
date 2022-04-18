@@ -18,14 +18,16 @@ Writer::~Writer()
 {
 }
 
-void Writer::operator()()
-{
-	writeToFile();
-}
-
 void Writer::write()
 {
-	writeToFile();
+	try
+	{
+		tryWriteToFile();
+	}
+	catch (const std::exception& exc)
+	{
+		notifyMessangerAboutError(exc.what());
+	}
 }
 
 void Writer::setMessenger(std::shared_ptr<Messenger> meseanger)
@@ -36,18 +38,6 @@ void Writer::setMessenger(std::shared_ptr<Messenger> meseanger)
 void Writer::notifyAboutError()
 {
 	errorHappend = true;
-}
-
-void Writer::writeToFile()
-{
-	try
-	{
-		tryWriteToFile();
-	}
-	catch (const std::exception& exc)
-	{
-		notifyMessangerAboutError(exc.what());
-	}
 }
 
 void Writer::tryWriteToFile()

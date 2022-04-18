@@ -17,14 +17,17 @@ Reader::~Reader()
 {
 }
 
-void Reader::operator()()
-{
-	readFromFile();
-}
-
 void Reader::read()
 {
-	readFromFile();
+	try
+	{
+		tryReadFromFile();
+	}
+	catch (const std::exception& exc)
+	{
+		notifyMessangerAboutError(exc.what());
+	}
+
 }
 
 void Reader::setMessenger(std::shared_ptr<Messenger> messenger)
@@ -35,18 +38,6 @@ void Reader::setMessenger(std::shared_ptr<Messenger> messenger)
 void Reader::notifyAboutError()
 {
 	errorHappend = true;
-}
-
-void Reader::readFromFile()
-{
-	try
-	{
-		tryReadFromFile();
-	}
-	catch (const std::exception& exc)
-	{
-		notifyMessangerAboutError(exc.what());
-	}
 }
 
 void Reader::tryReadFromFile()

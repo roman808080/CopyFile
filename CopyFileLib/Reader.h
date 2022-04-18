@@ -24,14 +24,12 @@ public:
     Reader(Reader&&) = delete;
     Reader& operator=(Reader&&) = delete;
 
-	void operator()();
 	void read();
 
 	void setMessenger(std::shared_ptr<Messenger> messenger);
 	virtual void notifyAboutError() override;
 
 private:
-	void readFromFile();
 	void tryReadFromFile();
 
 	void notifyMessangerAboutError(const std::string& errorString);
