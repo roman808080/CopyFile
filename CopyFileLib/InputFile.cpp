@@ -18,55 +18,29 @@ namespace
 
 struct FileInfo
 {
-	const std::string filePath;
-
-	const uintmax_t startBlock = 0;
-	uintmax_t endBlock = 0;
-
-	const uintmax_t blockSize = Constants::Megabyte;
-	const uintmax_t fileSize = getFileSize(filePath);
-
-	const uintmax_t startPosition = startBlock * blockSize;
-	uintmax_t endPosition = endBlock * blockSize;
+	const uintmax_t blockSize = Constants::Kilobyte;
+	const uintmax_t fileSize = 0;
 
 	FileInfo(const std::string& filePath,
-		const uintmax_t blockSize = Constants::Megabyte,
-		const uintmax_t startBlock = 0,
-		const uintmax_t endBlock = 0)
-		: filePath(filePath),
-		startBlock(startBlock),
-		endBlock(endBlock),
-		blockSize(blockSize),
-		fileSize(getFileSize(filePath)),
-		startPosition(startBlock * blockSize),
-		endPosition(endBlock * blockSize)
+			 const uintmax_t blockSize = Constants::Kilobyte)
+		: blockSize(blockSize)
+		, fileSize(getFileSize(filePath))
 	{
-		if (this->endBlock == 0)
-		{
-			const auto numberOfBlocks = getPossibleBlocksAmount(filePath, blockSize);
-			this->endBlock = numberOfBlocks;
-			endPosition = this->endBlock * blockSize;
-		}
-
-		if (endPosition > fileSize)
-		{
-			endPosition = fileSize;
-		}
 	}
 };
 
 
-InputFile::InputFile(const std::string& fileName)
+InputFile::InputFile(const std::string& fileName,
+					 const size_t blockSize)
 	: inputFile(fileName, std::ifstream::binary),
-	  fileInfo(std::make_unique<FileInfo>(fileName))
+	  fileInfo(std::make_unique<FileInfo>(fileName, blockSize))
 {
 	if (!inputFile.is_open())
 	{
 		throw std::runtime_error("Failed to open the file.");
 	}
 
-	inputFile.seekg(this->fileInfo->startPosition, inputFile.beg);
-	if (this->fileInfo->endPosition == 0)
+	if (this->fileInfo->fileSize == 0)
 	{
 		throw std::runtime_error("End position is equel to zero.");
 	}
@@ -84,9 +58,9 @@ uintmax_t InputFile::size()
 
 uintmax_t InputFile::calculateBlockSize()
 {
-	if ((getCurrentPosition() + fileInfo->blockSize) > fileInfo->endPosition)
+	if ((getCurrentPosition() + fileInfo->blockSize) > fileInfo->fileSize)
 	{
-		return fileInfo->endPosition - getCurrentPosition();
+		return fileInfo->fileSize - getCurrentPosition();
 	}
 
 	return fileInfo->blockSize;
@@ -111,12 +85,12 @@ bool InputFile::isFinished()
 		return true;
 	}
 
-	if (getCurrentPosition() > fileInfo->endPosition)
+	if (getCurrentPosition() > fileInfo->fileSize)
 	{
 		throw std::runtime_error("A wrong position in the input file.");
 	}
 
-	if (getCurrentPosition() == fileInfo->endPosition)
+	if (getCurrentPosition() == fileInfo->fileSize)
 	{
 		return true;
 	}

@@ -35,7 +35,6 @@ void App::tryRun()
 	std::shared_ptr<OutputFile> outputFile(std::make_shared<OutputFile>(outputFileName));
     auto inputFile = std::make_shared<InputFile>(inputFileName);
 
-	size_t maxQueueSize = Constants::MaxOccupiedMemory / blockSize;
 	std::shared_ptr<Router> router(std::make_shared<Router>());
 
     std::shared_ptr<Reader> reader(std::make_shared<Reader>(inputFile, router));

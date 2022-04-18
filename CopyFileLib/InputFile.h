@@ -11,7 +11,7 @@ struct FileInfo;
 class InputFile
 {
 public:
-	InputFile(const std::string& fileName);
+	InputFile(const std::string& fileName, const size_t blockSize = Constants::Kilobyte);
 	~InputFile();
 
 	InputFile(const InputFile&) = delete;
