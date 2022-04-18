@@ -19,7 +19,7 @@ public:
     InputFile(InputFile&&) = delete;
     InputFile& operator=(InputFile&&) = delete;
 
-	std::unique_ptr<std::vector<char>> readBlock();
+	void readBlock(std::vector<char>* block);
 
 	bool isFinished();
 	uintmax_t getCurrentPosition();

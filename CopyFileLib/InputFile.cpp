@@ -43,7 +43,7 @@ uintmax_t InputFile::calculateBlockSize()
 	return fileInfo->blockSize;
 }
 
-std::unique_ptr<std::vector<char>> InputFile::readBlock()
+void InputFile::readBlock(std::vector<char>* block)
 {
 	auto currentBlockSize = calculateBlockSize();
 	if (currentBlockSize == 0)
@@ -51,12 +51,8 @@ std::unique_ptr<std::vector<char>> InputFile::readBlock()
 		throw EmptyBlock("Nothing to read.");
 	}
 
-	std::unique_ptr<std::vector<char>> fileContent(std::make_unique<std::vector<char>>());
-	fileContent->resize(static_cast<size_t>(currentBlockSize));
-
-	inputFile.read(&(*fileContent)[0], currentBlockSize);
-
-	return std::move(fileContent);
+	block->resize(static_cast<size_t>(currentBlockSize));
+	inputFile.read(&(*block)[0], currentBlockSize);
 }
 
 bool InputFile::isFinished()

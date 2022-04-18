@@ -18,7 +18,7 @@ public:
     Router(Router&&) = delete;
     Router& operator=(Router&&) = delete;
 
-	// The method gets a block of memory which can be used for writing.
+	// The method gets a block of memory which can be used for reading.
 	// This method for reading thread. 
 	std::vector<char>* rotateInputBlocks(std::vector<char>* readyBlock);
 

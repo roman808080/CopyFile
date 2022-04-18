@@ -3,13 +3,18 @@
 
 #include "OutputFile.h"
 #include "Messenger.h"
+#include "Router.h"
 
 Writer::Writer(std::shared_ptr<OutputFile> outputFile,
-			   std::shared_ptr<ThreadsafeQueue<std::vector<char>>> queue)
+			   std::shared_ptr<Router> router)
 	: outputFile(outputFile)
-	, queue(queue)
+	, router(router)
 	, errorHappend(false)
 	, messenger(nullptr)
+{
+}
+
+Writer::~Writer()
 {
 }
 
@@ -47,11 +52,19 @@ void Writer::writeToFile()
 
 void Writer::tryWriteToFile()
 {
-	while (!queue->isFinished() &&
-		   !errorHappend)
+	std::vector<char>* previousBlock = nullptr;
+
+	bool isFinished = router->isRotationStopped() && previousBlock == nullptr;
+	while (!isFinished && !errorHappend)
 	{
-		auto block = std::move(queue->waitAndPop());
-		outputFile->write(std::move(block));
+		std::vector<char>* currentBlock = router->rotateOutputBlocks(previousBlock);
+		if (currentBlock != nullptr)
+		{
+			outputFile->write(currentBlock);
+		}
+
+		previousBlock = currentBlock;
+		isFinished = router->isRotationStopped() && previousBlock == nullptr;
 	}
 }
 

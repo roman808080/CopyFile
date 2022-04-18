@@ -18,7 +18,7 @@ public:
     OutputFile(OutputFile&&) = delete;
     OutputFile& operator=(OutputFile&&) = delete;
 
-	void write(std::unique_ptr<std::vector<char>> block);
+	void write(std::vector<char>* block);
 
 private:
 	std::ofstream outputFile;

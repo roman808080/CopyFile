@@ -3,18 +3,21 @@
 #include <memory>
 #include <vector>
 #include <atomic>
+#include <string>
 
-#include "ThreadsafeQueue.h"
 #include "MessageListenerInterface.h"
 
 class InputFile;
 class Messenger;
+class Router;
 
 class Reader: public MessageListenerInterface
 {
 public:
 	Reader(std::shared_ptr<InputFile> inputFile,
-               std::shared_ptr<ThreadsafeQueue<std::vector<char>>> queue);
+           std::shared_ptr<Router> router);
+
+	~Reader();
 
 	Reader(const Reader&) = delete;
     Reader& operator=(const Reader&) = delete;
@@ -35,7 +38,7 @@ private:
 
 private:
 	std::shared_ptr<InputFile> inputFile;
-	std::shared_ptr<ThreadsafeQueue<std::vector<char>>> queue;
+	std::shared_ptr<Router> router;
 
 	std::atomic<bool> errorHappend = false;
 	std::shared_ptr<Messenger> messenger;

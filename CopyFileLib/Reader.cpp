@@ -3,12 +3,17 @@
 
 #include "InputFile.h"
 #include "Messenger.h"
+#include "Router.h"
 
-Reader::Reader(std::shared_ptr<InputFile> inputFile, std::shared_ptr<ThreadsafeQueue<std::vector<char>>> queue)
+Reader::Reader(std::shared_ptr<InputFile> inputFile, std::shared_ptr<Router> router)
 	: inputFile(inputFile)
-	, queue(queue)
+	, router(router)
 	, errorHappend(false)
 	, messenger(nullptr)
+{
+}
+
+Reader::~Reader()
 {
 }
 
@@ -46,14 +51,22 @@ void Reader::readFromFile()
 
 void Reader::tryReadFromFile()
 {    
+	std::vector<char>* previousBlock = nullptr;
+
 	while (!inputFile->isFinished() &&
 		   !errorHappend)
 	{
-		auto block = std::move(inputFile->readBlock());
-		queue->push(std::move(block));
+		std::vector<char>* currentBlock = router->rotateInputBlocks(previousBlock);
+		inputFile->readBlock(currentBlock);
+		previousBlock = currentBlock;
 	}
 
-	queue->finalize();
+	if (previousBlock != nullptr)
+	{
+		router->rotateInputBlocks(previousBlock);
+	}
+
+	router->stopRotation();
 }
 
 void Reader::notifyMessangerAboutError(const std::string& errorString)

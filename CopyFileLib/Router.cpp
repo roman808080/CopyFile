@@ -27,7 +27,7 @@ std::vector<char>* Router::rotateInputBlocks(std::vector<char>* readyBlock)
 	std::vector<char>* newBlock = nullptr;
 	while ((newBlock = tryRotateInputBlocks(readyBlock)) == nullptr)
 	{
-		if (stopped)
+		if (stopped.load())
 		{
 			return nullptr;
 		}
@@ -43,7 +43,7 @@ std::vector<char>* Router::rotateOutputBlocks(std::vector<char>* usedBlock)
 	std::vector<char>* newBlock = nullptr;
 	while ((newBlock = tryRotateOutputBlocks(usedBlock)) == nullptr)
 	{
-		if (stopped)
+		if (stopped.load())
 		{
 			return nullptr;
 		}

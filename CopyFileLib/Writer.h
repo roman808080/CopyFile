@@ -6,12 +6,14 @@
 
 class OutputFile;
 class Messenger;
+class Router;
 
 class Writer: MessageListenerInterface
 {
 public:
 	Writer(std::shared_ptr<OutputFile> outputFile,
-		   std::shared_ptr<ThreadsafeQueue<std::vector<char>>> queue);
+		   std::shared_ptr<Router> router);
+	~Writer();
 
 	Writer(const Writer&) = delete;
     Writer& operator=(const Writer&) = delete;
@@ -32,7 +34,7 @@ private:
 
 private:
 	std::shared_ptr<OutputFile> outputFile;
-	std::shared_ptr<ThreadsafeQueue<std::vector<char>>> queue;
+	std::shared_ptr<Router> router;
 
 	std::atomic<bool> errorHappend = false;
 	std::shared_ptr<Messenger> messenger;
