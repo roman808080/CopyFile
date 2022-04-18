@@ -18,13 +18,10 @@ public:
     InputFile& operator=(InputFile&&) = delete;
 
 	void readBlock(std::vector<char>* block);
-
 	bool isFinished();
-	uintmax_t getCurrentPosition();
-
-	uintmax_t size();
 
 private:
+	uintmax_t getCurrentPosition();
 	uintmax_t calculateBlockSize();
 
 private:

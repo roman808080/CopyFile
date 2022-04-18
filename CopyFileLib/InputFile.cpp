@@ -38,11 +38,6 @@ InputFile::~InputFile()
 	inputFile.close();
 }
 
-uintmax_t InputFile::size()
-{
-	return fileSize;
-}
-
 uintmax_t InputFile::calculateBlockSize()
 {
 	if ((getCurrentPosition() + blockSize) > fileSize)
