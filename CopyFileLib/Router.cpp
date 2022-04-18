@@ -13,14 +13,26 @@ Router::Router()
 {
 	for (int i = 0; i < cache.size(); ++i)
 	{
-		usedBlocks.push_back(&cache[i]);
+		usedOutputBlocks.push_back(&cache[i]);
 	}
 }
 
-std::vector<char>* Router::rotateUsedBlocks(std::vector<char>* usedBlock)
+
+std::vector<char>* Router::rotateInputBlocks(std::vector<char>* readyBlock)
+{
+	std::vector<char>* newBlock = nullptr;
+	while ((newBlock = tryRotateInputBlocks(readyBlock)) == nullptr)
+	{
+		std::this_thread::yield();
+	}
+
+	return newBlock;
+}
+
+std::vector<char>* Router::rotateOutputBlocks(std::vector<char>* usedBlock)
 {	
 	std::vector<char>* newBlock = nullptr;
-	while ((newBlock = tryRotateUsedBlocks(usedBlock)) == nullptr)
+	while ((newBlock = tryRotateOutputBlocks(usedBlock)) == nullptr)
 	{
 		std::this_thread::yield();
 	}
@@ -28,53 +40,43 @@ std::vector<char>* Router::rotateUsedBlocks(std::vector<char>* usedBlock)
 	return newBlock;
 }
 
-std::vector<char>* Router::rotateReadyBlocks(std::vector<char>* readyBlock)
-{
-	std::vector<char>* newBlock = nullptr;
-	while ((newBlock = tryRotateReadyBlocks(readyBlock)) == nullptr)
-	{
-		std::this_thread::yield();
-	}
-
-	return newBlock;
-}
-
-std::vector<char>* Router::tryRotateUsedBlocks(std::vector<char>* usedBlock)
+std::vector<char>* Router::tryRotateInputBlocks(std::vector<char>* readyBlock)
 {
 	std::unique_lock<std::mutex> lock(criticalSection);
 
-	if (readyBlocks.empty())
-	{
-		return nullptr;
-	}
-
-	if (usedBlock != nullptr)
-	{
-		usedBlocks.push_back(usedBlock);
-	}
-
-	std::vector<char>* newBlock = readyBlocks.front();
-	readyBlocks.pop_front();
-
-	return newBlock;
-}
-
-std::vector<char>* Router::tryRotateReadyBlocks(std::vector<char>* readyBlock)
-{
-	std::unique_lock<std::mutex> lock(criticalSection);
-
-	if (usedBlocks.empty())
+	if (usedOutputBlocks.empty())
 	{
 		return nullptr;
 	}
 
 	if (readyBlock != nullptr)
 	{
-		readyBlocks.push_back(readyBlock);
+		readyOutputBlocks.push_back(readyBlock);
 	}
 
-	std::vector<char>* newBlock = usedBlocks.front();
-	usedBlocks.pop_front();
+	std::vector<char>* newBlock = usedOutputBlocks.front();
+	usedOutputBlocks.pop_front();
 
 	return newBlock;
 }
+
+std::vector<char>* Router::tryRotateOutputBlocks(std::vector<char>* usedBlock)
+{
+	std::unique_lock<std::mutex> lock(criticalSection);
+
+	if (readyOutputBlocks.empty())
+	{
+		return nullptr;
+	}
+
+	if (usedBlock != nullptr)
+	{
+		usedOutputBlocks.push_back(usedBlock);
+	}
+
+	std::vector<char>* newBlock = readyOutputBlocks.front();
+	readyOutputBlocks.pop_front();
+
+	return newBlock;
+}
+
