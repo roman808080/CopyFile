@@ -14,6 +14,11 @@ public:
 	InputFile(std::unique_ptr<FileInfo> fileInfo);
 	~InputFile();
 
+	InputFile(const InputFile&) = delete;
+    InputFile& operator=(const InputFile&) = delete;
+    InputFile(InputFile&&) = delete;
+    InputFile& operator=(InputFile&&) = delete;
+
 	std::unique_ptr<std::vector<char>> readBlock();
 
 	bool isFinished();
