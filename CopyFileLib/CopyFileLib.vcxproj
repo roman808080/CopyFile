@@ -159,7 +159,6 @@
     <ClInclude Include="InputFile.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="OutputFile.h" />
-    <ClInclude Include="Reader.h" />
     <ClInclude Include="Router.h" />
     <ClInclude Include="Writer.h" />
   </ItemGroup>
@@ -173,7 +172,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="OutputFile.cpp" />
-    <ClCompile Include="Reader.cpp" />
     <ClCompile Include="Router.cpp" />
     <ClCompile Include="Writer.cpp" />
   </ItemGroup>

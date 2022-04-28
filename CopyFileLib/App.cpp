@@ -6,9 +6,31 @@
 #include "OutputFile.h"
 #include "InputFile.h"
 
-#include "Reader.h"
 #include "Writer.h"
 #include "Router.h"
+
+namespace
+{
+    void readFromFile(std::shared_ptr<InputFile> inputFile,
+					  std::shared_ptr<Router> router)
+    {
+		std::vector<char>* previousBlock = nullptr;
+
+		while (!inputFile->isFinished())
+		{
+			std::vector<char>* currentBlock = router->rotateInputBlocks(previousBlock);
+			inputFile->readBlock(currentBlock);
+			previousBlock = currentBlock;
+		}
+
+		if (previousBlock != nullptr)
+		{
+			router->rotateInputBlocks(previousBlock);
+		}
+
+		router->stopRotation();
+    }
+}
 
 App::App(const std::string& inputFileName, const std::string& outputFileName, const size_t blockSize)
 	: inputFileName(inputFileName)
@@ -24,10 +46,7 @@ void App::run()
 
 	std::shared_ptr<Router> router(std::make_shared<Router>());
 
-    std::shared_ptr<Reader> reader(std::make_shared<Reader>(inputFile, router));
-    std::jthread readThread([reader]() {
-			reader->read();
-        });
+    std::jthread readThread(readFromFile, inputFile, router);
 
     std::shared_ptr<Writer> writer(std::make_shared<Writer>(outputFile, router));
     std::jthread writeThread([writer]() {

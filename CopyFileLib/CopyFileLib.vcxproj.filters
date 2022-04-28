@@ -30,9 +30,6 @@
     <ClInclude Include="OutputFile.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Reader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Writer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -51,9 +48,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="OutputFile.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Reader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Writer.cpp">
