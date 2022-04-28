@@ -19,19 +19,6 @@ App::App(const std::string& inputFileName, const std::string& outputFileName, co
 
 void App::run()
 {
-	try
-	{
-		tryRun();
-	}
-	catch (const std::exception& exc)
-	{
-		// Ideally should be replaced by a logger. Before partially this role executed Messanger, but I removed it to simplify the code.
-		std::cout << "An error has happend: " << exc.what() << std::endl;
-	}
-}
-
-void App::tryRun()
-{
 	std::shared_ptr<OutputFile> outputFile(std::make_shared<OutputFile>(outputFileName));
     auto inputFile = std::make_shared<InputFile>(inputFileName);
 
@@ -47,3 +34,4 @@ void App::tryRun()
             writer->write();
         });
 }
+

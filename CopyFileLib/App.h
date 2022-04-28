@@ -16,9 +16,6 @@ public:
 	void run();
 
 private:
-	void tryRun();
-
-private:
 	const std::string inputFileName;
 	const std::string outputFileName;
 	const size_t blockSize;
