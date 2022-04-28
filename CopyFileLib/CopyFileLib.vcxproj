@@ -160,7 +160,6 @@
     <ClInclude Include="pch.h" />
     <ClInclude Include="OutputFile.h" />
     <ClInclude Include="Router.h" />
-    <ClInclude Include="Writer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="App.cpp" />
@@ -173,7 +172,6 @@
     </ClCompile>
     <ClCompile Include="OutputFile.cpp" />
     <ClCompile Include="Router.cpp" />
-    <ClCompile Include="Writer.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

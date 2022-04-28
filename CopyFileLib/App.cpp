@@ -6,7 +6,6 @@
 #include "OutputFile.h"
 #include "InputFile.h"
 
-#include "Writer.h"
 #include "Router.h"
 
 namespace
@@ -30,6 +29,25 @@ namespace
 
 		router->stopRotation();
     }
+
+	void writeToFile(std::shared_ptr<OutputFile> outputFile,
+				     std::shared_ptr<Router> router)
+	{
+		std::vector<char>* previousBlock = nullptr;
+
+		bool isFinished = router->isRotationStopped() && previousBlock == nullptr;
+		while (!isFinished)
+		{
+			std::vector<char>* currentBlock = router->rotateOutputBlocks(previousBlock);
+			if (currentBlock != nullptr)
+			{
+				outputFile->write(currentBlock);
+			}
+
+			previousBlock = currentBlock;
+			isFinished = router->isRotationStopped() && previousBlock == nullptr;
+		}
+	}
 }
 
 App::App(const std::string& inputFileName, const std::string& outputFileName, const size_t blockSize)
@@ -47,10 +65,5 @@ void App::run()
 	std::shared_ptr<Router> router(std::make_shared<Router>());
 
     std::jthread readThread(readFromFile, inputFile, router);
-
-    std::shared_ptr<Writer> writer(std::make_shared<Writer>(outputFile, router));
-    std::jthread writeThread([writer]() {
-            writer->write();
-        });
+    std::jthread writeThread(writeToFile, outputFile, router);
 }
-
