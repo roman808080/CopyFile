@@ -37,7 +37,7 @@ namespace
 		bool isFinished = false;
 		do
 		{
-			Chunk currentBlock = router->rotateOutputBlocks(previousBlock);
+			const Chunk currentBlock = router->rotateOutputBlocks(previousBlock);
 			if (currentBlock.startPosition != nullptr)
 			{
 				outputFile->write(currentBlock);
