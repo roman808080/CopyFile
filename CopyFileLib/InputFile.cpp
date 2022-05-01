@@ -48,16 +48,15 @@ uintmax_t InputFile::calculateBlockSize()
 	return blockSize;
 }
 
-void InputFile::readBlock(std::vector<char>* block)
+void InputFile::readBlock(Chunk& block)
 {
-	auto currentBlockSize = calculateBlockSize();
-	if (currentBlockSize == 0)
+	block.size = calculateBlockSize();
+	if (block.size == 0)
 	{
 		throw std::runtime_error("Nothing to read.");
 	}
 
-	block->resize(static_cast<size_t>(currentBlockSize));
-	inputFile.read(&(*block)[0], currentBlockSize);
+	inputFile.read(block.startPosition, block.size);
 }
 
 bool InputFile::isFinished()

@@ -2,6 +2,7 @@
 #include "Router.h"
 
 #include <thread>
+#include "Constants.h"
 
 namespace
 {
@@ -9,11 +10,12 @@ namespace
 }
 
 Router::Router()
-	: cache(kMaxElementSize)
+	: cache(kMaxElementSize * Constants::Kilobyte)
 {
-	for (int i = 0; i < cache.size(); ++i)
+	for (int startPosition = 0; startPosition < kMaxElementSize * Constants::Kilobyte; startPosition += kMaxElementSize)
 	{
-		usedOutputBlocks.push_back(&cache[i]);
+		Chunk chunk {&cache[startPosition], Constants::Kilobyte};
+		usedOutputBlocks.push_back(chunk);
 	}
 }
 
@@ -22,14 +24,14 @@ Router::~Router()
 }
 
 
-std::vector<char>* Router::rotateInputBlocks(std::vector<char>* readyBlock)
+Chunk Router::rotateInputBlocks(Chunk readyBlock)
 {
-	std::vector<char>* newBlock = nullptr;
-	while ((newBlock = tryRotateInputBlocks(readyBlock)) == nullptr)
+	Chunk newBlock{nullptr, 0};
+	while ((newBlock = tryRotateInputBlocks(readyBlock)).startPosition == nullptr)
 	{
 		if (stopped.load())
 		{
-			return nullptr;
+			return newBlock;
 		}
 
 		std::this_thread::yield();
@@ -38,14 +40,14 @@ std::vector<char>* Router::rotateInputBlocks(std::vector<char>* readyBlock)
 	return newBlock;
 }
 
-std::vector<char>* Router::rotateOutputBlocks(std::vector<char>* usedBlock)
+Chunk Router::rotateOutputBlocks(Chunk usedBlock)
 {	
-	std::vector<char>* newBlock = nullptr;
-	while ((newBlock = tryRotateOutputBlocks(usedBlock)) == nullptr)
+	Chunk newBlock{nullptr, 0};
+	while ((newBlock = tryRotateOutputBlocks(usedBlock)).startPosition == nullptr)
 	{
 		if (stopped.load())
 		{
-			return nullptr;
+			return newBlock;
 		}
 
 		std::this_thread::yield();
@@ -64,41 +66,43 @@ bool Router::isRotationStopped()
 	return stopped;
 }
 
-std::vector<char>* Router::tryRotateInputBlocks(std::vector<char>* readyBlock)
+Chunk Router::tryRotateInputBlocks(Chunk readyBlock)
 {
 	std::unique_lock<std::mutex> lock(criticalSection);
 
 	if (usedOutputBlocks.empty())
 	{
-		return nullptr;
+		Chunk chunk {nullptr, 0};
+		return chunk;
 	}
 
-	if (readyBlock != nullptr)
+	if (readyBlock.startPosition != nullptr)
 	{
 		readyOutputBlocks.push_back(readyBlock);
 	}
 
-	std::vector<char>* newBlock = usedOutputBlocks.front();
+	Chunk newBlock = usedOutputBlocks.front();
 	usedOutputBlocks.pop_front();
 
 	return newBlock;
 }
 
-std::vector<char>* Router::tryRotateOutputBlocks(std::vector<char>* usedBlock)
+Chunk Router::tryRotateOutputBlocks(Chunk usedBlock)
 {
 	std::unique_lock<std::mutex> lock(criticalSection);
 
 	if (readyOutputBlocks.empty())
 	{
-		return nullptr;
+		Chunk chunk{ nullptr, 0 };
+		return chunk;
 	}
 
-	if (usedBlock != nullptr)
+	if (usedBlock.startPosition != nullptr)
 	{
 		usedOutputBlocks.push_back(usedBlock);
 	}
 
-	std::vector<char>* newBlock = readyOutputBlocks.front();
+	Chunk newBlock = readyOutputBlocks.front();
 	readyOutputBlocks.pop_front();
 
 	return newBlock;

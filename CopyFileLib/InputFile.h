@@ -5,6 +5,7 @@
 #include <memory>
 
 #include "Constants.h"
+#include "Router.h"
 
 class InputFile
 {
@@ -17,7 +18,7 @@ public:
     InputFile(InputFile&&) = delete;
     InputFile& operator=(InputFile&&) = delete;
 
-	void readBlock(std::vector<char>* block);
+	void readBlock(Chunk& block);
 	bool isFinished();
 
 private:

@@ -15,8 +15,8 @@ OutputFile::~OutputFile()
 	outputFile.close();
 }
 
-void OutputFile::write(std::vector<char>* block)
+void OutputFile::write(Chunk block)
 {
-	outputFile.write(&(*block)[0], block->size());
+	outputFile.write(block.startPosition, block.size);
 	outputFile.flush();
 }

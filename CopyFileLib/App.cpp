@@ -13,16 +13,15 @@ namespace
     void readFromFile(std::shared_ptr<InputFile> inputFile,
 					  std::shared_ptr<Router> router)
     {
-		std::vector<char>* previousBlock = nullptr;
-
+		Chunk previousBlock{nullptr, 0};
 		while (!inputFile->isFinished())
 		{
-			std::vector<char>* currentBlock = router->rotateInputBlocks(previousBlock);
+			Chunk currentBlock = router->rotateInputBlocks(previousBlock);
 			inputFile->readBlock(currentBlock);
 			previousBlock = currentBlock;
 		}
 
-		if (previousBlock != nullptr)
+		if (previousBlock.startPosition != nullptr)
 		{
 			router->rotateInputBlocks(previousBlock);
 		}
@@ -33,19 +32,19 @@ namespace
 	void writeToFile(std::shared_ptr<OutputFile> outputFile,
 				     std::shared_ptr<Router> router)
 	{
-		std::vector<char>* previousBlock = nullptr;
+		Chunk previousBlock{ nullptr, 0};
 
-		bool isFinished = router->isRotationStopped() && previousBlock == nullptr;
+		bool isFinished = router->isRotationStopped() && previousBlock.startPosition == nullptr;
 		while (!isFinished)
 		{
-			std::vector<char>* currentBlock = router->rotateOutputBlocks(previousBlock);
-			if (currentBlock != nullptr)
+			Chunk currentBlock = router->rotateOutputBlocks(previousBlock);
+			if (currentBlock.startPosition != nullptr)
 			{
 				outputFile->write(currentBlock);
 			}
 
 			previousBlock = currentBlock;
-			isFinished = router->isRotationStopped() && previousBlock == nullptr;
+			isFinished = router->isRotationStopped() && previousBlock.startPosition == nullptr;
 		}
 	}
 }

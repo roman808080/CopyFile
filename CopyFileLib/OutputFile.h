@@ -3,9 +3,7 @@
 #include <vector>
 
 #include "Constants.h"
-
-struct FileInfo;
-
+#include "Router.h"
 
 class OutputFile
 {
@@ -18,7 +16,7 @@ public:
     OutputFile(OutputFile&&) = delete;
     OutputFile& operator=(OutputFile&&) = delete;
 
-	void write(std::vector<char>* block);
+	void write(Chunk block);
 
 private:
 	std::ofstream outputFile;

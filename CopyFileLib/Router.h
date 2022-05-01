@@ -5,6 +5,12 @@
 #include <vector>
 #include <mutex>
 
+struct Chunk
+{
+	char* startPosition;
+	size_t size;
+};
+
 class Router
 {
 public:
@@ -20,29 +26,29 @@ public:
 
 	// The method gets a block of memory which can be used for reading.
 	// This method for reading thread. 
-	std::vector<char>* rotateInputBlocks(std::vector<char>* readyBlock);
+	Chunk rotateInputBlocks(Chunk readyBlock);
 
 	// The method utilizes a used block and gives a new block to write.
 	// This method for writing thread.
-	std::vector<char>* rotateOutputBlocks(std::vector<char>* usedBlock);
+	Chunk rotateOutputBlocks(Chunk usedBlock);
 	
 	void stopRotation();
 	bool isRotationStopped();
 
 private:
 	// locks and rotates blocks
-	std::vector<char>* tryRotateInputBlocks(std::vector<char>* readyBlock);
-	std::vector<char>* tryRotateOutputBlocks(std::vector<char>* usedBlock);
+	Chunk tryRotateInputBlocks(Chunk readyBlock);
+	Chunk tryRotateOutputBlocks(Chunk usedBlock);
 
 private:
 	// An initialized chunk of memory from which output and input blocks are taken.
-	std::vector<std::vector<char>> cache;
+	std::vector<char> cache;
 
 	// Blocks which are ready for writing into a file.
-	std::list<std::vector<char>*> readyOutputBlocks;
+	std::list<Chunk> readyOutputBlocks;
 
 	// The list is used to give away used blocks to reuse for reading.
-	std::list<std::vector<char>*> usedOutputBlocks;
+	std::list<Chunk> usedOutputBlocks;
 
 	std::mutex criticalSection;
 
