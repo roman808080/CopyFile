@@ -10,10 +10,28 @@
 
 namespace
 {
+	class RouterGuard
+	{
+	public:
+		RouterGuard(std::shared_ptr<Router> router)
+			: router(router)
+		{}
+
+		~RouterGuard()
+		{
+			router->stopRotation();
+		}
+
+	private:
+		std::shared_ptr<Router> router;
+	};
+
     void readFromFile(std::shared_ptr<InputFile> inputFile,
 					  std::shared_ptr<Router> router)
     {
+		RouterGuard routerGuard(router);
 		Chunk previousBlock{nullptr, 0};
+
 		while (!inputFile->isFinished())
 		{
 			Chunk currentBlock = router->rotateInputBlocks(previousBlock);
@@ -25,13 +43,12 @@ namespace
 		{
 			router->rotateInputBlocks(previousBlock);
 		}
-
-		router->stopRotation();
     }
 
 	void writeToFile(std::shared_ptr<OutputFile> outputFile,
 				     std::shared_ptr<Router> router)
 	{
+		RouterGuard routerGuard(router);
 		Chunk previousBlock{ nullptr, 0};
 
 		bool isFinished = false;
