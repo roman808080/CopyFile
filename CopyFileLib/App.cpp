@@ -34,8 +34,8 @@ namespace
 	{
 		Chunk previousBlock{ nullptr, 0};
 
-		bool isFinished = router->isRotationStopped() && previousBlock.startPosition == nullptr;
-		while (!isFinished)
+		bool isFinished = false;
+		do
 		{
 			Chunk currentBlock = router->rotateOutputBlocks(previousBlock);
 			if (currentBlock.startPosition != nullptr)
@@ -45,7 +45,7 @@ namespace
 
 			previousBlock = currentBlock;
 			isFinished = router->isRotationStopped() && previousBlock.startPosition == nullptr;
-		}
+		} while (!isFinished);
 	}
 }
 
