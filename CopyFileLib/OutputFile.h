@@ -16,7 +16,7 @@ public:
     OutputFile(OutputFile&&) = delete;
     OutputFile& operator=(OutputFile&&) = delete;
 
-	void write(Chunk block);
+	void write(const Chunk block);
 
 private:
 	std::ofstream outputFile;

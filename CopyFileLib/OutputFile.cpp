@@ -15,7 +15,7 @@ OutputFile::~OutputFile()
 	outputFile.close();
 }
 
-void OutputFile::write(Chunk block)
+void OutputFile::write(const Chunk block)
 {
 	outputFile.write(block.startPosition, block.size);
 	outputFile.flush();
