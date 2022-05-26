@@ -39,7 +39,10 @@ int main(int argc, char* argv[])
 #include <boost/asio/io_context.hpp>
 #include <boost/asio/ip/tcp.hpp>
 #include <boost/asio/signal_set.hpp>
+
 #include <boost/asio/write.hpp>
+#include <boost/asio/read.hpp>
+
 #include <cstdio>
 #include <boost/bind.hpp>
 
@@ -71,7 +74,8 @@ awaitable<void> connect_to_server()
 			co_await async_write(toServer, buffer(data, 4), use_awaitable);
 
 			std::array<char, 1024> response{0};
-			co_await toServer.async_read_some(buffer(response), use_awaitable);
+			// co_await toServer.async_read_some(buffer(response), use_awaitable);
+			co_await boost::asio::async_read(toServer, buffer(response, 4), use_awaitable);
 
 			std::cout << &response[0] << std::endl;
 
