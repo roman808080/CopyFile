@@ -33,7 +33,7 @@ awaitable<void> connect_to_server(boost::asio::io_context& ctx)
 		tcp::socket to_server(ctx);
 		auto target = *tcp::resolver(ctx).resolve("127.0.0.1", "5555");
 
-        std::string path_to_file{"/path/to/file"};
+        std::string path_to_file{"C:\\Users\\roman\\OneDrive\\Documents\\kivy\\main.py"};
         std::size_t path_size = path_to_file.size();
 
 		co_await to_server.async_connect(target, use_awaitable);
@@ -42,9 +42,7 @@ awaitable<void> connect_to_server(boost::asio::io_context& ctx)
 
         memcpy(&data, &path_size, sizeof(path_size));
 		co_await async_write(to_server, buffer(data, sizeof(path_size)), use_awaitable);
-
-        memcpy(&data, path_to_file.c_str(), path_to_file.size());
-		co_await async_write(to_server, buffer(data, path_to_file.size()), use_awaitable);
+		co_await async_write(to_server, buffer(path_to_file, path_to_file.size()), use_awaitable);
 	}
 	catch (std::exception &e)
 	{
