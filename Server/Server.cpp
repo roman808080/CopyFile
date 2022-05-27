@@ -23,17 +23,6 @@ struct proxy_state
 
 using proxy_state_ptr = std::shared_ptr<proxy_state>;
 
-/*awaitable<void> client_to_server(proxy_state_ptr state)
-{
-  try
-  {
-  }
-  catch (const std::exception& e)
-  {
-    state->client.close();
-  }
-}*/
-
 awaitable<void> connect_to_server(boost::asio::io_context& ctx)
 {
 	try
@@ -41,16 +30,21 @@ awaitable<void> connect_to_server(boost::asio::io_context& ctx)
 		boost::asio::steady_timer theTimer(ctx, boost::asio::chrono::seconds(1));
 		co_await theTimer.async_wait(use_awaitable);
 
-		tcp::socket toServer(ctx);
+		tcp::socket to_server(ctx);
 		auto target = *tcp::resolver(ctx).resolve("127.0.0.1", "5555");
 
-        std::size_t path_size = 222;
-		co_await toServer.async_connect(target, use_awaitable);
+        std::string path_to_file{"/path/to/file"};
+        std::size_t path_size = path_to_file.size();
 
-        std::array<char, sizeof(std::size_t)> data{ 0 };
+		co_await to_server.async_connect(target, use_awaitable);
+
+        std::array<char, 1024> data{ 0 };
+
         memcpy(&data, &path_size, sizeof(path_size));
+		co_await async_write(to_server, buffer(data, sizeof(path_size)), use_awaitable);
 
-		co_await async_write(toServer, buffer(data, sizeof(std::size_t)), use_awaitable);
+        memcpy(&data, path_to_file.c_str(), path_to_file.size());
+		co_await async_write(to_server, buffer(data, path_to_file.size()), use_awaitable);
 	}
 	catch (std::exception &e)
 	{
@@ -63,15 +57,18 @@ awaitable<void> write_to_file(proxy_state_ptr state)
   try
   {
     std::array<char, 1024> data {0};
-
-    std::array<char, sizeof(std::size_t)> data_size{0};
     std::size_t path_size = 0;
 
-	co_await boost::asio::async_read(state->client, buffer(data_size, sizeof(path_size)), use_awaitable);
-	memcpy(&path_size, &data_size, sizeof(path_size));
-
+	co_await boost::asio::async_read(state->client, buffer(data, sizeof(path_size)), use_awaitable);
+	memcpy(&path_size, &data, sizeof(path_size));
 
     std::cout << "The current path_size: " << path_size << std::endl;
+
+    std::string path_to_file;
+	co_await boost::asio::async_read(state->client, buffer(data, path_size), use_awaitable);
+    std::copy(data.begin(), data.end(), std::back_inserter(path_to_file));
+
+    std::cout << "The current path: " << path_to_file << std::endl;
 
     /*for (;;)
     {
