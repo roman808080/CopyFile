@@ -1,6 +1,9 @@
 #include <array>
 #include <iostream>
 #include <memory>
+
+#include <filesystem>
+
 #include <boost/asio.hpp>
 #include <boost/asio/read.hpp>
 
@@ -43,6 +46,10 @@ awaitable<void> connect_to_server(boost::asio::io_context& ctx)
         memcpy(&data, &path_size, sizeof(path_size));
 		co_await async_write(to_server, buffer(data, sizeof(path_size)), use_awaitable);
 		co_await async_write(to_server, buffer(path_to_file, path_to_file.size()), use_awaitable);
+
+        std::size_t file_size = std::filesystem::file_size(path_to_file);
+        memcpy(&data, &file_size, sizeof(path_size));
+		co_await async_write(to_server, buffer(data, sizeof(file_size)), use_awaitable);
 	}
 	catch (std::exception &e)
 	{
@@ -67,6 +74,12 @@ awaitable<void> write_to_file(proxy_state_ptr state)
     std::copy(data.begin(), data.end(), std::back_inserter(path_to_file));
 
     std::cout << "The current path: " << path_to_file << std::endl;
+
+    std::size_t file_size = 0;
+	co_await boost::asio::async_read(state->client, buffer(data, sizeof(file_size)), use_awaitable);
+	memcpy(&file_size, &data, sizeof(file_size));
+
+    std::cout << "The file size: " << file_size << std::endl;
 
     /*for (;;)
     {
