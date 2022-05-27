@@ -3,6 +3,7 @@
 #include <memory>
 
 #include <filesystem>
+#include <fstream>
 
 #include <boost/asio.hpp>
 #include <boost/asio/read.hpp>
@@ -50,6 +51,31 @@ awaitable<void> connect_to_server(boost::asio::io_context& ctx)
         std::size_t file_size = std::filesystem::file_size(path_to_file);
         memcpy(&data, &file_size, sizeof(path_size));
 		co_await async_write(to_server, buffer(data, sizeof(file_size)), use_awaitable);
+
+        std::ifstream input_file(path_to_file, std::ios::in | std::ios::binary);
+        std::size_t bytes_to_read = file_size;
+
+        const std::size_t max_bytes_to_read {1024};
+
+        do {
+            std::size_t current_size {max_bytes_to_read};
+
+            if (max_bytes_to_read >= bytes_to_read)
+            {
+                current_size = bytes_to_read;
+                bytes_to_read = 0;
+            }
+            else
+            {
+                bytes_to_read -= max_bytes_to_read;
+            }
+
+			input_file.read(&data[0], current_size);
+			co_await async_write(to_server, buffer(data, current_size), use_awaitable);
+
+        } while (bytes_to_read > 0);
+
+        input_file.close();
 	}
 	catch (std::exception &e)
 	{
@@ -81,11 +107,17 @@ awaitable<void> write_to_file(proxy_state_ptr state)
 
     std::cout << "The file size: " << file_size << std::endl;
 
-    /*for (;;)
+	std::ofstream output_file("C:\\Users\\roman\\OneDrive\\Documents\\local.txt", std::ios::out | std::ios::binary);
+    std::size_t bytes_to_read = file_size;
+
+    while (bytes_to_read > 0)
     {
-      auto n = co_await state->server.async_read_some(buffer(data), use_awaitable);
-      co_await async_write(state->client, buffer(data, n), use_awaitable);
-    }*/
+        std::size_t bytes = co_await state->client.async_read_some(buffer(data), use_awaitable);
+        bytes_to_read -= bytes;
+        output_file.write(&data[0], bytes);
+    }
+
+    output_file.close();
   }
   catch (const std::exception& e)
   {
