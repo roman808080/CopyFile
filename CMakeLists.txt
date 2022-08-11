@@ -7,4 +7,5 @@ project(CopyFile)
 
 add_subdirectory(CopyFile)
 add_subdirectory(CopyFileLib)
+add_subdirectory(GoogleTests)
 
