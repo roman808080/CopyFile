@@ -2,6 +2,7 @@
 #include "InputFile.h"
 
 #include <filesystem>
+#include <cmath>
 
 namespace
 {
