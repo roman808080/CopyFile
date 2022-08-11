@@ -12,7 +12,7 @@ namespace
 Router::Router()
 	: cache(kMaxElementSize * Constants::Kilobyte)
 {
-	for (int startPosition = 0; startPosition < kMaxElementSize * Constants::Kilobyte; startPosition += kMaxElementSize)
+	for (int startPosition = 0; startPosition < kMaxElementSize * Constants::Kilobyte; startPosition += Constants::Kilobyte)
 	{
 		Chunk chunk {&cache[startPosition], Constants::Kilobyte};
 		usedOutputBlocks.push_back(chunk);
