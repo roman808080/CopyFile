@@ -1,8 +1,6 @@
 cmake_minimum_required(VERSION 2.8)
 
 set(BOOST_ROOT "/home/ubuntu/boost/")
-set(BOOST_INCLUDEDIR "/home/ubuntu/boost/include")
-set(BOOST_LIBRARYDIR "/home/ubuntu/boost/lib")
 
 find_package(Boost 1.74.0)
 if(Boost_FOUND)
