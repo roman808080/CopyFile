@@ -5,7 +5,8 @@ ADD_EXECUTABLE(GoogleTests ${SRCS})
 
 TARGET_LINK_LIBRARIES(GoogleTests
     CopyFileLib
-    gtest::gtest
+    GTest::gtest
+    GTest::gmock
 )
 
 add_test(NAME GoogleTests
