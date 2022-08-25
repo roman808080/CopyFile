@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.15)
 
 project(CopyFile)
 
-find_package(Boost 1.74.0)
+find_package(Boost 1.79.0)
 if(Boost_FOUND)
   include_directories(${Boost_INCLUDE_DIRS})
 endif()
