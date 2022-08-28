@@ -80,3 +80,8 @@ At the moment of the writing, conan2 is in beta and you can install it with the 
 pip install conan --pre
 ~~~
 
+
+Integration Conan with Cmake
+------------
+
+This [link](https://docs.conan.io/en/2.0/tutorial/consuming_packages/build_simple_cmake_project.html) was originally used to research the topic. However, it worth to note that it was written for conan2 which is in beta at the moment of writing this article.
