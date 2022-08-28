@@ -58,3 +58,25 @@ The list of other profile can be found in *local_python/bin*:
 
 More information about virtual environments can be found [here](https://pythonbasics.org/virtualenv/).
 
+
+Install Conan
+------------
+
+The next page about the [installation](https://docs.conan.io/en/latest/installation.html) process can be usefull.
+
+However, basically, you need to run the next command:
+
+~~~bash
+pip install conan
+~~~
+
+Here how it looks in my environment:
+
+![conan installation image](images/conan_installation.jpg "An example of output for conan installation.")
+
+
+At the moment of the writing, conan2 is in beta and you can install it with the next command:
+~~~bash
+pip install conan --pre
+~~~
+
