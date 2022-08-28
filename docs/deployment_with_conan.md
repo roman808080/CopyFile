@@ -33,6 +33,7 @@ virtualenv -p python3 local_python
 ~~~
 
 You should see something like this:
+
 ![creation of virtualenv image](images/create_local_virtualenv.jpg "You need to see something like this")
 
 The next command should be (if you are using bash):
@@ -48,8 +49,10 @@ source local_python/bin/activate.fish
 ~~~
 
 Here is an example how I source the fish profile:
+
 ![source the fish profile image](images/source_profile.jpg "Source the fish profile.")
 
 The list of other profile can be found in *local_python/bin*:
+
 ![bin directory image](images/bin_directory.jpg "It is how the bin directory looks like.")
 
