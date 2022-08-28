@@ -56,3 +56,5 @@ The list of other profile can be found in *local_python/bin*:
 
 ![bin directory image](images/bin_directory.jpg "It is how the bin directory looks like.")
 
+More information about virtual environments can be found [here](https://pythonbasics.org/virtualenv/).
+
