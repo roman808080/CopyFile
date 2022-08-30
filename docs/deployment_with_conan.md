@@ -194,3 +194,19 @@ conan profile list
 My output:
 
 ![image of list of profiles](images/list-of-profiles.jpg "List of profiles.")
+
+### `WARN` About `-pr:b` and `-pr:h` parameters
+
+In the section above was mentioned that it is better to use `-pr:b` parameter to specify a profile.
+
+![image of lines with warns](images/warn-lines.jpg "Here the lines where the warnings are")
+
+[Here](https://docs.conan.io/en/latest/reference/profiles.html#build-profiles-and-host-profiles) is the documentation about this. And a citation:
+> All the commands that take a profile as an argument, from Conan v1.24 are starting to accept two profiles with command line arguments -pr:h/--profile:host and -pr:b/--profile:build. If both profiles are provided, Conan will build a graph with some packages associated with the host platform and some build requirements associated to the build platform. There are two scenarios where this feature is extremly useful:
+> * [Creating conan packages to install dev tools](https://docs.conan.io/en/latest/devtools/create_installer_packages.html#create-installer-packages)
+> * [Cross building](https://docs.conan.io/en/latest/systems_cross_building/cross_building.html#cross-building)
+
+So, it is not very useful in our case, and can cause problems. For example, I had a default profile with the old abi, and my profile with the new one and because I specified only a build profile (`-pr:b copy_file_profile`) it used a default profile as host profile which caused issues because I compiled against a wrong abi.
+
+It is better to specify `-pr` or `--profile`.
+
