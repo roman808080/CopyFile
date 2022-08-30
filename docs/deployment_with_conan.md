@@ -143,3 +143,11 @@ conan profile update settings.compiler.libcxx=libstdc++11 default
 
 ![image of updation of the default profile](images/update-conan-default-profile.jpg "Update the default conan profile with this command.")
 
+### `WARN` Using the default profile is not advisable
+E.g. here is an example of output which I have for another project:
+
+![image warn when using the default profile](images/warn-when-using-default-profile.jpg "Warn when using the default profile")
+
+You can see these three lines:
+
+![image of lines with warns](images/warn-lines.jpg "Here the lines where the warnings are")
