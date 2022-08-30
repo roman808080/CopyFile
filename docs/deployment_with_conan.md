@@ -81,7 +81,7 @@ pip install conan --pre
 ~~~
 
 
-Integration Conan with Cmake
+Integration of Conan with Cmake
 ------------
 
 This [link](https://docs.conan.io/en/2.0/tutorial/consuming_packages/build_simple_cmake_project.html) was originally used to research the topic. However, it is worth to mention that it was written for conan2 which is in beta at the moment of writing.
@@ -112,4 +112,26 @@ CMakeToolchain
 This file has two sections:
 * *\[requires\]* section is where we declare the libraries we want to use in the project, in this case, *boost/1.79.0*, *gtest/1.12.1* and *cryptopp/8.6.0*;
 * *\[generators\]* section tells Conan to generate the files that the compilers or build systems will use to find the dependencies and build the project. In this case, as our project is based in CMake, we will use CMakeDeps to generate information about where the libraries files are installed and CMakeToolchain to pass build information to CMake using a CMake toolchain file.
+
+The next thing which we need to do is to generate a default profile.
+
+[Here](https://docs.conan.io/en/2.0/tutorial/consuming_packages/build_simple_cmake_project.html) is a citation about this for conan2:
+> Besides the conanfile.txt, we need a Conan profile to build our project. Conan profiles allow users to define a configuration set for things like the compiler, build configuration, architecture, shared or static libraries, etc. Conan, by default, will not try to detect a profile automatically, so we need to create one. To let Conan try to guess the profile, based on the current operating system and installed tools...
+
+The documentation above shows the behaviour for the conan2 which is slightly different from the behaviour of the first version. The first version generates the profile automatically when `conan install` is run. It is not a desirable behaviour because by default it generates a profile with an old abi.
+
+Here example how it looks:
+
+![image of a default profile creation](images/conan-install-generates-default-profile.jpg "Output of the profile creation command.")
+
+To avoid this we can forcibly create a default profile and modify it (e.g. like [here](https://github.com/conan-io/conan/issues/5129)).
+To do this, run the next command:
+
+~~~bash
+conan profile new --detect default
+~~~
+
+You probably will have the next output:
+
+![image of a default profile creation](images/default-profile-creation.jpg "Output of the profile creation command.")
 
