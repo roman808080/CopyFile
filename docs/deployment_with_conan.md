@@ -206,7 +206,32 @@ In the section above was mentioned that it is better to use `-pr:b` parameter to
 > * [Creating conan packages to install dev tools](https://docs.conan.io/en/latest/devtools/create_installer_packages.html#create-installer-packages)
 > * [Cross building](https://docs.conan.io/en/latest/systems_cross_building/cross_building.html#cross-building)
 
-So, it is not very useful in our case, and can cause problems. For example, I had a default profile with the old abi, and my profile with the new one and because I specified only a build profile (`-pr:b copy_file_profile`) it used a default profile as host profile which caused issues because I compiled against a wrong abi.
+So, it is not very useful in our case, and can cause problems. For example, I had a default profile with the old abi, and my profile with the new one and because I specified only a build profile (`-pr:b=copy_file_profile`) it used a default profile as host profile which caused issues because I compiled against a wrong abi.
 
 It is better to specify `-pr` or `--profile`.
 
+Building with Conan and Cmake
+------------
+
+Finally, we can build our project:
+
+1. Let's create a directory where we will build:
+    ~~~bash
+    mkdir build
+    ~~~
+1. Go to the directory:
+    ~~~bash
+    cd build
+    ~~~
+1. Generate Conan files:
+    ~~~bash
+    conan install .. --build=missing --profile copy_file_profile
+    ~~~
+1. Generate Cmake files:
+    ~~~bash
+    cmake .. -DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release
+    ~~~
+1. Build:
+    ~~~bash
+    make
+    ~~~
