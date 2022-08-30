@@ -230,6 +230,11 @@ Finally, we can build our project:
     * `--build=missing` - specifies that we need to build missing dependencies
     * `-pr:b copy_file_profile` - specifies our build profile
     * `-pr:h copy_file_profile` - specifies our host profile
+
+    My output:
+
+    ![image of installation dependencies](images/conan-install-dependencies.jpg "Installation of dependencies")
+
 1. Generate Cmake files:
     ~~~bash
     cmake .. -DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release
@@ -238,7 +243,16 @@ Finally, we can build our project:
     * `..` - the place where `CMakeLists.txt` is placed
     * `-DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake` - specifies `conan_toolchain.cmake` which has information where to find our dependencies which we installed
     * `-DCMAKE_BUILD_TYPE=Release` - the type of the build
+
+    Part of my Cmake output (you can see the message about toolchain which we are using):
+
+    ![image of cmake](images/cmake-with-toolchain.jpg "Cmake with dependencies.")
+
 1. Build:
     ~~~bash
     make
     ~~~
+
+    The output should be pretty standard at this stage:
+
+    ![image of make](images/building-binaries.jpg "Just building binaries...finaly")
