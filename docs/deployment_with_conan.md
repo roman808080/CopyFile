@@ -227,10 +227,18 @@ Finally, we can build our project:
     ~~~bash
     conan install .. --build=missing --profile copy_file_profile
     ~~~
+    where
+    * `..` - the place where `conanfile.txt` is located
+    * `--build=missing` - specifies that we need to build missing dependencies
+    * `--profile copy_file_profile` - specifies our profile
 1. Generate Cmake files:
     ~~~bash
     cmake .. -DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release
     ~~~
+    where
+    * `..` - the place where _CMakeLists.txt_ is placed
+    * `-DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake` - specifies _conan_toolchain.cmake_ which has information where to find our dependencies which we installed
+    * `-DCMAKE_BUILD_TYPE=Release` - the type of the build
 1. Build:
     ~~~bash
     make
