@@ -120,7 +120,7 @@ The next thing which we need to do is to generate a default profile.
 
 The documentation above shows the behaviour for the conan2 which is slightly different from the behaviour of the first version. The first version generates the profile automatically when `conan install` is run. It is not a desirable behaviour because by default it generates a profile with an old abi.
 
-Here example how it looks:
+Here is an example how it looks:
 
 ![image of a default profile creation](images/conan-install-generates-default-profile.jpg "Output of the profile creation command.")
 
@@ -134,4 +134,12 @@ conan profile new --detect default
 You probably will have the next output:
 
 ![image of a default profile creation](images/default-profile-creation.jpg "Output of the profile creation command.")
+
+Now we can fix the abi by using the command which we were advised to use:
+
+~~~bash
+conan profile update settings.compiler.libcxx=libstdc++11 default
+~~~
+
+![image of updation of the default profile](images/update-conan-default-profile.jpg "Update the default conan profile with this command.")
 
