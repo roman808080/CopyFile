@@ -96,3 +96,20 @@ For my environment it looks the next way:
 
 ![list of remotes image](images/list-of-remotes.jpg "Remotes which are present in my environment.")
 
+This repository has a conan config file which is called *conanfile.txt*.
+The content of the file is
+~~~properties
+[requires]
+boost/1.79.0
+gtest/1.12.1
+cryptopp/8.6.0
+
+[generators]
+CMakeDeps
+CMakeToolchain
+~~~
+
+This file has two sections:
+* *\[requires\]* section is where we declare the libraries we want to use in the project, in this case, *boost/1.79.0*, *gtest/1.12.1* and *cryptopp/8.6.0*;
+* *\[generators\]* section tells Conan to generate the files that the compilers or build systems will use to find the dependencies and build the project. In this case, as our project is based in CMake, we will use CMakeDeps to generate information about where the libraries files are installed and CMakeToolchain to pass build information to CMake using a CMake toolchain file.
+
