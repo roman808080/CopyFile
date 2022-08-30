@@ -143,11 +143,34 @@ conan profile update settings.compiler.libcxx=libstdc++11 default
 
 ![image of updation of the default profile](images/update-conan-default-profile.jpg "Update the default conan profile with this command.")
 
+Now we can check the content of the profile, and make sure that it was modified.
+You can execute the next command to do this:
+~~~bash
+vi  ~/.conan/profiles/default
+~~~
+
+Here is the content of the file:
+~~~properties
+[settings]
+os=Linux
+os_build=Linux
+arch=armv8
+arch_build=armv8
+compiler=gcc
+compiler.version=11
+compiler.libcxx=libstdc++11
+build_type=Release
+[options]
+[build_requires]
+[env]
+~~~
+You probably will have a different configuration. Also, you will probably will be required to change more settings (e.g. `compiler.version`)
+
 ### `WARN` Using the default profile is not advisable
 E.g. here is an example of output which I have for another project:
 
 ![image warn when using the default profile](images/warn-when-using-default-profile.jpg "Warn when using the default profile")
 
-You can see these three lines:
+You can see these two lines:
 
 ![image of lines with warns](images/warn-lines.jpg "Here the lines where the warnings are")
