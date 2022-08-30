@@ -84,4 +84,15 @@ pip install conan --pre
 Integration Conan with Cmake
 ------------
 
-This [link](https://docs.conan.io/en/2.0/tutorial/consuming_packages/build_simple_cmake_project.html) was originally used to research the topic. However, it worth to note that it was written for conan2 which is in beta at the moment of writing this article.
+This [link](https://docs.conan.io/en/2.0/tutorial/consuming_packages/build_simple_cmake_project.html) was originally used to research the topic. However, it is worth to mention that it was written for conan2 which is in beta at the moment of writing.
+
+Here we will use recipes which are present in the cloud (center.conan.io).
+You can check current remotes with the next command:
+~~~bash
+conan remote list
+~~~
+
+For my environment it looks the next way:
+
+![list of remotes image](images/list-of-remotes.jpg "Remotes which are present in my environment.")
+
