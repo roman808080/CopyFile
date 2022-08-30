@@ -174,3 +174,23 @@ E.g. here is an example of output which I have for another project:
 You can see these two lines:
 
 ![image of lines with warns](images/warn-lines.jpg "Here the lines where the warnings are")
+
+To fix this we can go to the profiles directory and copy the profile with a different name:
+~~~bash
+cd ~/.conan/profiles/
+cp default copy_file_profile
+~~~
+
+Here is my example:
+
+![image of copying the default profile](images/copying-the-default-profile.jpg "Copying the default profile.")
+* `lla` is an alias of `exa -la -s=oldest --header --git --accessed --modified`. I am using [exa](https://the.exa.website/) instead of `ls`. With `ls` it should be something like `ls -Alt`.
+
+Now we can check the list of profiles with the next command:
+~~~bash
+conan profile list
+~~~
+
+My output:
+
+![image of list of profiles](images/list-of-profiles.jpg "List of profiles.")
