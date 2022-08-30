@@ -236,8 +236,8 @@ Finally, we can build our project:
     cmake .. -DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release
     ~~~
     where
-    * `..` - the place where _CMakeLists.txt_ is placed
-    * `-DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake` - specifies _conan_toolchain.cmake_ which has information where to find our dependencies which we installed
+    * `..` - the place where `CMakeLists.txt` is placed
+    * `-DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake` - specifies `conan_toolchain.cmake` which has information where to find our dependencies which we installed
     * `-DCMAKE_BUILD_TYPE=Release` - the type of the build
 1. Build:
     ~~~bash
