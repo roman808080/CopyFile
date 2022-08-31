@@ -5,7 +5,7 @@ Cmake (version 3.15 or above) and python3 (3.6 or above) are required.
 
 Install virtual package
 ------------
-To install virtualenv in python3 you need to input the next command:
+To install [virtualenv](https://pythonbasics.org/virtualenv/) in python3 you need to input the next command:
 ~~~bash
 pip install virtualenv
 ~~~
