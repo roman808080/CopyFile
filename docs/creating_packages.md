@@ -10,3 +10,21 @@ Creating packages with conan
 [Running your server](https://docs.conan.io/en/latest/uploading_packages/running_your_server.html)
 
 [Creating hello package](https://docs.conan.io/en/latest/creating_packages/getting_started.html)
+
+Creating a new package:
+~~~bash
+conan new hello/0.1 --template=cmake_lib
+~~~
+
+Building the package:
+~~~bash
+conan create . demo/testing
+~~~
+
+How to list [local packages](https://docs.conan.io/en/latest/creating_packages/getting_started.html):
+~~~bash
+conan search
+~~~
+
+
+![image of locally installed packages](images/locally-installed-packages-hello-package.jpg "Here my packages with the hello world library")
