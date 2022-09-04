@@ -133,3 +133,12 @@ ABI Compatibility
 ------------
 The link is [here](https://docs.conan.io/en/latest/creating_packages/define_abi_compatibility.html)
 ### It was skpped for now
+
+Using Components
+------------
+Components allow define a few binaries inside one package (as *.a, *.so or just binaries).
+By default it is advisable to have only one binary per package.
+
+The link on documentation is [here](https://docs.conan.io/en/latest/creating_packages/package_information.html#using-components)
+
+
