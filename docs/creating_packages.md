@@ -111,3 +111,19 @@ In short:
         ...
     ~~~
 
+Package Creation Process
+------------
+
+Original link is [here](https://docs.conan.io/en/latest/creating_packages/understand_packaging.html#package-creation-process).
+
+
+![image of a conan package creation](images/conan-package_create_flow.png "Creation of conan package")
+
+The citation from the documentation:
+
+> Each package recipe contains five important folders in the local cache:
+> * `export`: The folder in which the package recipe is stored.
+> * `export_source`: The folder in which code copied with the recipe exports_sources attribute is stored.
+> * `source`: The folder in which the source code for building from sources is stored.
+> * `build`: The folder in which the actual compilation of sources is done. There will typically be one subfolder for each different binary configuration
+> * `package`: The folder in which the final package artifacts are stored. There will be one subfolder for each different binary configuration
