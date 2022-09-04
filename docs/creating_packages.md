@@ -146,3 +146,40 @@ Packaging Approaches
 ------------
 Documentation is [here](https://docs.conan.io/en/latest/creating_packages/package_approaches.html)
 ### Skip for now
+
+Boost 1.80
+------------
+
+[One of the requested for boost 1.80](https://github.com/conan-io/conan-center-index/issues/12564)
+[Pull request 1.80](https://github.com/conan-io/conan-center-index/pull/12807/files#diff-a1f0c325abfbf82c4e7d0df08fca1267cc98d0cf9376362813be62c7e68ff50c)
+
+[Official patches](https://www.boost.org/patches/)
+
+Patches in boost_1.79 ~/.conan/data/boost/1.79.0/_/_/source/conandata.yml
+~~~yml
+patches:
+  1.79.0:
+  - base_path: source_subfolder
+    patch_file: patches/boost_locale_fail_on_missing_backend.patch
+  - base_path: source_subfolder
+    patch_file: patches/boost_1_77_mpi_check.patch
+  - base_path: source_subfolder
+    patch_file: patches/1.69.0-locale-no-system.patch
+  - base_path: source_subfolder
+    patch_file: patches/1.77.0-fiber-mingw.patch
+  - base_path: source_subfolder
+    patch_file: patches/1.79.0-0001-json-array-erase-relocate.patch
+  - base_path: source_subfolder
+    patch_file: patches/1.79.0-smart_ptr_cw_ppc_msync.patch
+  - base_path: source_subfolder
+    patch_file: patches/1.79.0-geometry_no_rtti.patch
+    patch_source: https://github.com/boostorg/geometry/discussions/1041
+    patch_type: portability
+    url: https://github.com/boostorg/geometry/commit/b354162798749b3aaa539755e7b9be49d2b9a9c4.patch
+sources:
+  1.79.0:
+    sha256: 475d589d51a7f8b3ba2ba4eda022b170e562ca3b760ee922c146b6c65856ef39
+    url:
+    - https://boostorg.jfrog.io/artifactory/main/release/1.79.0/source/boost_1_79_0.tar.bz2
+    - https://sourceforge.net/projects/boost/files/boost/1.79.0/boost_1_79_0.tar.bz2
+~~~
