@@ -142,3 +142,7 @@ By default it is advisable to have only one binary per package.
 The link on documentation is [here](https://docs.conan.io/en/latest/creating_packages/package_information.html#using-components)
 
 
+Packaging Approaches
+------------
+Documentation is [here](https://docs.conan.io/en/latest/creating_packages/package_approaches.html)
+### Skip for now
