@@ -59,3 +59,55 @@ conan create . demo/testing -o hello:shared=True
 
 
 ![image of locally installed packages](images/the-list-of-package-options.jpg "Detailed information")
+
+
+
+Cloning repositories
+------------
+
+Main link is [here](https://docs.conan.io/en/latest/creating_packages/external_repo.html).
+
+In short:
+
+1. By using `source()`
+
+    ~~~python
+    from conans import ConanFile, CMake, tools
+
+    class HelloConan(ConanFile):
+        ...
+
+        def source(self):
+            self.run("git clone https://github.com/conan-io/hello.git")
+            ...
+    ~~~
+
+1. By using `source()` and [tools.Git](https://docs.conan.io/en/latest/reference/tools.html#tools-git)
+
+    ~~~python
+    from conans import ConanFile, CMake, tools
+
+    class HelloConan(ConanFile):
+        ...
+
+        def source(self):
+            git = tools.Git(folder="hello")
+            git.clone("https://github.com/conan-io/hello.git", "master")
+            ...
+    ~~~
+
+1. Using the [scm attribute](https://docs.conan.io/en/latest/reference/conanfile/attributes.html#scm-attribute)
+
+    ~~~python
+    from conans import ConanFile, CMake, tools
+
+    class HelloConan(ConanFile):
+        scm = {
+            "type": "git",
+            "subfolder": "hello",
+            "url": "https://github.com/conan-io/hello.git",
+            "revision": "master"
+        }
+        ...
+    ~~~
+
