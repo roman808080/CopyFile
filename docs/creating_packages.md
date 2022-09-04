@@ -127,3 +127,9 @@ The citation from the documentation:
 > * `source`: The folder in which the source code for building from sources is stored.
 > * `build`: The folder in which the actual compilation of sources is done. There will typically be one subfolder for each different binary configuration
 > * `package`: The folder in which the final package artifacts are stored. There will be one subfolder for each different binary configuration
+
+
+ABI Compatibility
+------------
+The link is [here](https://docs.conan.io/en/latest/creating_packages/define_abi_compatibility.html)
+### It was skpped for now
