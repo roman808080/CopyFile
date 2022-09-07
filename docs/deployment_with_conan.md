@@ -11,7 +11,11 @@ Conan can do a lot of things to make our life easiear. It includes generating fi
 
 Install virtual package
 ------------
-To install [virtualenv](https://pythonbasics.org/virtualenv/) in python3 you need to input the next command:
+
+It is better to install a separate python interpreter to separate dependencies and reduce conflicts between different versions of Conan and Python.
+It easily can be done by using virtualenv.
+
+Firtly, to install [virtualenv](https://pythonbasics.org/virtualenv/) in python3 you need to input the next command:
 ~~~bash
 pip install virtualenv
 ~~~
@@ -30,6 +34,8 @@ How to do this can be found [here](https://pip.pypa.io/en/stable/installation/).
 Install virtual environment
 ------------
 
+The next thing which we need to do is to create a local python environment in our directory which we will be able to use instead of the global interpreter.
+
 It is required to execute the next command to create a local python environment in the local directory:
 ~~~bash
 virtualenv -p python local_python
@@ -43,7 +49,24 @@ You should see something like this:
 
 ![creation of virtualenv image](images/create_local_virtualenv.jpg "You need to see something like this")
 
-The next command should be (if you are using bash):
+This command created a subdirectory `local_python` which containes all the files which are required for the local python.
+
+Activating the virtual environment
+------------
+
+Now, to use the local interpreter we need to source a profile.
+
+To source a profile means that we export environmental variables from the file which we source. For example, imagine that we have a file `my_dear_profile.profile` with the next content:
+
+~~~bash
+export MY_VALUE=/path/to/a/random/file
+~~~
+
+If we export the profile, a variable `MY_VALUE` appears in Bash which can be used by other programs.
+
+In our case, the sourcing process modifies the environment of our shell in a way that our local python becomes usable.
+
+The next command should be executing to activate the local interpreter (if you are using bash):
 ~~~bash
 source local_python/bin/activate
 ~~~
@@ -58,6 +81,19 @@ source local_python/bin/activate.fish
 Here is an example how I source the fish profile:
 
 ![source the fish profile image](images/source_profile.jpg "Source the fish profile.")
+
+After the execution of the above command, the `local_python` should be activated. We can tell it by noticing `(local_python)` label in our shell.
+
+For instance, my fish shell looks the next way:
+
+~~~fish
+[I] (local_python) ubuntu@london ~/p/C/docs (master)>
+~~~
+
+However, without activation of `virtualenv` it would look the next way:
+~~~fish
+[I] ubuntu@london ~/p/C/docs (master)>
+~~~
 
 The list of other profile can be found in *local_python/bin*:
 
