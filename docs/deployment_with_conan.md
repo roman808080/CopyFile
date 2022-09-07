@@ -12,6 +12,9 @@ An introduction to Conan can be found [here](https://docs.conan.io/en/latest/).
 ## About the manual
 This instruction shows how to intergrate Conan with Cmake. The main motivation for this is to simplify the relationship between our project and libraries which we are using. Usually, when establishing a C++ project there are a lot of troubles with integrating dependencies into projects. It includes issues with getting right versions of packages, dependencies on global paths (which often can be hardcoded into the build mananger), the necessity to build every dependency separately with its own unique build instrument (e.g autosys, make, cmake or b2), and the necessity to repeat all these steps for every platform which we should support.
 
+This situation quite different for other languages. For instance, with [java](https://www.java.com/en/) we have a plenty of package managers ([maven](https://maven.apache.org/what-is-maven.html), [gradle](https://gradle.org/) or [ivy](https://ant.apache.org/ivy/)) which can install additional jars without any complains. The similar situation is with [Python](https://www.python.org/) which has its own dependency manager which is called [pip](https://pypi.org/project/pip/). And now, we can achieve the same with Conan.
+
+Conan can do a lot of things to make our life easiear. It includes generating files for other build systems (e.g. autosys or cmake), allowing us to reuse our code as a separate package and allowing us to host our own private packages in a dedicated [server](https://docs.conan.io/en/latest/uploading_packages/using_artifactory.html).
 
 ### [Cmake](https://cmake.org/) (version 3.15 or above) and [python3](https://www.python.org/) (3.6 or above) are required for this manual.
 
