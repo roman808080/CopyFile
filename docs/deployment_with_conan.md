@@ -38,6 +38,7 @@ How to do this can be found [here](https://pip.pypa.io/en/stable/installation/).
 
 Install virtual environment
 ------------
+
 It is required to execute the next command to create a local python environment in the local directory:
 ~~~bash
 virtualenv -p python local_python
@@ -72,6 +73,11 @@ The list of other profile can be found in *local_python/bin*:
 ![bin directory image](images/bin_directory.jpg "It is how the bin directory looks like.")
 
 More information about virtual environments can be found [here](https://pythonbasics.org/virtualenv/).
+
+Additional information about virtualenv (regarding Conan):
+* [Virtual env in Conan docs](https://docs.conan.io/en/1.11/mastering/virtualenv.html)
+* [Virtual env consumers](https://stackoverflow.com/questions/62955831/add-to-conan-virtualenv-from-consumer)
+
 
 
 Install Conan
