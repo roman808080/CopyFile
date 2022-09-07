@@ -1,7 +1,19 @@
 Deployment with conan
 ============
 
-Cmake (version 3.15 or above) and python3 (3.6 or above) are required.
+## About [conan](https://conan.io/) from official documentation:
+> The open source, decentralized and multi-platform package manager to create and share all your native binaries.
+
+An introduction to Conan can be found [here](https://docs.conan.io/en/latest/).
+
+## About Cmake:
+> CMake is an open-source, cross-platform family of tools designed to build, test and package software. CMake is used to control the software compilation process using simple platform and compiler independent configuration files, and generate native makefiles and workspaces that can be used in the compiler environment of your choice. The suite of CMake tools were created by Kitware in response to the need for a powerful, cross-platform build environment for open-source projects such as ITK and VTK.
+
+## About the manual
+This instruction shows how to intergrate Conan with Cmake. The main motivation for this is to simplify the relationship between our project and libraries which we are using. Usually, when establishing a C++ project there are a lot of troubles with integrating dependencies into projects. It includes issues with getting right versions of packages, dependencies on global paths (which often can be hardcoded into the build mananger), the necessity to build every dependency separately with its own unique build instrument (e.g autosys, make, cmake or b2), and the necessity to repeat all these steps for every platform which we should support.
+
+
+### [Cmake](https://cmake.org/) (version 3.15 or above) and [python3](https://www.python.org/) (3.6 or above) are required for this manual.
 
 Install virtual package
 ------------
