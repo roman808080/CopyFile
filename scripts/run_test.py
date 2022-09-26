@@ -33,6 +33,8 @@ def generate_file_with_file_object(file_object):
         generated_chunk = _generate_chunk()
         file_object.write(generated_chunk)
 
+    file_object.flush()
+
 
 def generate_file(file_name):
     with open(file_name, 'wb') as file:
@@ -79,13 +81,11 @@ def main():
         copy_file_path = get_path_to_copy_file_utility()
         destination = os.path.join(get_current_folder(), 'destination.txt')
 
-        subprocess.call([copy_file_path, temp_file.name, destination], shell=True) 
+        print(subprocess.run([copy_file_path, temp_file.name, destination], capture_output=True))
 
         hash_sha256 = calculate_hash_for_file(temp_file)
         print(hash_sha256)
-
-        with open(destination) as destination_file:
-            print(calculate_hash_for_file(destination_file))
+        print(calculate_hash_for_path(destination))
 
 
 if __name__ == '__main__':
