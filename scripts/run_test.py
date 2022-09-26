@@ -47,6 +47,11 @@ def calculate_hash_for_file(file_object):
     return sha256_hash.hexdigest()
 
 
+def calculate_hash_for_path(file_path):
+    with open(file_path, 'rb') as file:
+        return calculate_hash_for_file(file_object=file)
+
+
 def main():
     with tempfile.NamedTemporaryFile() as temp_file:
         generate_file_with_file_object(temp_file)
