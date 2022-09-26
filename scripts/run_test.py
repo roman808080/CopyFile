@@ -10,7 +10,7 @@ FILE_ITERATIONS_UPPER_BOUNDARY = 300
 MAX_UNICODE_UTF8 = 1112064
 
 
-def generate_chunk():
+def _generate_chunk():
     size = random.randrange(CHUNK_LOW_BOUNDARY, CHUNK_UPPER_BOUNDARY)
     numbers = list(bytes(str(2 ** size), 'utf-8'))
 
@@ -22,15 +22,19 @@ def generate_chunk():
     return bytes(''.join(array_symbols), 'utf-8')
 
 
-def generate_file():
-    with open('generated.txt', 'wb') as file:
-        for _ in range(random.randrange(FILE_ITERATIONS_LOW_BOUNDARY, FILE_ITERATIONS_UPPER_BOUNDARY)):
-            generated_chunk = generate_chunk()
-            file.write(generated_chunk)
+def _generate_file_with_file_object(file_object):
+    for _ in range(random.randrange(FILE_ITERATIONS_LOW_BOUNDARY, FILE_ITERATIONS_UPPER_BOUNDARY)):
+        generated_chunk = _generate_chunk()
+        file_object.write(generated_chunk)
+
+
+def generate_file(file_name):
+    with open(file_name, 'wb') as file:
+        _generate_file_with_file_object(file)
 
 
 def main():
-    generate_file()
+    generate_file('generated.txt')
 
 
 if __name__ == '__main__':
