@@ -3,6 +3,8 @@ import random
 import tempfile
 import hashlib
 import os
+import subprocess
+
 
 CHUNK_LOW_BOUNDARY = 1000
 CHUNK_UPPER_BOUNDARY = 2000
@@ -73,8 +75,17 @@ def get_path_to_copy_file_utility():
 def main():
     with tempfile.NamedTemporaryFile() as temp_file:
         generate_file_with_file_object(temp_file)
+
+        copy_file_path = get_path_to_copy_file_utility()
+        destination = os.path.join(get_current_folder(), 'destination.txt')
+
+        subprocess.call([copy_file_path, temp_file.name, destination], shell=True) 
+
         hash_sha256 = calculate_hash_for_file(temp_file)
         print(hash_sha256)
+
+        with open(destination) as destination_file:
+            print(calculate_hash_for_file(destination_file))
 
 
 if __name__ == '__main__':
