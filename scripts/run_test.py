@@ -2,6 +2,7 @@
 import random
 import tempfile
 import hashlib
+import os
 
 CHUNK_LOW_BOUNDARY = 1000
 CHUNK_UPPER_BOUNDARY = 2000
@@ -50,6 +51,23 @@ def calculate_hash_for_file(file_object):
 def calculate_hash_for_path(file_path):
     with open(file_path, 'rb') as file:
         return calculate_hash_for_file(file_object=file)
+
+
+def get_current_file_path():
+    return os.path.abspath(__file__)
+
+
+def get_current_folder():
+    return os.path.dirname(get_current_file_path())
+
+
+def get_project_root_directory():
+    return os.path.dirname(get_current_folder())
+
+
+def get_path_to_copy_file_utility():
+    return os.path.join(get_project_root_directory(),
+                        'build', 'CopyFile', 'CopyFile')
 
 
 def main():
