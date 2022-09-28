@@ -86,8 +86,11 @@ def main():
         hash_sha256_source = calculate_hash_for_file(temp_file)
         hash_sha256_destination = calculate_hash_for_path(destination)
 
-        print(hash_sha256_source)
-        print(hash_sha256_destination)
+        print(hash_sha256_source, '-> source ->', temp_file.name)
+        print(hash_sha256_destination, '-> destination ->', destination)
+
+        assert hash_sha256_source, hash_sha256_destination
+        print('The hash is OK\n')
 
 
 if __name__ == '__main__':
