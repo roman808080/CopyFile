@@ -432,3 +432,4 @@ FodyWeavers.xsd
 
 # Ignore build directory
 build/
+.vscode/settings.json
