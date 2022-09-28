@@ -9,6 +9,7 @@ add_executable(CopyFile
 # Specify here the libraries this program depends on
 target_link_libraries(CopyFile
     CopyFileLib
+    Boost::program_options
 )
 
 install(TARGETS CopyFile DESTINATION bin)

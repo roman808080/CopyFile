@@ -81,7 +81,7 @@ def main():
         copy_file_path = get_path_to_copy_file_utility()
         destination = os.path.join(temp_directory, 'destination.txt')
 
-        print(subprocess.run([copy_file_path, temp_file.name, destination], capture_output=True))
+        print(subprocess.run([copy_file_path, '-s', temp_file.name, '-d', destination], capture_output=True))
 
         hash_sha256_source = calculate_hash_for_file(temp_file)
         hash_sha256_destination = calculate_hash_for_path(destination)
