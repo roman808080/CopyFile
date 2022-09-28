@@ -127,6 +127,9 @@ void App::copyFileSharedMemoryMethod()
 	std::cout << "Shared memory name: " << sharedMemoryName << std::endl;
 	std::cout << "method: " << method << std::endl;
 
+	std::cout << "input file: " << inputFileName << std::endl;
+	std::cout << "output file: " << outputFileName << std::endl;
+
 	if (isClient)
 	{
 		std::this_thread::sleep_for(std::chrono::milliseconds(2000));
