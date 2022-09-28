@@ -21,6 +21,9 @@ public:
 	void setSharedMemoryName(const std::string& sharedMemoryName);
 	void setIsClient(bool isClient);
 
+private:
+	void copyFileDefaultMethod();
+
 
 private:
 	std::string inputFileName;
