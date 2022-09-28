@@ -5,10 +5,17 @@
 #include <thread>
 #include <chrono>
 
+#include <boost/interprocess/shared_memory_object.hpp>
+#include <boost/interprocess/mapped_region.hpp>
+
 #include "OutputFile.h"
 #include "InputFile.h"
 
+#include "anonymous_semaphore_shared_data.h"
+
 #include "Router.h"
+
+using namespace boost::interprocess;
 
 namespace
 {
@@ -67,6 +74,95 @@ namespace
 			isFinished = router->isRotationStopped() && previousBlock.startPosition == nullptr;
 		} while (!isFinished);
 	}
+
+	void run_server()
+	{
+		// Erase previous shared memory
+		shared_memory_object::remove("shared_memory");
+
+		// Create a shared memory object.
+		shared_memory_object shm(create_only // only create
+								 ,
+								 "shared_memory" // name
+								 ,
+								 read_write // read-write mode
+		);
+
+		// Set size
+		shm.truncate(sizeof(shared_memory_buffer));
+
+		// Map the whole shared memory in this process
+		mapped_region region(shm // What to map
+							 ,
+							 read_write // Map it as read-write
+		);
+
+		// Get the address of the mapped region
+		void *addr = region.get_address();
+
+		// Construct the shared structure in memory
+		shared_memory_buffer *data = new (addr) shared_memory_buffer;
+
+		const int NumMsg = 100;
+
+		// Insert data in the array
+		for (int i = 0; i < NumMsg; ++i)
+		{
+			data->nempty.wait();
+			data->mutex.wait();
+			data->items[i % shared_memory_buffer::NumItems] = i;
+			data->mutex.post();
+			data->nstored.post();
+		}
+
+		//Erase shared memory
+		shared_memory_object::remove("shared_memory");
+	}
+
+	void run_client()
+	{
+		// Create a shared memory object.
+		shared_memory_object shm(open_only // only create
+								 ,
+								 "shared_memory" // name
+								 ,
+								 read_write // read-write mode
+		);
+
+		// Map the whole shared memory in this process
+		mapped_region region(shm // What to map
+							 ,
+							 read_write // Map it as read-write
+		);
+
+		// Get the address of the mapped region
+		void *addr = region.get_address();
+
+		// Obtain the shared structure
+		shared_memory_buffer *data = static_cast<shared_memory_buffer *>(addr);
+
+		const int NumMsg = 100;
+
+		int extracted_data[NumMsg];
+
+		// Extract the data
+		for (int i = 0; i < NumMsg; ++i)
+		{
+			data->nstored.wait();
+			data->mutex.wait();
+			extracted_data[i] = data->items[i % shared_memory_buffer::NumItems];
+			data->mutex.post();
+			data->nempty.post();
+		}
+
+		//Erase shared memory
+		shared_memory_object::remove("shared_memory");
+
+		for (int i = 0; i < NumMsg; ++i)
+		{
+			std::cout << extracted_data[i] << " ";
+		}
+	}
 }
 
 App::App(const size_t blockSize)
@@ -123,19 +219,12 @@ void App::copyFileDefaultMethod()
 
 void App::copyFileSharedMemoryMethod()
 {
-	std::cout << "isClient: " << isClient << std::endl;
-	std::cout << "Shared memory name: " << sharedMemoryName << std::endl;
-	std::cout << "method: " << method << std::endl;
-
-	std::cout << "input file: " << inputFileName << std::endl;
-	std::cout << "output file: " << outputFileName << std::endl;
-
 	if (isClient)
 	{
-		std::this_thread::sleep_for(std::chrono::milliseconds(2000));
+		run_client();
 	}
 	else
 	{
-		std::this_thread::sleep_for(std::chrono::milliseconds(2000));
+		run_server();
 	}
 }

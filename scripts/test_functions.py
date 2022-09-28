@@ -116,6 +116,9 @@ def run_shared_memory_test():
         thread = threading.Thread(target=run_server_shared_memory, args=(destination, shared_memory_name))
         thread.start()
 
+        import time
+        time.sleep(0.5)
+
         output = subprocess.run([copy_file_path, '-s', temp_file.name, '-m', 'shared', '--client',
                                  '--shared-memory', shared_memory_name], capture_output=True)
 
