@@ -14,6 +14,7 @@ int main(int argc, char *argv[])
 	po::options_description desc("Allowed options");
 	desc.add_options()
 					("help,h", "produce help message")
+					("method,m", po::value<std::string>()->default_value("default"), "method (default, shared)")
 					("source,s", po::value<std::string>(), "set source file")
 					("destination,d", po::value<std::string>(), "set destination file");
 
@@ -39,6 +40,12 @@ int main(int argc, char *argv[])
 	if (variablesMap.count("destination"))
 	{
 		outputFileName = variablesMap["destination"].as<std::string>();
+	}
+
+	const std::string method = variablesMap["method"].as<std::string>();
+	if (method == "shared")
+	{
+		std::cout << "Shared memory has been chosen." << std::endl;
 	}
 
 	App app(inputFileName, outputFileName, Constants::Megabyte);
