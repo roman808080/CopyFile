@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <thread>
+#include <chrono>
 
 #include "OutputFile.h"
 #include "InputFile.h"
@@ -75,6 +76,12 @@ App::App(const size_t blockSize)
 
 void App::run()
 {
+	if (method == "shared")
+	{
+		copyFileSharedMemoryMethod();
+		return;
+	}
+
 	copyFileDefaultMethod();
 }
 
@@ -112,4 +119,16 @@ void App::copyFileDefaultMethod()
 
 	std::jthread readThread(readFromFile, inputFile, router);
 	std::jthread writeThread(writeToFile, outputFile, router);
+}
+
+void App::copyFileSharedMemoryMethod()
+{
+	if (isClient)
+	{
+		std::this_thread::sleep_for(std::chrono::milliseconds(20000));
+	}
+	else
+	{
+		std::this_thread::sleep_for(std::chrono::milliseconds(20000));
+	}
 }

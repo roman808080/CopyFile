@@ -23,6 +23,7 @@ public:
 
 private:
 	void copyFileDefaultMethod();
+	void copyFileSharedMemoryMethod();
 
 
 private:

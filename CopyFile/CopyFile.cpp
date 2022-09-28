@@ -14,7 +14,11 @@ int main(int argc, char *argv[])
 	po::options_description desc("Allowed options");
 	desc.add_options()
 					("help,h", "produce help message")
+
 					("method,m", po::value<std::string>()->default_value("default"), "method (default, shared)")
+					("shared-memory", po::value<std::string>(), "shared memory name")
+					("client", "if specified then program runs as a client, otherwise server")
+
 					("source,s", po::value<std::string>(), "set source file")
 					("destination,d", po::value<std::string>(), "set destination file");
 
