@@ -30,25 +30,23 @@ int main(int argc, char *argv[])
 		return 0;
 	}
 
-	std::string inputFileName{};
+	App app;
+
 	if (variablesMap.count("source"))
 	{
-		inputFileName = variablesMap["source"].as<std::string>();
+		const std::string inputFileName = variablesMap["source"].as<std::string>();
+		app.setInputFile(inputFileName);
 	}
 
-	std::string outputFileName{};
 	if (variablesMap.count("destination"))
 	{
-		outputFileName = variablesMap["destination"].as<std::string>();
+		const std::string outputFileName = variablesMap["destination"].as<std::string>();
+		app.setOutputFile(outputFileName);
 	}
 
 	const std::string method = variablesMap["method"].as<std::string>();
-	if (method == "shared")
-	{
-		std::cout << "Shared memory has been chosen." << std::endl;
-	}
+	app.setMethod(method);
 
-	App app(inputFileName, outputFileName, Constants::Megabyte);
 	app.run();
 
 	return 0;

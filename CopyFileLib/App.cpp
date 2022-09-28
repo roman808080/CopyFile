@@ -67,10 +67,12 @@ namespace
 	}
 }
 
-App::App(const std::string& inputFileName, const std::string& outputFileName, const size_t blockSize)
-	: inputFileName(inputFileName)
-	, outputFileName(outputFileName)
+App::App(const size_t blockSize)
+	: inputFileName("")
+	, outputFileName("")
+	, method ("default")
 	, blockSize(blockSize)
+	, isClient(false)
 {
 }
 
@@ -83,4 +85,29 @@ void App::run()
 
     std::jthread readThread(readFromFile, inputFile, router);
     std::jthread writeThread(writeToFile, outputFile, router);
+}
+
+void App::setInputFile(const std::string& inputFileName)
+{
+	this->inputFileName = inputFileName;
+}
+
+void App::setOutputFile(const std::string& outputFileName)
+{
+	this->outputFileName = outputFileName;
+}
+
+void App::setMethod(const std::string& method)
+{
+	this->method = method;
+}
+
+void App::setSharedMemoryName(const std::string& sharedMemoryName)
+{
+	this->sharedMemoryName = sharedMemoryName;
+}
+
+void App::setIsClient(bool isClient)
+{
+	this->isClient = isClient;
 }

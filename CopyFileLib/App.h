@@ -10,14 +10,25 @@ class Messenger;
 class App
 {
 public:
-	App(const std::string& inputFileName, const std::string& outputFileName,
-		const size_t blockSize = Constants::Kilobyte);
+	App(const size_t blockSize = Constants::Kilobyte);
 	
 	void run();
 
+	void setInputFile(const std::string& inputFileName);
+	void setOutputFile(const std::string& outputFileName);
+
+	void setMethod(const std::string& method);
+	void setSharedMemoryName(const std::string& sharedMemoryName);
+	void setIsClient(bool isClient);
+
+
 private:
-	const std::string inputFileName;
-	const std::string outputFileName;
+	std::string inputFileName;
+	std::string outputFileName;
+	std::string method;
+	std::string sharedMemoryName;
+
 	const size_t blockSize;
+	bool isClient;
 };
 
