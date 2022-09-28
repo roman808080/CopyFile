@@ -75,17 +75,19 @@ def get_path_to_copy_file_utility():
 
 
 def main():
-    with tempfile.NamedTemporaryFile() as temp_file:
+    with tempfile.NamedTemporaryFile() as temp_file, tempfile.TemporaryDirectory() as temp_directory:
         generate_file_with_file_object(temp_file)
 
         copy_file_path = get_path_to_copy_file_utility()
-        destination = os.path.join(get_current_folder(), 'destination.txt')
+        destination = os.path.join(temp_directory, 'destination.txt')
 
         print(subprocess.run([copy_file_path, temp_file.name, destination], capture_output=True))
 
-        hash_sha256 = calculate_hash_for_file(temp_file)
-        print(hash_sha256)
-        print(calculate_hash_for_path(destination))
+        hash_sha256_source = calculate_hash_for_file(temp_file)
+        hash_sha256_destination = calculate_hash_for_path(destination)
+
+        print(hash_sha256_source)
+        print(hash_sha256_destination)
 
 
 if __name__ == '__main__':
