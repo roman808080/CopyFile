@@ -74,7 +74,7 @@ def get_path_to_copy_file_utility():
                         'build', 'CopyFile', 'CopyFile')
 
 
-def main():
+def run_default_test():
     with tempfile.NamedTemporaryFile() as temp_file, tempfile.TemporaryDirectory() as temp_directory:
         generate_file_with_file_object(temp_file)
 
@@ -91,6 +91,10 @@ def main():
 
         assert hash_sha256_source, hash_sha256_destination
         print('The hash is OK\n')
+
+
+def main():
+    run_default_test()
 
 
 if __name__ == '__main__':
