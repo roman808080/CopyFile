@@ -48,6 +48,19 @@ int main(int argc, char *argv[])
 		app.setOutputFile(outputFileName);
 	}
 
+	bool isClient = false;
+	if (variablesMap.count("client"))
+	{
+		isClient = true;
+	}
+	app.setIsClient(isClient);
+
+	if (variablesMap.count("shared-memory"))
+	{
+		const std::string sharedMemoryName = variablesMap["shared-memory"].as<std::string>();
+		app.setSharedMemoryName(sharedMemoryName);
+	}
+
 	const std::string method = variablesMap["method"].as<std::string>();
 	app.setMethod(method);
 
