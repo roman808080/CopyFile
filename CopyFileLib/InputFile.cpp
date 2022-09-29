@@ -4,6 +4,8 @@
 #include <filesystem>
 #include <cmath>
 
+#include "anonymous_semaphore_shared_data.h"
+
 namespace
 {
 	uintmax_t getFileSize(const std::string& filePath)
@@ -58,6 +60,17 @@ void InputFile::readBlock(Chunk& block)
 	}
 
 	inputFile.read(block.startPosition, block.size);
+}
+
+void InputFile::readBlock(Block* block)
+{
+	block->size = calculateBlockSize();
+	if (block->size == 0)
+	{
+		throw std::runtime_error("Nothing to read.");
+	}
+
+	inputFile.read(block->buffer, block->size);
 }
 
 bool InputFile::isFinished()

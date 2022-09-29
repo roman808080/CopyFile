@@ -76,7 +76,7 @@ namespace
 		} while (!isFinished);
 	}
 
-	void run_server()
+	void run_server(std::shared_ptr<InputFile> inputFile)
 	{
 		// Erase previous shared memory
 		shared_memory_object::remove("shared_memory");
@@ -94,29 +94,29 @@ namespace
 		// Construct the shared structure in memory
 		shared_memory_buffer *data = new (addr) shared_memory_buffer;
 
-		const int NumMsg = 100;
-
-		// Insert data in the array
-		for (int i = 0; i < NumMsg; ++i)
+		int iteration = 0;
+		while (!inputFile->isFinished())
 		{
 			data->nempty.wait();
 			data->mutex.wait();
 
-			std::vector<char> hello {'h', 'e', 'l', 'l', 'o', '_'};
-
-			if (i == NumMsg - 1)
-			{
-				data->items[i % shared_memory_buffer::NumItems].size = 0;
-			}
-			else
-			{
-				std::copy(std::begin(hello), std::end(hello), std::begin(data->items[i % shared_memory_buffer::NumItems].buffer));
-				data->items[i % shared_memory_buffer::NumItems].size = hello.size();
-			}
+			auto item = &data->items[iteration % shared_memory_buffer::NumItems];
+			inputFile->readBlock(item);
 
 			data->mutex.post();
 			data->nstored.post();
+
+			++iteration;
 		}
+
+		data->nempty.wait();
+		data->mutex.wait();
+
+		data->items[iteration % shared_memory_buffer::NumItems].size = 0;
+
+		data->mutex.post();
+		data->nstored.post();
+
 
 		// Erase shared memory
 		shared_memory_object::remove("shared_memory");
@@ -223,6 +223,8 @@ void App::copyFileSharedMemoryMethod()
 	}
 	else
 	{
-		run_server();
+		auto inputFile = std::make_shared<InputFile>(inputFileName);
+
+		run_server(inputFile);
 	}
 }

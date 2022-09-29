@@ -7,6 +7,8 @@
 #include "Constants.h"
 #include "Router.h"
 
+struct Block;
+
 class InputFile
 {
 public:
@@ -19,6 +21,8 @@ public:
     InputFile& operator=(InputFile&&) = delete;
 
 	void readBlock(Chunk& block);
+	void readBlock(Block* block);
+
 	bool isFinished();
 
 private:
