@@ -5,6 +5,8 @@
 #include "Constants.h"
 #include "Router.h"
 
+struct Block;
+
 class OutputFile
 {
 public:
@@ -17,6 +19,7 @@ public:
     OutputFile& operator=(OutputFile&&) = delete;
 
 	void write(const Chunk block);
+	void write(const Block* block);
 
 private:
 	std::ofstream outputFile;

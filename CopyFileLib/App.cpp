@@ -215,16 +215,15 @@ void App::copyFileSharedMemoryMethod()
 {
 	if (isClient)
 	{
-		std::cout << "Client: ";
-		for(auto val : run_client())
+		std::shared_ptr<OutputFile> outputFile(std::make_shared<OutputFile>(outputFileName));
+		for(auto block : run_client())
 		{
-			std::cout << val->buffer << " " << val->size << " ";
+			outputFile->write(block);
 		}
 	}
 	else
 	{
 		auto inputFile = std::make_shared<InputFile>(inputFileName);
-
 		run_server(inputFile);
 	}
 }

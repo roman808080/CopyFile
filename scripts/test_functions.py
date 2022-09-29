@@ -129,9 +129,6 @@ def run_shared_memory_test():
 
         thread.join()
 
-        print('Disable futher checkes for now')
-        return
-
         hash_sha256_source = calculate_hash_for_file(temp_file)
         hash_sha256_destination = calculate_hash_for_path(destination)
 

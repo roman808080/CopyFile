@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "OutputFile.h"
 
+#include "anonymous_semaphore_shared_data.h"
+
 OutputFile::OutputFile(const std::string& fileName)
 	: outputFile(fileName, std::ofstream::binary)
 {
@@ -20,3 +22,10 @@ void OutputFile::write(const Chunk block)
 	outputFile.write(block.startPosition, block.size);
 	outputFile.flush();
 }
+
+void OutputFile::write(const Block* block)
+{
+	outputFile.write(block->buffer, block->size);
+	outputFile.flush();
+}
+
