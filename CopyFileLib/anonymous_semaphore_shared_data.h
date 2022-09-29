@@ -1,4 +1,11 @@
 #include <boost/interprocess/sync/interprocess_semaphore.hpp>
+#include "Constants.h"
+
+struct Item
+{
+	char buffer[Constants::Kilobyte];
+   size_t size;
+};
 
 struct shared_memory_buffer
 {
@@ -13,5 +20,6 @@ struct shared_memory_buffer
       mutex, nempty, nstored;
 
    //Items to fill
-   int items[NumItems];
+   Item items[NumItems];
+
 };

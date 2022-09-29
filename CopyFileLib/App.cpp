@@ -76,15 +76,6 @@ namespace
 		} while (!isFinished);
 	}
 
-	template <typename T>
-	unique_generator<T> range(T fromInclusive, T toExclusive)
-	{
-		for (T v = fromInclusive; v < toExclusive; ++v)
-		{
-			co_yield v;
-		}
-	}
-
 	void run_server()
 	{
 		// Erase previous shared memory
@@ -111,7 +102,9 @@ namespace
 			data->nempty.wait();
 			data->mutex.wait();
 
-			data->items[i % shared_memory_buffer::NumItems] = i;
+			std::vector<char> hello {'h', 'e', 'l', 'l', 'o', '_'};
+			std::copy(std::begin(hello), std::end(hello), std::begin(data->items[i % shared_memory_buffer::NumItems].buffer));
+			data->items[i % shared_memory_buffer::NumItems].size = hello.size();
 
 			data->mutex.post();
 			data->nstored.post();
@@ -121,21 +114,13 @@ namespace
 		shared_memory_object::remove("shared_memory");
 	}
 
-	unique_generator<int> run_client()
+	unique_generator<Item*> run_client()
 	{
 		// Create a shared memory object.
-		shared_memory_object shm(open_only // only create
-								 ,
-								 "shared_memory" // name
-								 ,
-								 read_write // read-write mode
-		);
+		shared_memory_object shm(open_only, "shared_memory", read_write);
 
 		// Map the whole shared memory in this process
-		mapped_region region(shm // What to map
-							 ,
-							 read_write // Map it as read-write
-		);
+		mapped_region region(shm, read_write);
 
 		// Get the address of the mapped region
 		void *addr = region.get_address();
@@ -151,7 +136,7 @@ namespace
 			data->nstored.wait();
 			data->mutex.wait();
 
-			co_yield data->items[i % shared_memory_buffer::NumItems];
+			co_yield &data->items[i % shared_memory_buffer::NumItems];
 
 			data->mutex.post();
 			data->nempty.post();
@@ -221,7 +206,7 @@ void App::copyFileSharedMemoryMethod()
 		std::cout << "Client: ";
 		for(auto val : run_client())
 		{
-			std::cout << val << " ";
+			std::cout << val->buffer << " ";
 		}
 	}
 	else
