@@ -103,8 +103,16 @@ namespace
 			data->mutex.wait();
 
 			std::vector<char> hello {'h', 'e', 'l', 'l', 'o', '_'};
-			std::copy(std::begin(hello), std::end(hello), std::begin(data->items[i % shared_memory_buffer::NumItems].buffer));
-			data->items[i % shared_memory_buffer::NumItems].size = hello.size();
+
+			if (i == NumMsg - 1)
+			{
+				data->items[i % shared_memory_buffer::NumItems].size = 0;
+			}
+			else
+			{
+				std::copy(std::begin(hello), std::end(hello), std::begin(data->items[i % shared_memory_buffer::NumItems].buffer));
+				data->items[i % shared_memory_buffer::NumItems].size = hello.size();
+			}
 
 			data->mutex.post();
 			data->nstored.post();
@@ -128,15 +136,19 @@ namespace
 		// Obtain the shared structure
 		shared_memory_buffer *data = static_cast<shared_memory_buffer *>(addr);
 
-		const int NumMsg = 100;
-
 		// Extract the data
-		for (int i = 0; i < NumMsg; ++i)
+		for (int i = 0;; ++i)
 		{
 			data->nstored.wait();
 			data->mutex.wait();
 
-			co_yield &data->items[i % shared_memory_buffer::NumItems];
+			auto item = &data->items[i % shared_memory_buffer::NumItems];
+			if (item->size == 0)
+			{
+				co_return;
+			}
+
+			co_yield item;
 
 			data->mutex.post();
 			data->nempty.post();
@@ -206,7 +218,7 @@ void App::copyFileSharedMemoryMethod()
 		std::cout << "Client: ";
 		for(auto val : run_client())
 		{
-			std::cout << val->buffer << " ";
+			std::cout << val->buffer << " " << val->size << " ";
 		}
 	}
 	else
