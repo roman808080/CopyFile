@@ -122,7 +122,7 @@ namespace
 		shared_memory_object::remove("shared_memory");
 	}
 
-	unique_generator<Item*> run_client()
+	unique_generator<Block*> run_client()
 	{
 		// Create a shared memory object.
 		shared_memory_object shm(open_only, "shared_memory", read_write);
