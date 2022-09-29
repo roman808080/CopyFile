@@ -7,6 +7,7 @@
 
 #include <boost/interprocess/shared_memory_object.hpp>
 #include <boost/interprocess/mapped_region.hpp>
+#include "unique_generator.h"
 
 #include "OutputFile.h"
 #include "InputFile.h"
@@ -75,6 +76,15 @@ namespace
 		} while (!isFinished);
 	}
 
+	template <typename T>
+	unique_generator<T> range(T fromInclusive, T toExclusive)
+	{
+		for (T v = fromInclusive; v < toExclusive; ++v)
+		{
+			co_yield v;
+		}
+	}
+
 	void run_server()
 	{
 		// Erase previous shared memory
@@ -115,11 +125,11 @@ namespace
 			data->nstored.post();
 		}
 
-		//Erase shared memory
+		// Erase shared memory
 		shared_memory_object::remove("shared_memory");
 	}
 
-	void run_client()
+	unique_generator<int> run_client()
 	{
 		// Create a shared memory object.
 		shared_memory_object shm(open_only // only create
@@ -143,25 +153,20 @@ namespace
 
 		const int NumMsg = 100;
 
-		int extracted_data[NumMsg];
-
 		// Extract the data
 		for (int i = 0; i < NumMsg; ++i)
 		{
 			data->nstored.wait();
 			data->mutex.wait();
-			extracted_data[i] = data->items[i % shared_memory_buffer::NumItems];
+
+			co_yield data->items[i % shared_memory_buffer::NumItems];
+
 			data->mutex.post();
 			data->nempty.post();
 		}
 
-		//Erase shared memory
+		// Erase shared memory
 		shared_memory_object::remove("shared_memory");
-
-		for (int i = 0; i < NumMsg; ++i)
-		{
-			std::cout << extracted_data[i] << " ";
-		}
 	}
 }
 
@@ -221,7 +226,11 @@ void App::copyFileSharedMemoryMethod()
 {
 	if (isClient)
 	{
-		run_client();
+		std::cout << "Client: ";
+		for(auto val : run_client())
+		{
+			std::cout << val << " ";
+		}
 	}
 	else
 	{
