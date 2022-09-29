@@ -6,11 +6,7 @@
 #include <mutex>
 #include <atomic>
 
-struct Chunk
-{
-	char* startPosition;
-	size_t size;
-};
+#include "Chunk.h"
 
 class Router
 {

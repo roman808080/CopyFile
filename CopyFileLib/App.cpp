@@ -89,23 +89,13 @@ namespace
 	{
 		// Erase previous shared memory
 		shared_memory_object::remove("shared_memory");
-
-		// Create a shared memory object.
-		shared_memory_object shm(create_only // only create
-								 ,
-								 "shared_memory" // name
-								 ,
-								 read_write // read-write mode
-		);
+		shared_memory_object shm(create_only, "shared_memory", read_write);
 
 		// Set size
 		shm.truncate(sizeof(shared_memory_buffer));
 
 		// Map the whole shared memory in this process
-		mapped_region region(shm // What to map
-							 ,
-							 read_write // Map it as read-write
-		);
+		mapped_region region(shm, read_write);
 
 		// Get the address of the mapped region
 		void *addr = region.get_address();
@@ -120,7 +110,9 @@ namespace
 		{
 			data->nempty.wait();
 			data->mutex.wait();
+
 			data->items[i % shared_memory_buffer::NumItems] = i;
+
 			data->mutex.post();
 			data->nstored.post();
 		}
