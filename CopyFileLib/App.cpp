@@ -99,7 +99,8 @@ namespace
 		{
 			data->nempty.wait();
 
-			auto item = &data->items[iteration % shared_memory_buffer::NumItems];
+			iteration = iteration % shared_memory_buffer::NumItems;
+			auto item = &data->items[iteration];
 			inputFile->readBlock(item);
 
 			data->nstored.post();
@@ -131,11 +132,13 @@ namespace
 		shared_memory_buffer *data = static_cast<shared_memory_buffer *>(addr);
 
 		// Extract the data
-		for (int i = 0;; ++i)
+		int iteration = 0;
+		while (true)
 		{
 			data->nstored.wait();
 
-			auto item = &data->items[i % shared_memory_buffer::NumItems];
+			iteration = iteration % shared_memory_buffer::NumItems;
+			auto item = &data->items[iteration];
 			if (item->size == 0)
 			{
 				co_return;
@@ -144,6 +147,7 @@ namespace
 			co_yield item;
 
 			data->nempty.post();
+			++iteration;
 		}
 
 		// Erase shared memory

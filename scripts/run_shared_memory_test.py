@@ -1,7 +1,7 @@
 #!/bin/env python3
 from test_functions import run_shared_memory_test
 
-AMOUNT_OF_TEST_ITERATIONS = 1
+AMOUNT_OF_TEST_ITERATIONS = 5
 
 def main():
     for _ in range(AMOUNT_OF_TEST_ITERATIONS):
