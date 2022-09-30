@@ -98,23 +98,17 @@ namespace
 		while (!inputFile->isFinished())
 		{
 			data->nempty.wait();
-			data->mutex.wait();
 
 			auto item = &data->items[iteration % shared_memory_buffer::NumItems];
 			inputFile->readBlock(item);
 
-			data->mutex.post();
 			data->nstored.post();
 
 			++iteration;
 		}
 
 		data->nempty.wait();
-		data->mutex.wait();
-
 		data->items[iteration % shared_memory_buffer::NumItems].size = 0;
-
-		data->mutex.post();
 		data->nstored.post();
 
 
@@ -140,7 +134,6 @@ namespace
 		for (int i = 0;; ++i)
 		{
 			data->nstored.wait();
-			data->mutex.wait();
 
 			auto item = &data->items[i % shared_memory_buffer::NumItems];
 			if (item->size == 0)
@@ -150,7 +143,6 @@ namespace
 
 			co_yield item;
 
-			data->mutex.post();
 			data->nempty.post();
 		}
 
