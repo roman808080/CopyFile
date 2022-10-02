@@ -90,7 +90,7 @@ def run_default_test():
         print(hash_sha256_source, '-> source ->', temp_file.name)
         print(hash_sha256_destination, '-> destination ->', destination)
 
-        assert hash_sha256_source, hash_sha256_destination
+        assert hash_sha256_source == hash_sha256_destination
         print('The hash is OK\n')
 
 
@@ -135,5 +135,5 @@ def run_shared_memory_test():
         print(hash_sha256_source, '-> source ->', temp_file.name)
         print(hash_sha256_destination, '-> destination ->', destination)
 
-        assert hash_sha256_source, hash_sha256_destination
+        assert hash_sha256_source == hash_sha256_destination
         print('The hash is OK\n')
