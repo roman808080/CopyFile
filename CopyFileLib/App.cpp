@@ -222,7 +222,7 @@ namespace
 		}
 
 		// Erase shared memory
-		shared_memory_object::remove("shared_memory");
+		shared_memory_object::remove(sharedMemoryName.c_str());
 	}
 }
 
