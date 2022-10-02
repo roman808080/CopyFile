@@ -148,11 +148,11 @@ namespace
 		shared_memory_buffer* data;
 	};
 
-	void run_server(std::shared_ptr<InputFile> inputFile)
+	void run_server(const std::string& sharedMemoryName, std::shared_ptr<InputFile> inputFile)
 	{
 		// Erase previous shared memory
-		shared_memory_object::remove("shared_memory");
-		shared_memory_object shm(create_only, "shared_memory", read_write);
+		shared_memory_object::remove(sharedMemoryName.c_str());
+		shared_memory_object shm(create_only, sharedMemoryName.c_str(), read_write);
 
 		// Set size
 		shm.truncate(sizeof(shared_memory_buffer));
@@ -185,13 +185,13 @@ namespace
 		data->nstored.post();
 
 		// Erase shared memory
-		shared_memory_object::remove("shared_memory");
+		shared_memory_object::remove(sharedMemoryName.c_str());
 	}
 
-	unique_generator<Block *> run_client()
+	unique_generator<Block *> run_client(const std::string& sharedMemoryName)
 	{
 		// Create a shared memory object.
-		shared_memory_object shm(open_only, "shared_memory", read_write);
+		shared_memory_object shm(open_only, sharedMemoryName.c_str(), read_write);
 
 		// Map the whole shared memory in this process
 		mapped_region region(shm, read_write);
@@ -283,7 +283,7 @@ void App::copyFileSharedMemoryMethod()
 	if (isClient)
 	{
 		std::shared_ptr<OutputFile> outputFile(std::make_shared<OutputFile>(outputFileName));
-		for (auto block : run_client())
+		for (auto block : run_client(sharedMemoryName))
 		{
 			outputFile->write(block);
 		}
@@ -291,6 +291,6 @@ void App::copyFileSharedMemoryMethod()
 	else
 	{
 		auto inputFile = std::make_shared<InputFile>(inputFileName);
-		run_server(inputFile);
+		run_server(sharedMemoryName, inputFile);
 	}
 }
