@@ -79,29 +79,27 @@ namespace
 	class SharedMemory
 	{
 	public:
-		static std::unique_ptr<SharedMemory> createSharedMemory(const std::string &sharedMemoryName)
+		static SharedMemory createSharedMemory(const std::string &sharedMemoryName)
 		{
 			// Erase previous shared memory
 			shared_memory_object::remove(sharedMemoryName.c_str());
 			shared_memory_object shm(create_only, sharedMemoryName.c_str(), read_write);
 
-			std::unique_ptr<SharedMemory> sharedMemory(std::make_unique<SharedMemory>(sharedMemoryName,
-																					  std::move(shm)));
+			SharedMemory sharedMemory(SharedMemory(sharedMemoryName, std::move(shm)));
 
 
-			sharedMemory->initMemoryBuffer();
+			sharedMemory.initMemoryBuffer();
 			return std::move(sharedMemory);
 		}
 
-		static std::unique_ptr<SharedMemory> attachSharedMemory(const std::string &sharedMemoryName)
+		static SharedMemory attachSharedMemory(const std::string &sharedMemoryName)
 		{
 			// Create a shared memory object.
 			shared_memory_object shm(open_only, sharedMemoryName.c_str(), read_write);
 
-			std::unique_ptr<SharedMemory> sharedMemory(std::make_unique<SharedMemory>(sharedMemoryName,
-																					  std::move(shm)));
+			SharedMemory sharedMemory(SharedMemory(sharedMemoryName, std::move(shm)));
 
-			sharedMemory->castMemoryBuffer();
+			sharedMemory.castMemoryBuffer();
 			return std::move(sharedMemory);
 		}
 
@@ -182,8 +180,8 @@ namespace
 
 	void run_server(const std::string& sharedMemoryName, std::shared_ptr<InputFile> inputFile)
 	{
-		std::unique_ptr<SharedMemory> sharedMemory(std::move(SharedMemory::createSharedMemory(sharedMemoryName)));
-		shared_memory_buffer* data = sharedMemory->get();
+		SharedMemory sharedMemory(SharedMemory::createSharedMemory(sharedMemoryName));
+		shared_memory_buffer* data = sharedMemory.get();
 
 		int iteration = 0;
 		while (!inputFile->isFinished())
@@ -202,15 +200,12 @@ namespace
 		data->nempty.wait();
 		data->items[iteration % shared_memory_buffer::NumItems].size = 0;
 		data->nstored.post();
-
-		// Erase shared memory
-		shared_memory_object::remove(sharedMemoryName.c_str());
 	}
 
 	unique_generator<Block *> run_client(const std::string& sharedMemoryName)
 	{
-		std::unique_ptr<SharedMemory> sharedMemory(std::move(SharedMemory::attachSharedMemory(sharedMemoryName)));
-		shared_memory_buffer* data = sharedMemory->get();
+		SharedMemory sharedMemory(SharedMemory::attachSharedMemory(sharedMemoryName));
+		shared_memory_buffer* data = sharedMemory.get();
 
 		// Extract the data
 		int iteration = 0;
@@ -230,9 +225,6 @@ namespace
 			data->nempty.post();
 			++iteration;
 		}
-
-		// Erase shared memory
-		shared_memory_object::remove(sharedMemoryName.c_str());
 	}
 }
 
