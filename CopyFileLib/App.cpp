@@ -108,8 +108,8 @@ namespace
 		SharedMemory(const std::string &sharedMemoryName, shared_memory_object &&shm)
 		: sharedMemoryName(sharedMemoryName)
 		, shm(std::move(shm)) {
-			shm.truncate(sizeof(shared_memory_buffer));
-			this->region = std::move(mapped_region(shm, read_write));
+			this->shm.truncate(sizeof(shared_memory_buffer));
+			this->region = std::move(mapped_region(this->shm, read_write));
 		}
 
 		~SharedMemory()
@@ -150,21 +150,8 @@ namespace
 
 	void run_server(const std::string& sharedMemoryName, std::shared_ptr<InputFile> inputFile)
 	{
-		// Erase previous shared memory
-		shared_memory_object::remove(sharedMemoryName.c_str());
-		shared_memory_object shm(create_only, sharedMemoryName.c_str(), read_write);
-
-		// Set size
-		shm.truncate(sizeof(shared_memory_buffer));
-
-		// Map the whole shared memory in this process
-		mapped_region region(shm, read_write);
-
-		// Get the address of the mapped region
-		void *addr = region.get_address();
-
-		// Construct the shared structure in memory
-		shared_memory_buffer *data = new (addr) shared_memory_buffer;
+		std::unique_ptr<SharedMemory> sharedMemory(std::move(SharedMemory::createSharedMemory(sharedMemoryName)));
+		shared_memory_buffer* data = sharedMemory->get();
 
 		int iteration = 0;
 		while (!inputFile->isFinished())
@@ -190,17 +177,8 @@ namespace
 
 	unique_generator<Block *> run_client(const std::string& sharedMemoryName)
 	{
-		// Create a shared memory object.
-		shared_memory_object shm(open_only, sharedMemoryName.c_str(), read_write);
-
-		// Map the whole shared memory in this process
-		mapped_region region(shm, read_write);
-
-		// Get the address of the mapped region
-		void *addr = region.get_address();
-
-		// Obtain the shared structure
-		shared_memory_buffer *data = static_cast<shared_memory_buffer *>(addr);
+		std::unique_ptr<SharedMemory> sharedMemory(std::move(SharedMemory::attachSharedMemory(sharedMemoryName)));
+		shared_memory_buffer* data = sharedMemory->get();
 
 		// Extract the data
 		int iteration = 0;
