@@ -103,12 +103,6 @@ namespace
 			return std::move(sharedMemory);
 		}
 
-		SharedMemory(const std::string &sharedMemoryName, shared_memory_object &&shm)
-		: sharedMemoryName(sharedMemoryName)
-		, shm(std::move(shm)) {
-			this->shm.truncate(sizeof(shared_memory_buffer));
-			this->region = std::move(mapped_region(this->shm, read_write));
-		}
 
 		SharedMemory(const SharedMemory&) = delete;
 		SharedMemory& operator=(const SharedMemory&) = delete;
@@ -153,6 +147,13 @@ namespace
 		}
 
 	private:
+		SharedMemory(const std::string &sharedMemoryName, shared_memory_object &&shm)
+		: sharedMemoryName(sharedMemoryName)
+		, shm(std::move(shm)) {
+			this->shm.truncate(sizeof(shared_memory_buffer));
+			this->region = std::move(mapped_region(this->shm, read_write));
+		}
+
 		void initMemoryBuffer()
 		{
 			// Get the address of the mapped region
