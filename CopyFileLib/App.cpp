@@ -183,16 +183,16 @@ namespace
 		shared_memory_buffer* data;
 	};
 
-	void readFromFileToSharedMemory(std::shared_ptr<InputFile> inputFile, shared_memory_buffer* data)
+	void readFromFileToSharedMemory(InputFile& inputFile, shared_memory_buffer* data)
 	{
 		int iteration = 0;
-		while (!inputFile->isFinished())
+		while (!inputFile.isFinished())
 		{
 			data->nempty.wait();
 
 			iteration = iteration % shared_memory_buffer::NumItems;
 			auto item = &data->items[iteration];
-			inputFile->readBlock(item);
+			inputFile.readBlock(item);
 
 			data->nstored.post();
 
@@ -204,7 +204,7 @@ namespace
 		data->nstored.post();
 	}
 
-	void writeFromSharedMemoryToFile(std::shared_ptr<OutputFile> outputFile, shared_memory_buffer* data)
+	void writeFromSharedMemoryToFile(OutputFile& outputFile, shared_memory_buffer* data)
 	{
 		// Extract the data
 		int iteration = 0;
@@ -219,7 +219,7 @@ namespace
 				return;
 			}
 
-			outputFile->write(item);
+			outputFile.write(item);
 
 			data->nempty.post();
 			++iteration;
@@ -295,14 +295,14 @@ void App::copyFileSharedMemoryMethod()
 	if (sharedMemory)
 	{
 		shared_memory_buffer* data = sharedMemory->get();
-		auto inputFile = std::make_shared<InputFile>(inputFileName);
+		InputFile inputFile(inputFileName);
 		readFromFileToSharedMemory(inputFile, data);
 
 		return;
 	}
 
 	std::lock_guard<named_mutex> lock(namedMutex);
-	std::shared_ptr<OutputFile> outputFile(std::make_shared<OutputFile>(outputFileName));
+	OutputFile outputFile(outputFileName);
 
 	sharedMemory = std::move(SharedMemory::attachSharedMemory(sharedMemoryName));
 	shared_memory_buffer* data = sharedMemory->get();
