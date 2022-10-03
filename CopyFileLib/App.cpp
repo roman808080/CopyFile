@@ -4,9 +4,13 @@
 #include <iostream>
 #include <thread>
 #include <chrono>
+#include <mutex>
 
 #include <boost/interprocess/shared_memory_object.hpp>
 #include <boost/interprocess/mapped_region.hpp>
+#include <boost/interprocess/sync/named_mutex.hpp>
+#include <boost/scope_exit.hpp>
+
 #include "unique_generator.h"
 
 #include "OutputFile.h"
@@ -79,30 +83,39 @@ namespace
 	class SharedMemory
 	{
 	public:
-		static SharedMemory createSharedMemory(const std::string &sharedMemoryName)
+
+		static std::unique_ptr<SharedMemory> tryCreateSharedMemory(const std::string &sharedMemoryName)
 		{
-			// Erase previous shared memory
-			shared_memory_object::remove(sharedMemoryName.c_str());
-			shared_memory_object shm(create_only, sharedMemoryName.c_str(), read_write);
+			try
+			{
+				shared_memory_object shm(create_only, sharedMemoryName.c_str(), read_write);
+				std::unique_ptr<SharedMemory> sharedMemory(std::make_unique<SharedMemory>(sharedMemoryName, std::move(shm)));
 
-			SharedMemory sharedMemory(SharedMemory(sharedMemoryName, std::move(shm)));
-
-
-			sharedMemory.initMemoryBuffer();
-			return std::move(sharedMemory);
+				sharedMemory->initMemoryBuffer();
+				return std::move(sharedMemory);
+			}
+			catch(const std::exception& e)
+			{
+				return nullptr;
+			}
 		}
 
-		static SharedMemory attachSharedMemory(const std::string &sharedMemoryName)
+		static std::unique_ptr<SharedMemory> attachSharedMemory(const std::string &sharedMemoryName)
 		{
 			// Create a shared memory object.
 			shared_memory_object shm(open_only, sharedMemoryName.c_str(), read_write);
+			std::unique_ptr<SharedMemory> sharedMemory(std::make_unique<SharedMemory>(sharedMemoryName, std::move(shm)));
 
-			SharedMemory sharedMemory(SharedMemory(sharedMemoryName, std::move(shm)));
-
-			sharedMemory.castMemoryBuffer();
+			sharedMemory->castMemoryBuffer();
 			return std::move(sharedMemory);
 		}
 
+		SharedMemory(const std::string &sharedMemoryName, shared_memory_object &&shm)
+		: sharedMemoryName(sharedMemoryName)
+		, shm(std::move(shm)) {
+			this->shm.truncate(sizeof(shared_memory_buffer));
+			this->region = std::move(mapped_region(this->shm, read_write));
+		}
 
 		SharedMemory(const SharedMemory&) = delete;
 		SharedMemory& operator=(const SharedMemory&) = delete;
@@ -147,13 +160,6 @@ namespace
 		}
 
 	private:
-		SharedMemory(const std::string &sharedMemoryName, shared_memory_object &&shm)
-		: sharedMemoryName(sharedMemoryName)
-		, shm(std::move(shm)) {
-			this->shm.truncate(sizeof(shared_memory_buffer));
-			this->region = std::move(mapped_region(this->shm, read_write));
-		}
-
 		void initMemoryBuffer()
 		{
 			// Get the address of the mapped region
@@ -179,11 +185,8 @@ namespace
 		shared_memory_buffer* data;
 	};
 
-	void run_server(const std::string& sharedMemoryName, std::shared_ptr<InputFile> inputFile)
+	void readFromFileToSharedMemory(std::shared_ptr<InputFile> inputFile, shared_memory_buffer* data)
 	{
-		SharedMemory sharedMemory(SharedMemory::createSharedMemory(sharedMemoryName));
-		shared_memory_buffer* data = sharedMemory.get();
-
 		int iteration = 0;
 		while (!inputFile->isFinished())
 		{
@@ -203,11 +206,8 @@ namespace
 		data->nstored.post();
 	}
 
-	unique_generator<Block *> run_client(const std::string& sharedMemoryName)
+	void writeFromSharedMemoryToFile(std::shared_ptr<OutputFile> outputFile, shared_memory_buffer* data)
 	{
-		SharedMemory sharedMemory(SharedMemory::attachSharedMemory(sharedMemoryName));
-		shared_memory_buffer* data = sharedMemory.get();
-
 		// Extract the data
 		int iteration = 0;
 		while (true)
@@ -218,10 +218,10 @@ namespace
 			auto item = &data->items[iteration];
 			if (item->size == 0)
 			{
-				co_return;
+				return;
 			}
 
-			co_yield item;
+			outputFile->write(item);
 
 			data->nempty.post();
 			++iteration;
@@ -283,17 +283,36 @@ void App::copyFileDefaultMethod()
 
 void App::copyFileSharedMemoryMethod()
 {
-	if (isClient)
+	named_mutex namedMutex{open_or_create, sharedMemoryName.c_str()};
+	BOOST_SCOPE_EXIT(&sharedMemoryName)
 	{
-		std::shared_ptr<OutputFile> outputFile(std::make_shared<OutputFile>(outputFileName));
-		for (auto block : run_client(sharedMemoryName))
-		{
-			outputFile->write(block);
-		}
+		named_mutex::remove(sharedMemoryName.c_str());
+	} BOOST_SCOPE_EXIT_END
+
+	std::unique_ptr<SharedMemory> sharedMemory(nullptr);
+
+	// trying to create a shared memory
+	if (namedMutex.try_lock())
+	{
+		std::lock_guard<named_mutex> lock(namedMutex, std::adopt_lock);
+		sharedMemory = std::move(SharedMemory::tryCreateSharedMemory(sharedMemoryName));
 	}
-	else
+
+	// Check whether the lock and creation was successful
+	if (sharedMemory)
 	{
+		shared_memory_buffer* data = sharedMemory->get();
 		auto inputFile = std::make_shared<InputFile>(inputFileName);
-		run_server(sharedMemoryName, inputFile);
+		readFromFileToSharedMemory(inputFile, data);
+
+		return;
 	}
+
+	std::lock_guard<named_mutex> lock(namedMutex);
+	std::shared_ptr<OutputFile> outputFile(std::make_shared<OutputFile>(outputFileName));
+
+	sharedMemory = std::move(SharedMemory::attachSharedMemory(sharedMemoryName));
+	shared_memory_buffer* data = sharedMemory->get();
+
+	writeFromSharedMemoryToFile(outputFile, data);
 }
