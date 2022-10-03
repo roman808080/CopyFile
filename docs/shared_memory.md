@@ -10,5 +10,16 @@
 * [Semaphores](https://beej.us/guide/bgipc/html/multi/semaphores.html)
 * [Inter process synchronization mechanisms - semaphores](https://www.boost.org/doc/libs/1_38_0/doc/html/interprocess/synchronization_mechanisms.html#interprocess.synchronization_mechanisms.semaphores)
 * [Semaphores anonymous example](https://www.boost.org/doc/libs/1_38_0/doc/html/interprocess/synchronization_mechanisms.html#interprocess.synchronization_mechanisms.semaphores.semaphores_anonymous_example)
+* [Named mutex removal](https://stackoverflow.com/questions/7555253/boost-named-mutex-and-remove-command)
 * []()
-* []()
+
+
+Removing shared memory with python
+------------
+
+~~~python
+from multiprocessing import shared_memory
+shm = shared_memory.SharedMemory('crazy')
+shm.close()
+shm.unlink()
+~~~
