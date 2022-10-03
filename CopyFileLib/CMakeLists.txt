@@ -11,6 +11,7 @@ set(libfoo_SRCS
     OutputFile.cpp
     pch.cpp
     Router.cpp
+    SharedMemory.cpp
 )
 
 # Declare the library
