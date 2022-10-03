@@ -19,7 +19,6 @@ public:
 
 	void setMethod(const std::string& method);
 	void setSharedMemoryName(const std::string& sharedMemoryName);
-	void setIsClient(bool isClient);
 
 private:
 	void copyFileDefaultMethod();

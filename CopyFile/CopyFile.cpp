@@ -17,7 +17,6 @@ int main(int argc, char *argv[])
 
 					("method,m", po::value<std::string>()->default_value("default"), "method (default, shared)")
 					("shared-memory", po::value<std::string>(), "shared memory name")
-					("client", "if specified then program runs as a client, otherwise server")
 
 					("source,s", po::value<std::string>(), "set source file")
 					("destination,d", po::value<std::string>(), "set destination file");
@@ -47,13 +46,6 @@ int main(int argc, char *argv[])
 		const std::string outputFileName = variablesMap["destination"].as<std::string>();
 		app.setOutputFile(outputFileName);
 	}
-
-	bool isClient = false;
-	if (variablesMap.count("client"))
-	{
-		isClient = true;
-	}
-	app.setIsClient(isClient);
 
 	if (variablesMap.count("shared-memory"))
 	{

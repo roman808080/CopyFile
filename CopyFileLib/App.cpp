@@ -265,11 +265,6 @@ void App::setSharedMemoryName(const std::string &sharedMemoryName)
 	this->sharedMemoryName = sharedMemoryName;
 }
 
-void App::setIsClient(bool isClient)
-{
-	this->isClient = isClient;
-}
-
 void App::copyFileDefaultMethod()
 {
 	std::shared_ptr<OutputFile> outputFile(std::make_shared<OutputFile>(outputFileName));
