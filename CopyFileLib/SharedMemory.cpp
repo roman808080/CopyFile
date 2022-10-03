@@ -1,5 +1,7 @@
 #include "SharedMemory.h"
 
+#include "anonymous_semaphore_shared_data.h"
+
 std::unique_ptr<SharedMemory> SharedMemory::tryCreateSharedMemory(const std::string &sharedMemoryName)
 {
     try
@@ -88,4 +90,47 @@ void SharedMemory::castMemoryBuffer()
 
     // Obtain the shared structure
     data = static_cast<shared_memory_buffer *>(addr);
+}
+
+void readFromFileToSharedMemory(InputFile& inputFile, shared_memory_buffer* data)
+{
+    int iteration = 0;
+    while (!inputFile.isFinished())
+    {
+        data->nempty.wait();
+
+        iteration = iteration % shared_memory_buffer::NumItems;
+        auto item = &data->items[iteration];
+        inputFile.readBlock(item);
+
+        data->nstored.post();
+
+        ++iteration;
+    }
+
+    data->nempty.wait();
+    data->items[iteration % shared_memory_buffer::NumItems].size = 0;
+    data->nstored.post();
+}
+
+void writeFromSharedMemoryToFile(OutputFile& outputFile, shared_memory_buffer* data)
+{
+    // Extract the data
+    int iteration = 0;
+    while (true)
+    {
+        data->nstored.wait();
+
+        iteration = iteration % shared_memory_buffer::NumItems;
+        auto item = &data->items[iteration];
+        if (item->size == 0)
+        {
+            return;
+        }
+
+        outputFile.write(item);
+
+        data->nempty.post();
+        ++iteration;
+    }
 }

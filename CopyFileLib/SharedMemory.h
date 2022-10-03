@@ -6,9 +6,12 @@
 #include <boost/interprocess/shared_memory_object.hpp>
 #include <boost/interprocess/mapped_region.hpp>
 
-#include "anonymous_semaphore_shared_data.h"
+#include "OutputFile.h"
+#include "InputFile.h"
 
 using namespace boost::interprocess;
+
+struct shared_memory_buffer;
 
 class SharedMemory
 {
@@ -38,3 +41,6 @@ private:
     mapped_region region;
     shared_memory_buffer* data;
 };
+
+void readFromFileToSharedMemory(InputFile& inputFile, shared_memory_buffer* data);
+void writeFromSharedMemoryToFile(OutputFile& outputFile, shared_memory_buffer* data);
