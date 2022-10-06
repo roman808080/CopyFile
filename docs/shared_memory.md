@@ -21,7 +21,14 @@ Removing shared memory with python
 
 ~~~python
 from multiprocessing import shared_memory
+
+# for shared memory
 shm = shared_memory.SharedMemory('crazy')
+shm.close()
+shm.unlink()
+
+# for named semaphore (implemented by using shared memory)
+shm = shared_memory.SharedMemory('sem.crazy')
 shm.close()
 shm.unlink()
 ~~~
