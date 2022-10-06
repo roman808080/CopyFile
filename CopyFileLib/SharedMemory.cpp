@@ -8,7 +8,7 @@ std::unique_ptr<SharedMemory> SharedMemory::tryCreateSharedMemory(const std::str
 {
     try
     {
-        shared_memory_object shm(create_only, sharedMemoryName.c_str(), read_write);
+        shared_memory_object shm(open_or_create, sharedMemoryName.c_str(), read_write);
         std::unique_ptr<SharedMemory> sharedMemory(std::make_unique<SharedMemory>(sharedMemoryName, std::move(shm)));
 
         sharedMemory->initMemoryBuffer();
