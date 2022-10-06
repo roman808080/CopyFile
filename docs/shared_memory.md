@@ -13,6 +13,7 @@
 * [Named mutex removal](https://stackoverflow.com/questions/7555253/boost-named-mutex-and-remove-command)
 * [Boost interprocess mutexes and checking for abandonment](https://stackoverflow.com/questions/15772768/boost-interprocess-mutexes-and-checking-for-abandonment)
 * [A description of what robust futexes are¶](https://www.kernel.org/doc/html/next/locking/robust-futexes.html)
+* [Semaphores are Surprisingly Versatile](https://preshing.com/20150316/semaphores-are-surprisingly-versatile/)
 * []()
 
 
