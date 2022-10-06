@@ -15,6 +15,7 @@
 
 #include "Router.h"
 #include "SharedMemory.h"
+#include "Constants.h"
 
 using namespace boost::interprocess;
 
@@ -152,7 +153,7 @@ void App::copyFileSharedMemoryMethod()
 		return;
 	}
 
-	boost::posix_time::ptime untilTime = boost::posix_time::second_clock::local_time() + boost::posix_time::seconds(3);
+	boost::posix_time::ptime untilTime = boost::posix_time::second_clock::local_time() + boost::posix_time::seconds(Constants::Timeout);
 	if (!namedMutex.timed_lock(untilTime))
 	{
 		throw std::runtime_error("Failed to acquire lock as a client");
