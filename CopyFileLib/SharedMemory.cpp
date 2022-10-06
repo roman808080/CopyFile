@@ -1,5 +1,7 @@
 #include "SharedMemory.h"
 
+#include <boost/date_time/posix_time/posix_time.hpp>
+
 #include "anonymous_semaphore_shared_data.h"
 
 std::unique_ptr<SharedMemory> SharedMemory::tryCreateSharedMemory(const std::string &sharedMemoryName)
@@ -97,7 +99,11 @@ void readFromFileToSharedMemory(InputFile& inputFile, shared_memory_buffer* data
     int iteration = 0;
     while (!inputFile.isFinished())
     {
-        data->nempty.wait();
+        boost::posix_time::ptime untilTime = boost::posix_time::second_clock::local_time() + boost::posix_time::seconds(Constants::Timeout);
+        if (!data->nempty.timed_wait(untilTime))
+        {
+            throw std::runtime_error("Timeout for empty elements experied.");
+        }
 
         iteration = iteration % shared_memory_buffer::NumItems;
         auto item = &data->items[iteration];
@@ -119,7 +125,11 @@ void writeFromSharedMemoryToFile(OutputFile& outputFile, shared_memory_buffer* d
     int iteration = 0;
     while (true)
     {
-        data->nstored.wait();
+        boost::posix_time::ptime untilTime = boost::posix_time::second_clock::local_time() + boost::posix_time::seconds(Constants::Timeout);
+        if (!data->nstored.timed_wait(untilTime))
+        {
+            throw std::runtime_error("Timeout for stored elements experied.");
+        }
 
         iteration = iteration % shared_memory_buffer::NumItems;
         auto item = &data->items[iteration];
