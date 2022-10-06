@@ -132,7 +132,7 @@ void App::copyFileSharedMemoryMethod()
 	file_lock inputFileLock(inputFileName.c_str());
 	std::unique_ptr<SharedMemory> sharedMemory(nullptr);
 
-	// trying to create a shared memory
+	// try to lock as a source process.
 	if (inputFileLock.try_lock())
 	{
 		std::lock_guard<file_lock> lock(inputFileLock, std::adopt_lock);
@@ -145,13 +145,13 @@ void App::copyFileSharedMemoryMethod()
 		return;
 	}
 
+	// try to lock as a destination process.
 	OutputFile outputFile(outputFileName);
 	file_lock outputFileLock(outputFileName.c_str());
 
-	boost::posix_time::ptime untilTime = boost::posix_time::second_clock::local_time() + boost::posix_time::seconds(Constants::Timeout);
-	if (!outputFileLock.timed_lock(untilTime))
+	if (!outputFileLock.try_lock())
 	{
-		throw std::runtime_error("Failed to acquire lock as a client");
+		throw std::runtime_error("Failed to acquire lock as a client. Possibly, there is another client.");
 	}
 
 	std::lock_guard<file_lock> lock(outputFileLock, std::adopt_lock);
