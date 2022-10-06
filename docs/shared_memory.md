@@ -11,6 +11,8 @@
 * [Inter process synchronization mechanisms - semaphores](https://www.boost.org/doc/libs/1_38_0/doc/html/interprocess/synchronization_mechanisms.html#interprocess.synchronization_mechanisms.semaphores)
 * [Semaphores anonymous example](https://www.boost.org/doc/libs/1_38_0/doc/html/interprocess/synchronization_mechanisms.html#interprocess.synchronization_mechanisms.semaphores.semaphores_anonymous_example)
 * [Named mutex removal](https://stackoverflow.com/questions/7555253/boost-named-mutex-and-remove-command)
+* [Boost interprocess mutexes and checking for abandonment](https://stackoverflow.com/questions/15772768/boost-interprocess-mutexes-and-checking-for-abandonment)
+* [A description of what robust futexes are¶](https://www.kernel.org/doc/html/next/locking/robust-futexes.html)
 * []()
 
 

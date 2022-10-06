@@ -8,6 +8,7 @@
 
 #include <boost/interprocess/sync/named_mutex.hpp>
 #include <boost/scope_exit.hpp>
+#include <boost/date_time/posix_time/posix_time.hpp>
 
 #include "OutputFile.h"
 #include "InputFile.h"
@@ -151,7 +152,13 @@ void App::copyFileSharedMemoryMethod()
 		return;
 	}
 
-	std::lock_guard<named_mutex> lock(namedMutex);
+	boost::posix_time::ptime untilTime = boost::posix_time::second_clock::local_time() + boost::posix_time::seconds(3);
+	if (!namedMutex.timed_lock(untilTime))
+	{
+		throw std::runtime_error("Failed to acquire lock as a client");
+	}
+
+	std::lock_guard<named_mutex> lock(namedMutex, std::adopt_lock);
 	OutputFile outputFile(outputFileName);
 
 	sharedMemory = std::move(SharedMemory::attachSharedMemory(sharedMemoryName));
