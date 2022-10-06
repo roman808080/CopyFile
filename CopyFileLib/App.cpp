@@ -9,6 +9,7 @@
 #include <boost/interprocess/sync/named_mutex.hpp>
 #include <boost/scope_exit.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
+#include <boost/interprocess/sync/file_lock.hpp>
 
 #include "OutputFile.h"
 #include "InputFile.h"
@@ -128,24 +129,15 @@ void App::copyFileDefaultMethod()
 
 void App::copyFileSharedMemoryMethod()
 {
-	named_mutex namedMutex{open_or_create, sharedMemoryName.c_str()};
-	BOOST_SCOPE_EXIT(&sharedMemoryName)
-	{
-		named_mutex::remove(sharedMemoryName.c_str());
-	} BOOST_SCOPE_EXIT_END
-
+	file_lock inputFileLock(inputFileName.c_str());
 	std::unique_ptr<SharedMemory> sharedMemory(nullptr);
 
 	// trying to create a shared memory
-	if (namedMutex.try_lock())
+	if (inputFileLock.try_lock())
 	{
-		std::lock_guard<named_mutex> lock(namedMutex, std::adopt_lock);
+		std::lock_guard<file_lock> lock(inputFileLock, std::adopt_lock);
 		sharedMemory = std::move(SharedMemory::tryCreateSharedMemory(sharedMemoryName));
-	}
 
-	// Check whether the lock and creation was successful
-	if (sharedMemory)
-	{
 		shared_memory_buffer* data = sharedMemory->get();
 		InputFile inputFile(inputFileName);
 		readFromFileToSharedMemory(inputFile, data);
@@ -153,14 +145,16 @@ void App::copyFileSharedMemoryMethod()
 		return;
 	}
 
+	OutputFile outputFile(outputFileName);
+	file_lock outputFileLock(outputFileName.c_str());
+
 	boost::posix_time::ptime untilTime = boost::posix_time::second_clock::local_time() + boost::posix_time::seconds(Constants::Timeout);
-	if (!namedMutex.timed_lock(untilTime))
+	if (!outputFileLock.timed_lock(untilTime))
 	{
 		throw std::runtime_error("Failed to acquire lock as a client");
 	}
 
-	std::lock_guard<named_mutex> lock(namedMutex, std::adopt_lock);
-	OutputFile outputFile(outputFileName);
+	std::lock_guard<file_lock> lock(outputFileLock, std::adopt_lock);
 
 	sharedMemory = std::move(SharedMemory::attachSharedMemory(sharedMemoryName));
 	shared_memory_buffer* data = sharedMemory->get();
