@@ -10,6 +10,7 @@ add_executable(CopyFile
 target_link_libraries(CopyFile
     CopyFileLib
     Boost::program_options
+    cryptopp-static
 )
 
 install(TARGETS CopyFile DESTINATION bin)

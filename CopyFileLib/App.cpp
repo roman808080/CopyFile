@@ -11,6 +11,9 @@
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/interprocess/sync/file_lock.hpp>
 
+#include <cryptopp/cryptlib.h>
+#include <cryptopp/blake2.h>
+
 #include "OutputFile.h"
 #include "InputFile.h"
 
