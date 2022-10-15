@@ -13,6 +13,8 @@
 
 #include <cryptopp/cryptlib.h>
 #include <cryptopp/blake2.h>
+#include <cryptopp/files.h>
+#include <cryptopp/hex.h>
 
 #include "OutputFile.h"
 #include "InputFile.h"
@@ -130,10 +132,29 @@ void App::copyFileDefaultMethod()
 	std::jthread writeThread(writeToFile, outputFile, router);
 }
 
+namespace {
+	std::string getHash(const std::string& combinedPath)
+	{
+		CryptoPP::BLAKE2b hash;
+		hash.Update(reinterpret_cast<const CryptoPP::byte*>(combinedPath.data()), combinedPath.size());
+
+		std::string digest;
+		digest.resize(hash.DigestSize());
+		hash.Final(reinterpret_cast<CryptoPP::byte*>(&digest[0]));
+
+		std::string stringHash;
+		CryptoPP::StringSource(digest, true, new CryptoPP::HexEncoder(new CryptoPP::StringSink(stringHash)));
+
+		return stringHash;
+	}
+}
+
 void App::copyFileSharedMemoryMethod()
 {
 	file_lock inputFileLock(inputFileName.c_str());
 	std::unique_ptr<SharedMemory> sharedMemory(nullptr);
+
+	std::cout << "Hash: " << getHash("Yoda said, Do or do not. There is not try.") << std::endl;
 
 	// try to lock as a source process.
 	if (inputFileLock.try_lock())
