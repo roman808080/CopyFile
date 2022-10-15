@@ -86,7 +86,7 @@ namespace
 }
 
 App::App(const size_t blockSize)
-	: inputFileName(""), outputFileName(""), method("default"), blockSize(blockSize), isClient(false)
+	: inputFileName(""), outputFileName(""), method("default"), blockSize(blockSize)
 {
 }
 
@@ -114,11 +114,6 @@ void App::setOutputFile(const std::string &outputFileName)
 void App::setMethod(const std::string &method)
 {
 	this->method = method;
-}
-
-void App::setSharedMemoryName(const std::string &sharedMemoryName)
-{
-	this->sharedMemoryName = sharedMemoryName;
 }
 
 void App::copyFileDefaultMethod()
@@ -154,7 +149,7 @@ void App::copyFileSharedMemoryMethod()
 	file_lock inputFileLock(inputFileName.c_str());
 	std::unique_ptr<SharedMemory> sharedMemory(nullptr);
 
-	std::cout << "Hash: " << getHash("Yoda said, Do or do not. There is not try.") << std::endl;
+	const std::string sharedMemoryName(getHash(inputFileName + outputFileName));
 
 	// try to lock as a source process.
 	if (inputFileLock.try_lock())

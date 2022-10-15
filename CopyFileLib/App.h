@@ -18,7 +18,6 @@ public:
 	void setOutputFile(const std::string& outputFileName);
 
 	void setMethod(const std::string& method);
-	void setSharedMemoryName(const std::string& sharedMemoryName);
 
 private:
 	void copyFileDefaultMethod();
@@ -29,9 +28,7 @@ private:
 	std::string inputFileName;
 	std::string outputFileName;
 	std::string method;
-	std::string sharedMemoryName;
 
 	const size_t blockSize;
-	bool isClient;
 };
 

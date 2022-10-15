@@ -16,7 +16,6 @@ int main(int argc, char *argv[])
 					("help,h", "produce help message")
 
 					("method,m", po::value<std::string>()->default_value("default"), "method (default, shared)")
-					("shared-memory", po::value<std::string>(), "shared memory name")
 
 					("source,s", po::value<std::string>(), "set source file")
 					("destination,d", po::value<std::string>(), "set destination file");
@@ -45,12 +44,6 @@ int main(int argc, char *argv[])
 	{
 		const std::string outputFileName = variablesMap["destination"].as<std::string>();
 		app.setOutputFile(outputFileName);
-	}
-
-	if (variablesMap.count("shared-memory"))
-	{
-		const std::string sharedMemoryName = variablesMap["shared-memory"].as<std::string>();
-		app.setSharedMemoryName(sharedMemoryName);
 	}
 
 	const std::string method = variablesMap["method"].as<std::string>();

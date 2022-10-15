@@ -94,10 +94,9 @@ def run_default_test():
         print('The hash is OK\n')
 
 
-def run_server_shared_memory(source, destination, shared_memory_name):
+def run_server_shared_memory(source, destination):
     copy_file_path = get_path_to_copy_file_utility()
-    output = subprocess.run([copy_file_path, '-s', source, '-d', destination, '-m', 'shared',
-                             '--shared-memory', shared_memory_name], capture_output=True)
+    output = subprocess.run([copy_file_path, '-s', source, '-d', destination, '-m', 'shared'], capture_output=True)
 
     print('Server args:', output.args)
     print('Server stdout:', output.stdout)
@@ -108,16 +107,14 @@ def run_server_shared_memory(source, destination, shared_memory_name):
 def run_shared_memory_test():
     with tempfile.NamedTemporaryFile() as temp_file, tempfile.TemporaryDirectory() as temp_directory:
         generate_file_with_file_object(temp_file)
-        shared_memory_name = 'crazy'
 
         copy_file_path = get_path_to_copy_file_utility()
         destination = os.path.join(temp_directory, 'destination.txt')
 
-        thread = threading.Thread(target=run_server_shared_memory, args=(temp_file.name, destination, shared_memory_name))
+        thread = threading.Thread(target=run_server_shared_memory, args=(temp_file.name, destination,))
         thread.start()
 
-        output = subprocess.run([copy_file_path, '-s', temp_file.name, '-d', destination, '-m', 'shared',
-                                 '--shared-memory', shared_memory_name], capture_output=True)
+        output = subprocess.run([copy_file_path, '-s', temp_file.name, '-d', destination, '-m', 'shared'], capture_output=True)
 
         print('Client args:', output.args)
         print('Client stdout:', output.stdout)
