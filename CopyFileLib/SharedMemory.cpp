@@ -24,13 +24,6 @@ SharedMemory SharedMemory::createSharedMemory(const std::string &sharedMemoryNam
     return std::move(sharedMemory);
 }
 
-SharedMemory::SharedMemory(const std::string &sharedMemoryName, shared_memory_object &&shm)
-: sharedMemoryName(sharedMemoryName)
-, shm(std::move(shm)) {
-    this->shm.truncate(sizeof(shared_memory_buffer));
-    this->region = std::move(mapped_region(this->shm, read_write));
-}
-
 SharedMemory::SharedMemory(SharedMemory&& other)
 : sharedMemoryName(std::move(other.sharedMemoryName))
 , shm(std::move(other.shm))
@@ -68,6 +61,13 @@ SharedMemory::~SharedMemory()
 shared_memory_buffer* SharedMemory::get()
 {
     return data;
+}
+
+SharedMemory::SharedMemory(const std::string &sharedMemoryName, shared_memory_object &&shm)
+: sharedMemoryName(sharedMemoryName)
+, shm(std::move(shm)) {
+    this->shm.truncate(sizeof(shared_memory_buffer));
+    this->region = std::move(mapped_region(this->shm, read_write));
 }
 
 void SharedMemory::initMemoryBuffer()

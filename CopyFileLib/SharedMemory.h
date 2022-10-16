@@ -20,8 +20,6 @@ public:
     static SharedMemory createSharedMemory(const std::string &sharedMemoryName);
     static SharedMemory attachSharedMemory(const std::string &sharedMemoryName);
 
-    SharedMemory(const std::string &sharedMemoryName, shared_memory_object &&shm);
-
     SharedMemory(const SharedMemory&) = delete;
     SharedMemory& operator=(const SharedMemory&) = delete;
 
@@ -32,6 +30,8 @@ public:
     shared_memory_buffer* get();
 
 private:
+    SharedMemory(const std::string &sharedMemoryName, shared_memory_object &&shm);
+
     void initMemoryBuffer();
     void castMemoryBuffer();
 
