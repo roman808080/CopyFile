@@ -1,7 +1,6 @@
-set(libfoo_SRCS
+set(copylib_SRCS
     App.h
     Constants.h
-    framework.h
     InputFile.h
     OutputFile.h
     pch.h
@@ -16,7 +15,7 @@ set(libfoo_SRCS
 
 # Declare the library
 add_library(CopyFileLib STATIC
-    ${libfoo_SRCS}
+    ${copylib_SRCS}
 )
 
 # Specify here the include directories exported
