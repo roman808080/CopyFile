@@ -4,29 +4,23 @@
 
 #include "SharedMemoryBuffer.h"
 
-std::unique_ptr<SharedMemory> SharedMemory::tryCreateSharedMemory(const std::string &sharedMemoryName)
-{
-    try
-    {
-        shared_memory_object shm(open_or_create, sharedMemoryName.c_str(), read_write);
-        std::unique_ptr<SharedMemory> sharedMemory(std::make_unique<SharedMemory>(sharedMemoryName, std::move(shm)));
-
-        sharedMemory->initMemoryBuffer();
-        return std::move(sharedMemory);
-    }
-    catch(const std::exception& e)
-    {
-        return nullptr;
-    }
-}
-
- std::unique_ptr<SharedMemory> SharedMemory::attachSharedMemory(const std::string &sharedMemoryName)
+SharedMemory SharedMemory::createSharedMemory(const std::string &sharedMemoryName)
 {
     // Create a shared memory object.
-    shared_memory_object shm(open_only, sharedMemoryName.c_str(), read_write);
-    std::unique_ptr<SharedMemory> sharedMemory(std::make_unique<SharedMemory>(sharedMemoryName, std::move(shm)));
+    shared_memory_object shm(open_or_create, sharedMemoryName.c_str(), read_write);
+    SharedMemory sharedMemory(sharedMemoryName, std::move(shm));
 
-    sharedMemory->castMemoryBuffer();
+    sharedMemory.initMemoryBuffer();
+    return std::move(sharedMemory);
+}
+
+ SharedMemory SharedMemory::attachSharedMemory(const std::string &sharedMemoryName)
+{
+    // Attached to a shared memory.
+    shared_memory_object shm(open_only, sharedMemoryName.c_str(), read_write);
+    SharedMemory sharedMemory(sharedMemoryName, std::move(shm));
+
+    sharedMemory.castMemoryBuffer();
     return std::move(sharedMemory);
 }
 

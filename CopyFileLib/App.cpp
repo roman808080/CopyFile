@@ -145,17 +145,16 @@ void App::copyFileDefaultMethod()
 void App::copyFileSharedMemoryMethod()
 {
 	file_lock inputFileLock(inputFileName.c_str());
-	std::unique_ptr<SharedMemory> sharedMemory(nullptr);
-
 	const std::string sharedMemoryName(getHash(inputFileName + outputFileName));
 
 	// try to lock as a source process.
 	if (inputFileLock.try_lock())
 	{
 		std::lock_guard<file_lock> lock(inputFileLock, std::adopt_lock);
-		sharedMemory = std::move(SharedMemory::tryCreateSharedMemory(sharedMemoryName));
 
-		shared_memory_buffer* data = sharedMemory->get();
+		SharedMemory sharedMemory(std::move(SharedMemory::createSharedMemory(sharedMemoryName)));
+		shared_memory_buffer* data = sharedMemory.get();
+
 		InputFile inputFile(inputFileName);
 		readFromFileToSharedMemory(inputFile, data);
 
@@ -173,8 +172,8 @@ void App::copyFileSharedMemoryMethod()
 
 	std::lock_guard<file_lock> lock(outputFileLock, std::adopt_lock);
 
-	sharedMemory = std::move(SharedMemory::attachSharedMemory(sharedMemoryName));
-	shared_memory_buffer* data = sharedMemory->get();
+	SharedMemory sharedMemory(std::move(SharedMemory::attachSharedMemory(sharedMemoryName)));
+	shared_memory_buffer* data = sharedMemory.get();
 
 	writeFromSharedMemoryToFile(outputFile, data);
 }

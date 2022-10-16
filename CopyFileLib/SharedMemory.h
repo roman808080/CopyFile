@@ -17,8 +17,8 @@ class SharedMemory
 {
 public:
 
-    static std::unique_ptr<SharedMemory> tryCreateSharedMemory(const std::string &sharedMemoryName);
-    static std::unique_ptr<SharedMemory> attachSharedMemory(const std::string &sharedMemoryName);
+    static SharedMemory createSharedMemory(const std::string &sharedMemoryName);
+    static SharedMemory attachSharedMemory(const std::string &sharedMemoryName);
 
     SharedMemory(const std::string &sharedMemoryName, shared_memory_object &&shm);
 
