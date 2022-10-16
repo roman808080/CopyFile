@@ -12,11 +12,11 @@ struct SharedMemoryBuffer
    enum { NumItems = 10 };
 
    SharedMemoryBuffer()
-      :  nempty(NumItems), nstored(0)
+      :  empty(NumItems), stored(0)
    {}
 
    //Semaphores to protect and synchronize access
-   boost::interprocess::interprocess_semaphore nempty, nstored;
+   boost::interprocess::interprocess_semaphore empty, stored;
 
    //Items to fill
    Block items[NumItems];

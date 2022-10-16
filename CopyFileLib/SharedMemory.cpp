@@ -94,7 +94,7 @@ void readFromFileToSharedMemory(InputFile& inputFile, SharedMemoryBuffer* data)
     while (!inputFile.isFinished())
     {
         boost::posix_time::ptime untilTime = boost::posix_time::second_clock::local_time() + boost::posix_time::seconds(Constants::Timeout);
-        if (!data->nempty.timed_wait(untilTime))
+        if (!data->empty.timed_wait(untilTime))
         {
             throw std::runtime_error("Timeout for empty elements experied.");
         }
@@ -103,14 +103,14 @@ void readFromFileToSharedMemory(InputFile& inputFile, SharedMemoryBuffer* data)
         auto item = &data->items[iteration];
         inputFile.readBlock(item);
 
-        data->nstored.post();
+        data->stored.post();
 
         ++iteration;
     }
 
-    data->nempty.wait();
+    data->empty.wait();
     data->items[iteration % SharedMemoryBuffer::NumItems].size = 0;
-    data->nstored.post();
+    data->stored.post();
 }
 
 void writeFromSharedMemoryToFile(OutputFile& outputFile, SharedMemoryBuffer* data)
@@ -120,7 +120,7 @@ void writeFromSharedMemoryToFile(OutputFile& outputFile, SharedMemoryBuffer* dat
     while (true)
     {
         boost::posix_time::ptime untilTime = boost::posix_time::second_clock::local_time() + boost::posix_time::seconds(Constants::Timeout);
-        if (!data->nstored.timed_wait(untilTime))
+        if (!data->stored.timed_wait(untilTime))
         {
             throw std::runtime_error("Timeout for stored elements experied.");
         }
@@ -134,7 +134,7 @@ void writeFromSharedMemoryToFile(OutputFile& outputFile, SharedMemoryBuffer* dat
 
         outputFile.write(item);
 
-        data->nempty.post();
+        data->empty.post();
         ++iteration;
     }
 }
