@@ -7,11 +7,11 @@ struct Block
    size_t size;
 };
 
-struct shared_memory_buffer
+struct SharedMemoryBuffer
 {
    enum { NumItems = 10 };
 
-   shared_memory_buffer()
+   SharedMemoryBuffer()
       :  nempty(NumItems), nstored(0)
    {}
 

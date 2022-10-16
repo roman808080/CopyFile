@@ -11,7 +11,7 @@
 
 using namespace boost::interprocess;
 
-struct shared_memory_buffer;
+struct SharedMemoryBuffer;
 
 class SharedMemory
 {
@@ -27,7 +27,7 @@ public:
     SharedMemory& operator=(SharedMemory&& other);
     ~SharedMemory();
 
-    shared_memory_buffer* get();
+    SharedMemoryBuffer* get();
 
 private:
     SharedMemory(const std::string &sharedMemoryName, shared_memory_object &&shm);
@@ -39,8 +39,8 @@ private:
     std::string sharedMemoryName;
     shared_memory_object shm;
     mapped_region region;
-    shared_memory_buffer* data;
+    SharedMemoryBuffer* data;
 };
 
-void readFromFileToSharedMemory(InputFile& inputFile, shared_memory_buffer* data);
-void writeFromSharedMemoryToFile(OutputFile& outputFile, shared_memory_buffer* data);
+void readFromFileToSharedMemory(InputFile& inputFile, SharedMemoryBuffer* data);
+void writeFromSharedMemoryToFile(OutputFile& outputFile, SharedMemoryBuffer* data);

@@ -58,7 +58,7 @@ SharedMemory::~SharedMemory()
     }
 }
 
-shared_memory_buffer* SharedMemory::get()
+SharedMemoryBuffer* SharedMemory::get()
 {
     return data;
 }
@@ -66,7 +66,7 @@ shared_memory_buffer* SharedMemory::get()
 SharedMemory::SharedMemory(const std::string &sharedMemoryName, shared_memory_object &&shm)
 : sharedMemoryName(sharedMemoryName)
 , shm(std::move(shm)) {
-    this->shm.truncate(sizeof(shared_memory_buffer));
+    this->shm.truncate(sizeof(SharedMemoryBuffer));
     this->region = std::move(mapped_region(this->shm, read_write));
 }
 
@@ -76,7 +76,7 @@ void SharedMemory::initMemoryBuffer()
     void* addr = region.get_address();
 
     // Construct the shared structure in memory
-    data = new (addr) shared_memory_buffer; 
+    data = new (addr) SharedMemoryBuffer; 
 }
 
 void SharedMemory::castMemoryBuffer()
@@ -85,10 +85,10 @@ void SharedMemory::castMemoryBuffer()
     void* addr = region.get_address();
 
     // Obtain the shared structure
-    data = static_cast<shared_memory_buffer *>(addr);
+    data = static_cast<SharedMemoryBuffer *>(addr);
 }
 
-void readFromFileToSharedMemory(InputFile& inputFile, shared_memory_buffer* data)
+void readFromFileToSharedMemory(InputFile& inputFile, SharedMemoryBuffer* data)
 {
     int iteration = 0;
     while (!inputFile.isFinished())
@@ -99,7 +99,7 @@ void readFromFileToSharedMemory(InputFile& inputFile, shared_memory_buffer* data
             throw std::runtime_error("Timeout for empty elements experied.");
         }
 
-        iteration = iteration % shared_memory_buffer::NumItems;
+        iteration = iteration % SharedMemoryBuffer::NumItems;
         auto item = &data->items[iteration];
         inputFile.readBlock(item);
 
@@ -109,11 +109,11 @@ void readFromFileToSharedMemory(InputFile& inputFile, shared_memory_buffer* data
     }
 
     data->nempty.wait();
-    data->items[iteration % shared_memory_buffer::NumItems].size = 0;
+    data->items[iteration % SharedMemoryBuffer::NumItems].size = 0;
     data->nstored.post();
 }
 
-void writeFromSharedMemoryToFile(OutputFile& outputFile, shared_memory_buffer* data)
+void writeFromSharedMemoryToFile(OutputFile& outputFile, SharedMemoryBuffer* data)
 {
     // Extract the data
     int iteration = 0;
@@ -125,7 +125,7 @@ void writeFromSharedMemoryToFile(OutputFile& outputFile, shared_memory_buffer* d
             throw std::runtime_error("Timeout for stored elements experied.");
         }
 
-        iteration = iteration % shared_memory_buffer::NumItems;
+        iteration = iteration % SharedMemoryBuffer::NumItems;
         auto item = &data->items[iteration];
         if (item->size == 0)
         {

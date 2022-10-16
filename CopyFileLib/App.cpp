@@ -153,7 +153,7 @@ void App::copyFileSharedMemoryMethod()
 		std::lock_guard<file_lock> lock(inputFileLock, std::adopt_lock);
 
 		SharedMemory sharedMemory(std::move(SharedMemory::createSharedMemory(sharedMemoryName)));
-		shared_memory_buffer* data = sharedMemory.get();
+		SharedMemoryBuffer* data = sharedMemory.get();
 
 		InputFile inputFile(inputFileName);
 		readFromFileToSharedMemory(inputFile, data);
@@ -173,7 +173,7 @@ void App::copyFileSharedMemoryMethod()
 	std::lock_guard<file_lock> lock(outputFileLock, std::adopt_lock);
 
 	SharedMemory sharedMemory(std::move(SharedMemory::attachSharedMemory(sharedMemoryName)));
-	shared_memory_buffer* data = sharedMemory.get();
+	SharedMemoryBuffer* data = sharedMemory.get();
 
 	writeFromSharedMemoryToFile(outputFile, data);
 }
