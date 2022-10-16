@@ -83,6 +83,21 @@ namespace
 		} while (!isFinished);
 	}
 
+	std::string getHash(const std::string& combinedPath)
+	{
+		CryptoPP::BLAKE2b hash;
+		hash.Update(reinterpret_cast<const CryptoPP::byte*>(combinedPath.data()), combinedPath.size());
+
+		std::string digest;
+		digest.resize(hash.DigestSize());
+		hash.Final(reinterpret_cast<CryptoPP::byte*>(&digest[0]));
+
+		std::string stringHash;
+		CryptoPP::StringSource(digest, true, new CryptoPP::HexEncoder(new CryptoPP::StringSink(stringHash)));
+
+		return stringHash;
+	}
+
 }
 
 App::App(const size_t blockSize)
@@ -125,23 +140,6 @@ void App::copyFileDefaultMethod()
 
 	std::jthread readThread(readFromFile, inputFile, router);
 	std::jthread writeThread(writeToFile, outputFile, router);
-}
-
-namespace {
-	std::string getHash(const std::string& combinedPath)
-	{
-		CryptoPP::BLAKE2b hash;
-		hash.Update(reinterpret_cast<const CryptoPP::byte*>(combinedPath.data()), combinedPath.size());
-
-		std::string digest;
-		digest.resize(hash.DigestSize());
-		hash.Final(reinterpret_cast<CryptoPP::byte*>(&digest[0]));
-
-		std::string stringHash;
-		CryptoPP::StringSource(digest, true, new CryptoPP::HexEncoder(new CryptoPP::StringSink(stringHash)));
-
-		return stringHash;
-	}
 }
 
 void App::copyFileSharedMemoryMethod()
