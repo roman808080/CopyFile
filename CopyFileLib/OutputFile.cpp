@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "OutputFile.h"
 
-#include "anonymous_semaphore_shared_data.h"
+#include "SharedMemoryBuffer.h"
 
 OutputFile::OutputFile(const std::string& fileName)
 	: outputFile(fileName, std::ofstream::binary)

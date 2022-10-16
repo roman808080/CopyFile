@@ -2,7 +2,7 @@
 
 #include <boost/date_time/posix_time/posix_time.hpp>
 
-#include "anonymous_semaphore_shared_data.h"
+#include "SharedMemoryBuffer.h"
 
 std::unique_ptr<SharedMemory> SharedMemory::tryCreateSharedMemory(const std::string &sharedMemoryName)
 {

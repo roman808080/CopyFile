@@ -4,7 +4,7 @@
 #include <filesystem>
 #include <cmath>
 
-#include "anonymous_semaphore_shared_data.h"
+#include "SharedMemoryBuffer.h"
 
 namespace
 {
