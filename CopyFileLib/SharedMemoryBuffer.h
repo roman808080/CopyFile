@@ -9,7 +9,7 @@ struct Block
 
 struct SharedMemoryBuffer
 {
-   enum { NumItems = 10 };
+   enum { NumItems = 2 };
 
    SharedMemoryBuffer()
       :  empty(NumItems), stored(0)
