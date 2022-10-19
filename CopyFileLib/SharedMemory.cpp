@@ -91,31 +91,35 @@ void SharedMemory::castMemoryBuffer()
 
 namespace
 {
+    void tryWaitEmpty(SharedMemoryBuffer* data)
+    {
+        while(!data->empty.try_wait())
+        {
+            if (data->isFailed())
+            {
+                throw std::runtime_error("Failed to copy file.");
+            }
+
+            std::this_thread::yield();
+        }
+    }
+
     void tryReadToSharedMemory(InputFile& inputFile, SharedMemoryBuffer* data)
     {
         int iteration = 0;
         while (!inputFile.isFinished())
         {
-            while(!data->empty.try_wait())
-            {
-                if (data->isFailed())
-                {
-                    throw std::runtime_error("Failed to copy file.");
-                }
-
-                std::this_thread::yield();
-            }
+            tryWaitEmpty(data);
 
             iteration = iteration % SharedMemoryBuffer::NumItems;
             auto item = &data->items[iteration];
             inputFile.readBlock(item);
 
             data->stored.post();
-
             ++iteration;
         }
 
-        data->empty.wait();
+        tryWaitEmpty(data);
         data->items[iteration % SharedMemoryBuffer::NumItems].size = 0;
         data->stored.post();
     }
@@ -136,21 +140,26 @@ void readFromFileToSharedMemory(InputFile& inputFile, SharedMemoryBuffer* data)
 
 namespace
 {
+    void tryWaitStored(SharedMemoryBuffer* data)
+    {
+        while(!data->stored.try_wait())
+        {
+            if (data->isFailed())
+            {
+                throw std::runtime_error("Failed to copy file.");
+            }
+
+            std::this_thread::yield();
+        }
+    }
+
     void tryReadFromSharedMemory(OutputFile& outputFile, SharedMemoryBuffer* data)
     {
         // Extract the data
         int iteration = 0;
         while (true)
         {
-            while(!data->stored.try_wait())
-            {
-                if (data->isFailed())
-                {
-                    throw std::runtime_error("Failed to copy file.");
-                }
-
-                std::this_thread::yield();
-            }
+            tryWaitStored(data);
 
             iteration = iteration % SharedMemoryBuffer::NumItems;
             auto item = &data->items[iteration];
