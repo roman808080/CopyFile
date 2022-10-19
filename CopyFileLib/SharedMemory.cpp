@@ -1,6 +1,7 @@
 #include "SharedMemory.h"
 
 #include <boost/date_time/posix_time/posix_time.hpp>
+#include <thread>
 
 #include "SharedMemoryBuffer.h"
 
@@ -95,10 +96,14 @@ namespace
         int iteration = 0;
         while (!inputFile.isFinished())
         {
-            boost::posix_time::ptime untilTime = boost::posix_time::second_clock::local_time() + boost::posix_time::seconds(Constants::Timeout);
-            if (!data->empty.timed_wait(untilTime))
+            while(!data->empty.try_wait())
             {
-                throw std::runtime_error("Timeout for empty elements experied.");
+                if (data->isFailed())
+                {
+                    throw std::runtime_error("Failed to copy file.");
+                }
+
+                std::this_thread::yield();
             }
 
             iteration = iteration % SharedMemoryBuffer::NumItems;
@@ -137,10 +142,14 @@ namespace
         int iteration = 0;
         while (true)
         {
-            boost::posix_time::ptime untilTime = boost::posix_time::second_clock::local_time() + boost::posix_time::seconds(Constants::Timeout);
-            if (!data->stored.timed_wait(untilTime))
+            while(!data->stored.try_wait())
             {
-                throw std::runtime_error("Timeout for stored elements experied.");
+                if (data->isFailed())
+                {
+                    throw std::runtime_error("Failed to copy file.");
+                }
+
+                std::this_thread::yield();
             }
 
             iteration = iteration % SharedMemoryBuffer::NumItems;
