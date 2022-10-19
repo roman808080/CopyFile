@@ -88,53 +88,85 @@ void SharedMemory::castMemoryBuffer()
     data = static_cast<SharedMemoryBuffer *>(addr);
 }
 
-void readFromFileToSharedMemory(InputFile& inputFile, SharedMemoryBuffer* data)
+namespace
 {
-    int iteration = 0;
-    while (!inputFile.isFinished())
+    void tryReadToSharedMemory(InputFile& inputFile, SharedMemoryBuffer* data)
     {
-        boost::posix_time::ptime untilTime = boost::posix_time::second_clock::local_time() + boost::posix_time::seconds(Constants::Timeout);
-        if (!data->empty.timed_wait(untilTime))
+        int iteration = 0;
+        while (!inputFile.isFinished())
         {
-            throw std::runtime_error("Timeout for empty elements experied.");
+            boost::posix_time::ptime untilTime = boost::posix_time::second_clock::local_time() + boost::posix_time::seconds(Constants::Timeout);
+            if (!data->empty.timed_wait(untilTime))
+            {
+                throw std::runtime_error("Timeout for empty elements experied.");
+            }
+
+            iteration = iteration % SharedMemoryBuffer::NumItems;
+            auto item = &data->items[iteration];
+            inputFile.readBlock(item);
+
+            data->stored.post();
+
+            ++iteration;
         }
 
-        iteration = iteration % SharedMemoryBuffer::NumItems;
-        auto item = &data->items[iteration];
-        inputFile.readBlock(item);
-
+        data->empty.wait();
+        data->items[iteration % SharedMemoryBuffer::NumItems].size = 0;
         data->stored.post();
-
-        ++iteration;
     }
+}
 
-    data->empty.wait();
-    data->items[iteration % SharedMemoryBuffer::NumItems].size = 0;
-    data->stored.post();
+void readFromFileToSharedMemory(InputFile& inputFile, SharedMemoryBuffer* data)
+{
+    try
+    {
+        tryReadToSharedMemory(inputFile, data);
+    }
+    catch(const std::exception& e)
+    {
+        data->setFailed();
+        throw;
+    }
+}
+
+namespace
+{
+    void tryReadFromSharedMemory(OutputFile& outputFile, SharedMemoryBuffer* data)
+    {
+        // Extract the data
+        int iteration = 0;
+        while (true)
+        {
+            boost::posix_time::ptime untilTime = boost::posix_time::second_clock::local_time() + boost::posix_time::seconds(Constants::Timeout);
+            if (!data->stored.timed_wait(untilTime))
+            {
+                throw std::runtime_error("Timeout for stored elements experied.");
+            }
+
+            iteration = iteration % SharedMemoryBuffer::NumItems;
+            auto item = &data->items[iteration];
+            if (item->size == 0)
+            {
+                return;
+            }
+
+            outputFile.write(item);
+
+            data->empty.post();
+            ++iteration;
+        }
+    }
 }
 
 void writeFromSharedMemoryToFile(OutputFile& outputFile, SharedMemoryBuffer* data)
 {
-    // Extract the data
-    int iteration = 0;
-    while (true)
+    try
     {
-        boost::posix_time::ptime untilTime = boost::posix_time::second_clock::local_time() + boost::posix_time::seconds(Constants::Timeout);
-        if (!data->stored.timed_wait(untilTime))
-        {
-            throw std::runtime_error("Timeout for stored elements experied.");
-        }
-
-        iteration = iteration % SharedMemoryBuffer::NumItems;
-        auto item = &data->items[iteration];
-        if (item->size == 0)
-        {
-            return;
-        }
-
-        outputFile.write(item);
-
-        data->empty.post();
-        ++iteration;
+        tryReadFromSharedMemory(outputFile, data);
+    }
+    catch(const std::exception& e)
+    {
+        data->setFailed();
+        throw;
     }
 }
