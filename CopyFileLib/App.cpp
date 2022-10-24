@@ -177,18 +177,29 @@ namespace
 		setFileTransferAsFailed(gHash);
 		exit(signo);
 	}
+
+	void registerSignalHandler()
+	{
+		if (signal(SIGINT, sigIntHandler) == SIG_ERR)
+		{
+			std::cout << "Failed to register handler for SIGINT" << std::endl;
+		}
+
+		if (signal(SIGHUP, sigIntHandler) == SIG_ERR)
+		{
+			std::cout << "Failed to register handler for SIGHUP" << std::endl;
+		}
+	}
 }
 
 	void App::copyFileSharedMemoryMethod()
 	{
 		file_lock inputFileLock(inputFileName.c_str());
 		const std::string sharedMemoryName(getHash(inputFileName + outputFileName));
-		std::copy(std::begin(sharedMemoryName), std::end(sharedMemoryName), gHash);
 
-		if (signal(SIGINT, sigIntHandler) == SIG_ERR)
-		{
-			std::cout << "Failed to register handler." << std::endl;
-		}
+		// Copy sharedMemory to a global variable and register events on which to react
+		std::copy(std::begin(sharedMemoryName), std::end(sharedMemoryName), gHash);
+		registerSignalHandler();
 
 		// try to lock as a source process.
 		if (inputFileLock.try_lock())
