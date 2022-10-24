@@ -6,6 +6,11 @@
 #include <chrono>
 #include <mutex>
 
+// linux 
+#include<signal.h>
+#include<unistd.h>
+#include<stdlib.h>
+
 #include <boost/interprocess/sync/named_mutex.hpp>
 #include <boost/scope_exit.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
@@ -21,9 +26,12 @@
 
 #include "Router.h"
 #include "SharedMemory.h"
+#include "SharedMemoryBuffer.h"
 #include "Constants.h"
 
 using namespace boost::interprocess;
+
+static char gHash[128];
 
 namespace
 {
@@ -142,21 +150,56 @@ void App::copyFileDefaultMethod()
 	std::jthread writeThread(writeToFile, outputFile, router);
 }
 
-void App::copyFileSharedMemoryMethod()
+namespace
 {
-	file_lock inputFileLock(inputFileName.c_str());
-	const std::string sharedMemoryName(getHash(inputFileName + outputFileName));
-
-	// try to lock as a source process.
-	if (inputFileLock.try_lock())
+	bool setFileTransferAsFailed(const char* sharedMemoryName)
 	{
-		std::lock_guard<file_lock> lock(inputFileLock, std::adopt_lock);
+		try
+		{
+			SharedMemory sharedMemory(std::move(SharedMemory::attachSharedMemory(sharedMemoryName)));
+			SharedMemoryBuffer* data = sharedMemory.get();
+			data->setFailed();
 
-		SharedMemory sharedMemory(std::move(SharedMemory::createSharedMemory(sharedMemoryName)));
-		SharedMemoryBuffer* data = sharedMemory.get();
+			std::cout << "Successfully marked as failed." << std::endl;
 
-		InputFile inputFile(inputFileName);
-		readFromFileToSharedMemory(inputFile, data);
+			shared_memory_object::remove(sharedMemoryName);
+			return true;
+		}
+		catch(const std::exception& e)
+		{
+			std::cerr << e.what() << '\n';
+			return false;
+		}
+	}
+
+	void sigIntHandler(int signo)
+	{
+		setFileTransferAsFailed(gHash);
+		exit(signo);
+	}
+}
+
+	void App::copyFileSharedMemoryMethod()
+	{
+		file_lock inputFileLock(inputFileName.c_str());
+		const std::string sharedMemoryName(getHash(inputFileName + outputFileName));
+		std::copy(std::begin(sharedMemoryName), std::end(sharedMemoryName), gHash);
+
+		if (signal(SIGINT, sigIntHandler) == SIG_ERR)
+		{
+			std::cout << "Failed to register handler." << std::endl;
+		}
+
+		// try to lock as a source process.
+		if (inputFileLock.try_lock())
+		{
+			std::lock_guard<file_lock> lock(inputFileLock, std::adopt_lock);
+
+			SharedMemory sharedMemory(std::move(SharedMemory::createSharedMemory(sharedMemoryName)));
+			SharedMemoryBuffer* data = sharedMemory.get();
+
+			InputFile inputFile(inputFileName);
+			readFromFileToSharedMemory(inputFile, data);
 
 		return;
 	}
