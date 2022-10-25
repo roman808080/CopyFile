@@ -104,7 +104,7 @@ namespace
         }
     }
 
-    void tryReadToSharedMemory(InputFile& inputFile, SharedMemoryBuffer* data)
+    void tryWriteToSharedMemory(InputFile& inputFile, SharedMemoryBuffer* data)
     {
         int iteration = 0;
         while (!inputFile.isFinished())
@@ -129,7 +129,7 @@ void readFromFileToSharedMemory(InputFile& inputFile, SharedMemoryBuffer* data)
 {
     try
     {
-        tryReadToSharedMemory(inputFile, data);
+        tryWriteToSharedMemory(inputFile, data);
     }
     catch(const std::exception& e)
     {
