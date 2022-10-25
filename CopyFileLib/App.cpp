@@ -6,10 +6,10 @@
 #include <chrono>
 #include <mutex>
 
-// linux 
-#include<signal.h>
-#include<unistd.h>
-#include<stdlib.h>
+// linux
+#include <signal.h>
+#include <unistd.h>
+#include <stdlib.h>
 
 #include <boost/interprocess/sync/named_mutex.hpp>
 #include <boost/scope_exit.hpp>
@@ -91,14 +91,14 @@ namespace
 		} while (!isFinished);
 	}
 
-	std::string getHash(const std::string& combinedPath)
+	std::string getHash(const std::string &combinedPath)
 	{
 		CryptoPP::BLAKE2b hash;
-		hash.Update(reinterpret_cast<const CryptoPP::byte*>(combinedPath.data()), combinedPath.size());
+		hash.Update(reinterpret_cast<const CryptoPP::byte *>(combinedPath.data()), combinedPath.size());
 
 		std::string digest;
 		digest.resize(hash.DigestSize());
-		hash.Final(reinterpret_cast<CryptoPP::byte*>(&digest[0]));
+		hash.Final(reinterpret_cast<CryptoPP::byte *>(&digest[0]));
 
 		std::string stringHash;
 		CryptoPP::StringSource(digest, true, new CryptoPP::HexEncoder(new CryptoPP::StringSink(stringHash)));
@@ -152,12 +152,12 @@ void App::copyFileDefaultMethod()
 
 namespace
 {
-	bool setFileTransferAsFailed(const char* sharedMemoryName)
+	bool setFileTransferAsFailed(const char *sharedMemoryName)
 	{
 		try
 		{
 			SharedMemory sharedMemory(std::move(SharedMemory::attachSharedMemory(sharedMemoryName)));
-			SharedMemoryBuffer* data = sharedMemory.get();
+			SharedMemoryBuffer *data = sharedMemory.get();
 			data->setFailed();
 
 			std::cout << "Successfully marked as failed." << std::endl;
@@ -165,7 +165,7 @@ namespace
 			shared_memory_object::remove(sharedMemoryName);
 			return true;
 		}
-		catch(const std::exception& e)
+		catch (const std::exception &e)
 		{
 			std::cerr << e.what() << '\n';
 			return false;
@@ -192,7 +192,9 @@ namespace
 	}
 }
 
-	void App::copyFileSharedMemoryMethod()
+void App::copyFileSharedMemoryMethod()
+{
+	try
 	{
 		file_lock inputFileLock(inputFileName.c_str());
 		const std::string sharedMemoryName(getHash(inputFileName + outputFileName));
@@ -207,27 +209,34 @@ namespace
 			std::lock_guard<file_lock> lock(inputFileLock, std::adopt_lock);
 
 			SharedMemory sharedMemory(std::move(SharedMemory::createSharedMemory(sharedMemoryName)));
-			SharedMemoryBuffer* data = sharedMemory.get();
+			SharedMemoryBuffer *data = sharedMemory.get();
 
 			InputFile inputFile(inputFileName);
 			readFromFileToSharedMemory(inputFile, data);
 
-		return;
+			return;
+		}
+
+		// try to lock as a destination process.
+		OutputFile outputFile(outputFileName);
+		file_lock outputFileLock(outputFileName.c_str());
+
+		if (!outputFileLock.try_lock())
+		{
+			throw std::runtime_error("Failed to acquire lock as a client. Possibly, there is another client.");
+		}
+
+		std::lock_guard<file_lock> lock(outputFileLock, std::adopt_lock);
+
+		SharedMemory sharedMemory(std::move(SharedMemory::attachSharedMemory(sharedMemoryName)));
+		SharedMemoryBuffer *data = sharedMemory.get();
+
+		writeFromSharedMemoryToFile(outputFile, data);
 	}
-
-	// try to lock as a destination process.
-	OutputFile outputFile(outputFileName);
-	file_lock outputFileLock(outputFileName.c_str());
-
-	if (!outputFileLock.try_lock())
+	catch (const std::exception &e)
 	{
-		throw std::runtime_error("Failed to acquire lock as a client. Possibly, there is another client.");
+		// This catch block is here to make sure that all files are closed and that shared memory marked as ready for removal
+		std::cerr << e.what() << '\n';
+		throw;
 	}
-
-	std::lock_guard<file_lock> lock(outputFileLock, std::adopt_lock);
-
-	SharedMemory sharedMemory(std::move(SharedMemory::attachSharedMemory(sharedMemoryName)));
-	SharedMemoryBuffer* data = sharedMemory.get();
-
-	writeFromSharedMemoryToFile(outputFile, data);
 }
