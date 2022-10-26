@@ -6,6 +6,9 @@
 #include <chrono>
 #include <mutex>
 
+#include <exception> // std::set_terminate
+#include <cstdlib>	 // std::abort
+
 // linux
 #include <signal.h>
 #include <unistd.h>
@@ -172,6 +175,12 @@ namespace
 		}
 	}
 
+	void removeResourcesUponTermination()
+	{
+		setFileTransferAsFailed(gHash);
+		abort(); // forces abnormal termination
+	}
+
 	void sigIntHandler(int signo)
 	{
 		setFileTransferAsFailed(gHash);
@@ -202,6 +211,9 @@ void App::copyFileSharedMemoryMethod()
 		// Copy sharedMemory to a global variable and register events on which to react
 		std::copy(std::begin(sharedMemoryName), std::end(sharedMemoryName), gHash);
 		registerSignalHandler();
+
+		// register terminate function
+		std::set_terminate(removeResourcesUponTermination);
 
 		// try to lock as a source process.
 		if (inputFileLock.try_lock())
