@@ -3,7 +3,7 @@
 #include <iostream>
 #include <boost/program_options.hpp>
 
-#include "App.h"
+#include "NetworkApp.h"
 #include "Constants.h"
 
 using namespace boost::program_options;
@@ -15,7 +15,7 @@ int main(int argc, char *argv[])
 	desc.add_options()
 					("help,h", "produce help message")
 
-					("method,m", po::value<std::string>()->default_value("default"), "method (default, shared)")
+					("server", po::value<std::string>()->implicit_value(""), "specifies whether the program is a client or server. If not specified then client.")
 
 					("source,s", po::value<std::string>(), "set source file")
 					("destination,d", po::value<std::string>(), "set destination file");
@@ -32,7 +32,7 @@ int main(int argc, char *argv[])
 		return 0;
 	}
 
-	App app;
+	NetworkApp app;
 
 	if (variablesMap.count("source"))
 	{
@@ -46,8 +46,12 @@ int main(int argc, char *argv[])
 		app.setOutputFile(outputFileName);
 	}
 
-	const std::string method = variablesMap["method"].as<std::string>();
-	app.setMethod(method);
+	bool isServer = false;
+	if (variablesMap.count("server"))
+	{
+		isServer = true;
+	}
+	app.setIsServer(isServer);
 
 	app.run();
 

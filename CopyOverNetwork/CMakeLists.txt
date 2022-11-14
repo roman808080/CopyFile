@@ -1,5 +1,6 @@
 set(Main_SRCS
     CopyFileOverNetwork.cpp
+    NetworkApp.cpp
 )
 
 add_executable(CopyFileOverNetwork
