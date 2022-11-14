@@ -1,4 +1,6 @@
 #include "NetworkApp.h"
+#include "Server.h"
+#include "Client.h"
 
 NetworkApp::NetworkApp(const size_t blockSize)
     : blockSize(blockSize),
@@ -8,20 +10,28 @@ NetworkApp::NetworkApp(const size_t blockSize)
 
 void NetworkApp::run()
 {
-    // 
+    if (isServer)
+    {
+        Server server {"0.0.0.0", "5555"};
+        server.run();
+        return;
+    }
+
+    Client client {"0.0.0.0", "5555"};
+    client.run();
 }
 
 void NetworkApp::setInputFile(const std::string &inputFileName)
 {
-    // 
+    this->inputFileName = inputFileName;
 }
 
 void NetworkApp::setOutputFile(const std::string &outputFileName)
 {
-    // 
+    this->outputFileName = outputFileName;
 }
 
 void NetworkApp::setIsServer(bool isServer)
 {
-    // 
+    this->isServer = isServer;
 }
