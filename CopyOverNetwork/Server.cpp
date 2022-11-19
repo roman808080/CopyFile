@@ -39,27 +39,36 @@ namespace
     {
     public:
         Protocol()
-        {}
+        {
+        }
 
-        void onReceivePackage(std::size_t packageSize, const std::array<char, 1024>& package)
-        {}
+        void onReceivePackage(std::size_t packageSize, const std::array<char, 1024> &package)
+        {
+        }
 
     private:
-        // 
-
+        //
     };
-    
+
     awaitable<void> handle_client(tcp::socket client)
     {
         std::array<char, 1024> data{0};
-        std::size_t next_block_size = 0;
+        Protocol protocol;
 
-        co_await boost::asio::async_read(client, buffer(data, sizeof(next_block_size)), use_awaitable);
-        memcpy(&next_block_size, &data, sizeof(next_block_size));
-
-        if (next_block_size > data.size())
+        while (true)
         {
-            throw std::runtime_error("Next block size is more then 1024 bytes.");
+            std::size_t next_block_size = 0;
+
+            co_await boost::asio::async_read(client, buffer(data, sizeof(next_block_size)), use_awaitable);
+            memcpy(&next_block_size, &data, sizeof(next_block_size));
+
+            if (next_block_size > data.size())
+            {
+                throw std::runtime_error("Next block size is more then 1024 bytes.");
+            }
+
+            co_await boost::asio::async_read(client, buffer(data, next_block_size), use_awaitable);
+            protocol.onReceivePackage(next_block_size, data);
         }
     }
 
