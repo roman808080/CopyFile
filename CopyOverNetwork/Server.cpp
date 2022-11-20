@@ -74,7 +74,9 @@ namespace
 
                     std::size_t typeOfRequest = 1;
                     std::size_t response = 2;
+
                     std::size_t totalSize = sizeof(typeOfRequest) + sizeof(response);
+                    outMessage.block_size = totalSize;
 
                     memcpy(startOutPosition, &typeOfRequest, sizeof(typeOfRequest));
                     startOutPosition += sizeof(typeOfRequest);
@@ -153,8 +155,7 @@ void Server::run()
 
     auto listen_endpoint =
         *tcp::resolver(ctx).resolve(
-            "0.0.0.0",
-            "5555",
+            host, port,
             tcp::resolver::passive);
 
     tcp::acceptor acceptor(ctx, listen_endpoint);
