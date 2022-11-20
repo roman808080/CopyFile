@@ -1,5 +1,6 @@
 #include "Server.h"
 
+#include <iostream>
 #include <boost/asio.hpp>
 #include <boost/asio/read.hpp>
 
@@ -19,12 +20,12 @@ using boost::asio::ip::tcp;
 ////////////////////////////////////////////////
 // Protocol
 ////////////////////////////////////////////////
-// 0 | int |        -> ping (int == 1)
-// 1 | str |        -> client name
-// 2 | int | str |  -> file name. Int == file_name_size, str == file_name
-// 3 | int |        -> permissions
-// 4 | int |        -> options. 001 -> allows rewriting for a given client.
-// 5 | int | str |  -> file block. First parameter the size of the block, the second char[]
+// 1 | int |        -> ping (int == 1)
+// 2 | str |        -> client name
+// 3 | int | str |  -> file name. Int == file_name_size, str == file_name
+// 4 | int |        -> permissions
+// 5 | int |        -> options. 001 -> allows rewriting for a given client.
+// 6 | int | str |  -> file block. First parameter the size of the block, the second char[]
 ////////////////////////////////////////////////
 
 ////////////////////////////////////////////////
@@ -48,8 +49,44 @@ namespace
         {
         }
 
-        void onReceivePackage(const Message &inMessage, Message &outMessage)
+        void onReceivePackage(Message &inMessage, Message &outMessage)
         {
+            auto startPosition = &inMessage.data;
+
+            std::size_t decision{0};
+            memcpy(startPosition, &decision, sizeof(decision));
+            startPosition += sizeof(decision);
+
+            // TODO: Add enum for decision
+            // 1 -> ping
+            if (decision == 1)
+            {
+                std::size_t request_or_response{0};
+                memcpy(startPosition, &request_or_response, sizeof(request_or_response));
+                startPosition += sizeof(request_or_response);
+
+                // 1 means it is a request
+                if (request_or_response == 1)
+                {
+                    std::cout << "Received ping request." << std::endl;
+
+                    auto startOutPosition = &outMessage.data;
+
+                    std::size_t typeOfRequest = 1;
+                    std::size_t response = 2;
+                    std::size_t totalSize = sizeof(typeOfRequest) + sizeof(response);
+
+                    memcpy(startOutPosition, &typeOfRequest, sizeof(typeOfRequest));
+                    startOutPosition += sizeof(typeOfRequest);
+
+                    memcpy(startOutPosition, &response, sizeof(response));
+                    startOutPosition += sizeof(response);
+                }
+                else if (request_or_response == 2)
+                {
+                    std::cout << "Received ping response." << std::endl;
+                }
+            }
         }
 
     private:
