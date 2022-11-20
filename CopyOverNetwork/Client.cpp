@@ -26,7 +26,7 @@ namespace
         co_await server.async_connect(target, use_awaitable);
 
         Message outMessage{0};
-        auto startOutPosition = &outMessage.data;
+        char* startOutPosition = outMessage.data.data();
 
         std::size_t typeOfRequest = 1;
         std::size_t request = 1;

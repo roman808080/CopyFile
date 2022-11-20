@@ -51,10 +51,10 @@ namespace
 
         void onReceivePackage(Message &inMessage, Message &outMessage)
         {
-            auto startPosition = &inMessage.data;
+            char* startPosition = inMessage.data.data();
 
             std::size_t decision{0};
-            memcpy(startPosition, &decision, sizeof(decision));
+            memcpy(&decision, startPosition, sizeof(decision));
             startPosition += sizeof(decision);
 
             // TODO: Add enum for decision
@@ -62,7 +62,7 @@ namespace
             if (decision == 1)
             {
                 std::size_t request_or_response{0};
-                memcpy(startPosition, &request_or_response, sizeof(request_or_response));
+                memcpy(&request_or_response, startPosition, sizeof(request_or_response));
                 startPosition += sizeof(request_or_response);
 
                 // 1 means it is a request
@@ -70,7 +70,7 @@ namespace
                 {
                     std::cout << "Received ping request." << std::endl;
 
-                    auto startOutPosition = &outMessage.data;
+                    char* startOutPosition = outMessage.data.data();
 
                     std::size_t typeOfRequest = 1;
                     std::size_t response = 2;
