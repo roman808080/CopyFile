@@ -37,10 +37,10 @@ namespace
 {
     struct Message
     {
-        std::array<char, 1024> data {0};
-        std::size_t block_size {0};
+        std::array<char, 1024> data{0};
+        std::size_t block_size{0};
     };
-    
+
     class Protocol
     {
     public:
@@ -48,7 +48,7 @@ namespace
         {
         }
 
-        void onReceivePackage(const Message& inMessage, Message& outMessage)
+        void onReceivePackage(const Message &inMessage, Message &outMessage)
         {
         }
 
@@ -58,9 +58,7 @@ namespace
 
     awaitable<void> handle_client(tcp::socket client)
     {
-        Message inMessage {0};
-        Message outMessage {0};
-
+        Message inMessage{0};
         Protocol protocol;
 
         while (true)
@@ -74,7 +72,23 @@ namespace
             }
 
             co_await boost::asio::async_read(client, buffer(inMessage.data, inMessage.block_size), use_awaitable);
+
+            Message outMessage{0};
             protocol.onReceivePackage(inMessage, outMessage);
+
+            if (outMessage.block_size > 0)
+            {
+                if (outMessage.block_size > outMessage.data.size())
+                {
+                    throw std::runtime_error("Block size is more then 1024 bytes.");
+                }
+
+                std::array<char, sizeof(std::size_t)> sizeArray{0};
+                memcpy(&sizeArray, &outMessage.block_size, sizeof(outMessage.block_size));
+
+                co_await async_write(client, buffer(sizeArray, sizeof(outMessage.block_size)), use_awaitable);
+                co_await async_write(client, buffer(outMessage.data, outMessage.block_size), use_awaitable);
+            }
         }
     }
 
