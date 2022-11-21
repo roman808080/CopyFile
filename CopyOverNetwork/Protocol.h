@@ -17,5 +17,8 @@ public:
     void onReceivePackage(Message &inMessage, Message &outMessage);
 
 private:
+    void handlePing(char *startPosition, Message &outMessage);
+
+private:
     //
 };
