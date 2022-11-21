@@ -3,17 +3,38 @@
 #include <iostream>
 #include <memory.h>
 
+////////////////////////////////////////////////
+// Protocol
+////////////////////////////////////////////////
+// 1 | int |        -> ping (int == 1)
+// 2 | str |        -> client name
+// 3 | int | str | int | -> file name. file_name_size -> file_name -> permissions -> size -> options.
+//                              * permissions -- e.g. 777 or 600
+//                              * options -- e.g. 001 -> allows rewriting for a given client.
+// 4 | int | str | -> file block. First parameter the size of the block, the second char[]
+// 5 | int | str | -> exception. Size of the error message and the message.
+////////////////////////////////////////////////
+
+namespace
+{
+    enum class MessageType : std::size_t
+    {
+        Ping = 1,
+        ClientName = 2,
+        FileName = 3,
+        FileBlock = 4,
+    };
+}
+
 void Protocol::onReceivePackage(Message &inMessage, Message &outMessage)
 {
     char *startPosition = inMessage.data.data();
 
-    std::size_t decision{0};
-    memcpy(&decision, startPosition, sizeof(decision));
-    startPosition += sizeof(decision);
+    std::size_t messageType{0};
+    memcpy(&messageType, startPosition, sizeof(messageType));
+    startPosition += sizeof(messageType);
 
-    // TODO: Add enum for decision
-    // 1 -> ping
-    if (decision == 1)
+    if (static_cast<MessageType>(messageType) == MessageType::Ping)
     {
         std::size_t request_or_response{0};
         memcpy(&request_or_response, startPosition, sizeof(request_or_response));

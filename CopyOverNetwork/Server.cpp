@@ -18,23 +18,6 @@ using boost::asio::ip::tcp;
 // | size | char[] | -> the Client class has only shallow understanding about our protocol
 ////////////////////////////////////////////////
 
-////////////////////////////////////////////////
-// Protocol
-////////////////////////////////////////////////
-// 1 | int |        -> ping (int == 1)
-// 2 | str |        -> client name
-// 3 | int | str |  -> file name. Int == file_name_size, str == file_name
-// 4 | int |        -> permissions
-// 5 | int |        -> options. 001 -> allows rewriting for a given client.
-// 6 | int | str |  -> file block. First parameter the size of the block, the second char[]
-////////////////////////////////////////////////
-
-////////////////////////////////////////////////
-// Handler
-// private:
-// buffer
-////////////////////////////////////////////////
-
 namespace
 {
     awaitable<void> handle_client(tcp::socket client)
