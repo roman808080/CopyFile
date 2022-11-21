@@ -57,26 +57,35 @@ void Protocol::handlePing(char *startPosition, Message &outMessage)
     memcpy(&pingType, startPosition, sizeof(pingType));
     startPosition += sizeof(pingType);
 
-    if (static_cast<PingType>(pingType) == PingType::Request)
+    switch (static_cast<PingType>(pingType))
     {
-        std::cout << "Received ping request." << std::endl;
-
-        char *startOutPosition = outMessage.data.data();
-
-        std::size_t typeOfRequest = 1;
-        std::size_t response = 2;
-
-        std::size_t totalSize = sizeof(typeOfRequest) + sizeof(response);
-        outMessage.block_size = totalSize;
-
-        memcpy(startOutPosition, &typeOfRequest, sizeof(typeOfRequest));
-        startOutPosition += sizeof(typeOfRequest);
-
-        memcpy(startOutPosition, &response, sizeof(response));
-        startOutPosition += sizeof(response);
-    }
-    else if (static_cast<PingType>(pingType) == PingType::Response)
-    {
+    case PingType::Request:
+        handlePingRequest(startPosition, outMessage);
+        break;
+    case PingType::Response:
         std::cout << "Received ping response." << std::endl;
+        break;
+
+    default:
+        std::runtime_error("Unsupported Ping Type");
     }
+}
+
+void Protocol::handlePingRequest(char *startPosition, Message &outMessage)
+{
+    std::cout << "Received ping request." << std::endl;
+
+    char *startOutPosition = outMessage.data.data();
+
+    std::size_t typeOfRequest = 1;
+    std::size_t response = 2;
+
+    std::size_t totalSize = sizeof(typeOfRequest) + sizeof(response);
+    outMessage.block_size = totalSize;
+
+    memcpy(startOutPosition, &typeOfRequest, sizeof(typeOfRequest));
+    startOutPosition += sizeof(typeOfRequest);
+
+    memcpy(startOutPosition, &response, sizeof(response));
+    startOutPosition += sizeof(response);
 }

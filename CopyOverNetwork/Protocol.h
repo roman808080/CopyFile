@@ -18,6 +18,7 @@ public:
 
 private:
     void handlePing(char *startPosition, Message &outMessage);
+    void handlePingRequest(char *startPosition, Message &outMessage);
 
 private:
     //
