@@ -3,6 +3,7 @@ set(Main_SRCS
     NetworkApp.cpp
     Client.cpp
     Server.cpp
+    Protocol.cpp
 )
 
 add_executable(CopyFileOverNetwork
