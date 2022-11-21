@@ -40,16 +40,15 @@ void Protocol::onReceivePackage(Message &inMessage, Message &outMessage)
     memcpy(&messageType, startPosition, sizeof(messageType));
     startPosition += sizeof(messageType);
 
-    if (static_cast<MessageType>(messageType) == MessageType::Ping)
-        switch (static_cast<MessageType>(messageType))
-        {
-        case MessageType::Ping:
-            handlePing(startPosition, outMessage);
-            break;
+    switch (static_cast<MessageType>(messageType))
+    {
+    case MessageType::Ping:
+        handlePing(startPosition, outMessage);
+        break;
 
-        default:
-            std::runtime_error("Unsupported Message Type");
-        }
+    default:
+        std::runtime_error("Unsupported Message Type");
+    }
 }
 
 void Protocol::handlePing(char *startPosition, Message &outMessage)
