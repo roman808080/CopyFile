@@ -24,6 +24,12 @@ namespace
         FileName = 3,
         FileBlock = 4,
     };
+
+    enum class PingType : std::size_t
+    {
+        Request = 1,
+        Response = 2,
+    };
 }
 
 void Protocol::onReceivePackage(Message &inMessage, Message &outMessage)
@@ -36,12 +42,11 @@ void Protocol::onReceivePackage(Message &inMessage, Message &outMessage)
 
     if (static_cast<MessageType>(messageType) == MessageType::Ping)
     {
-        std::size_t request_or_response{0};
-        memcpy(&request_or_response, startPosition, sizeof(request_or_response));
-        startPosition += sizeof(request_or_response);
+        std::size_t pingType{0};
+        memcpy(&pingType, startPosition, sizeof(pingType));
+        startPosition += sizeof(pingType);
 
-        // 1 means it is a request
-        if (request_or_response == 1)
+        if (static_cast<PingType>(pingType) == PingType::Request)
         {
             std::cout << "Received ping request." << std::endl;
 
@@ -59,7 +64,7 @@ void Protocol::onReceivePackage(Message &inMessage, Message &outMessage)
             memcpy(startOutPosition, &response, sizeof(response));
             startOutPosition += sizeof(response);
         }
-        else if (request_or_response == 2)
+        else if (static_cast<PingType>(pingType) == PingType::Response)
         {
             std::cout << "Received ping response." << std::endl;
         }
