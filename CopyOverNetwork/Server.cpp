@@ -42,10 +42,10 @@ namespace
         std::size_t block_size{0};
     };
 
-    class ServerProtocol
+    class Protocol
     {
     public:
-        ServerProtocol()
+        Protocol()
         {
         }
 
@@ -98,7 +98,7 @@ namespace
     awaitable<void> handle_client(tcp::socket client)
     {
         Message inMessage{0};
-        ServerProtocol protocol;
+        Protocol protocol;
 
         while (true)
         {
