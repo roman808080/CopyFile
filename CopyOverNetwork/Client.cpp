@@ -29,15 +29,15 @@ namespace
         std::size_t request = 1;
         std::size_t totalSize = sizeof(typeOfRequest) + sizeof(request);
 
-        memcpy(startOutPosition, &typeOfRequest, sizeof(typeOfRequest));
+        std::memcpy(startOutPosition, &typeOfRequest, sizeof(typeOfRequest));
         startOutPosition += sizeof(typeOfRequest);
 
-        memcpy(startOutPosition, &request, sizeof(request));
+        std::memcpy(startOutPosition, &request, sizeof(request));
         startOutPosition += sizeof(request);
 
         std::array<char, sizeof(std::size_t)> sizeArray{0};
         outMessage.block_size = totalSize;
-        memcpy(&sizeArray, &outMessage.block_size, sizeof(outMessage.block_size));
+        std::memcpy(&sizeArray, &outMessage.block_size, sizeof(outMessage.block_size));
 
         co_await async_write(server, buffer(sizeArray, sizeof(outMessage.block_size)), use_awaitable);
         co_await async_write(server, buffer(outMessage.data, outMessage.block_size), use_awaitable);
@@ -46,7 +46,7 @@ namespace
         Message inMessage{0};
 
         co_await boost::asio::async_read(server, buffer(inMessage.data, sizeof(inMessage.block_size)), use_awaitable);
-        memcpy(&inMessage.block_size, &inMessage.data, sizeof(inMessage.block_size));
+        std::memcpy(&inMessage.block_size, &inMessage.data, sizeof(inMessage.block_size));
 
         if (inMessage.block_size > inMessage.data.size())
         {

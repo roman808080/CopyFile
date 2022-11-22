@@ -1,7 +1,7 @@
 #include "Protocol.h"
 
 #include <iostream>
-#include <memory.h>
+#include <cstring>
 
 ////////////////////////////////////////////////
 // Protocol
@@ -43,7 +43,7 @@ void Protocol::onReceivePackage(Message &inMessage)
     char *startPosition = inMessage.data.data();
 
     std::size_t messageType{0};
-    memcpy(&messageType, startPosition, sizeof(messageType));
+    std::memcpy(&messageType, startPosition, sizeof(messageType));
     startPosition += sizeof(messageType);
 
     switch (static_cast<MessageType>(messageType))
@@ -65,7 +65,7 @@ void Protocol::onPingRequest(std::function<void(std::unique_ptr<Message>)> lambd
 void Protocol::handlePing(char *startPosition)
 {
     std::size_t pingType{0};
-    memcpy(&pingType, startPosition, sizeof(pingType));
+    std::memcpy(&pingType, startPosition, sizeof(pingType));
     startPosition += sizeof(pingType);
 
     switch (static_cast<PingType>(pingType))
@@ -95,10 +95,10 @@ void Protocol::handlePingRequest(char *startPosition)
     std::size_t totalSize = sizeof(typeOfRequest) + sizeof(response);
     message->block_size = totalSize;
 
-    memcpy(startOutPosition, &typeOfRequest, sizeof(typeOfRequest));
+    std::memcpy(startOutPosition, &typeOfRequest, sizeof(typeOfRequest));
     startOutPosition += sizeof(typeOfRequest);
 
-    memcpy(startOutPosition, &response, sizeof(response));
+    std::memcpy(startOutPosition, &response, sizeof(response));
     startOutPosition += sizeof(response);
 
     pingRequestLambda(std::move(message));

@@ -28,7 +28,7 @@ namespace
         }
 
         std::array<char, sizeof(std::size_t)> sizeArray{0};
-        memcpy(&sizeArray, &message->block_size, sizeof(message->block_size));
+        std::memcpy(&sizeArray, &message->block_size, sizeof(message->block_size));
 
         co_await async_write(client, buffer(sizeArray, sizeof(message->block_size)), use_awaitable);
         co_await async_write(client, buffer(message->data, message->block_size), use_awaitable);
@@ -49,7 +49,7 @@ namespace
         while (true)
         {
             co_await boost::asio::async_read(client, buffer(inMessage.data, sizeof(inMessage.block_size)), use_awaitable);
-            memcpy(&inMessage.block_size, &inMessage.data, sizeof(inMessage.block_size));
+            std::memcpy(&inMessage.block_size, &inMessage.data, sizeof(inMessage.block_size));
 
             if (inMessage.block_size > inMessage.data.size())
             {
