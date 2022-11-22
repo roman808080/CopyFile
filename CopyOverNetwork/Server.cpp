@@ -20,10 +20,31 @@ using boost::asio::ip::tcp;
 
 namespace
 {
+    awaitable<void> sendMessage(std::unique_ptr<Message> message, tcp::socket& client)
+    {
+        if (message->block_size > message->data.size())
+        {
+            throw std::runtime_error("Block size is more then 1024 bytes.");
+        }
+
+        std::array<char, sizeof(std::size_t)> sizeArray{0};
+        memcpy(&sizeArray, &message->block_size, sizeof(message->block_size));
+
+        co_await async_write(client, buffer(sizeArray, sizeof(message->block_size)), use_awaitable);
+        co_await async_write(client, buffer(message->data, message->block_size), use_awaitable);
+    }
+
     awaitable<void> handle_client(tcp::socket client)
     {
         Message inMessage{0};
         Protocol protocol;
+
+        auto onPingRequestLambda = [&client](std::unique_ptr<Message> message)
+        {
+            auto ex = client.get_executor();
+            co_spawn(ex, sendMessage(std::move(message), client), detached);
+        };
+        protocol.onPingRequest(onPingRequestLambda);
 
         while (true)
         {
@@ -39,20 +60,6 @@ namespace
 
             Message outMessage{0};
             protocol.onReceivePackage(inMessage, outMessage);
-
-            if (outMessage.block_size > 0)
-            {
-                if (outMessage.block_size > outMessage.data.size())
-                {
-                    throw std::runtime_error("Block size is more then 1024 bytes.");
-                }
-
-                std::array<char, sizeof(std::size_t)> sizeArray{0};
-                memcpy(&sizeArray, &outMessage.block_size, sizeof(outMessage.block_size));
-
-                co_await async_write(client, buffer(sizeArray, sizeof(outMessage.block_size)), use_awaitable);
-                co_await async_write(client, buffer(outMessage.data, outMessage.block_size), use_awaitable);
-            }
         }
     }
 

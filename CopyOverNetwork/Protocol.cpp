@@ -86,17 +86,20 @@ void Protocol::handlePingRequest(char *startPosition, Message &outMessage)
 {
     std::cout << "Received ping request." << std::endl;
 
-    char *startOutPosition = outMessage.data.data();
+    auto message = std::make_unique<Message>();
+    char *startOutPosition = message->data.data();
 
     std::size_t typeOfRequest = static_cast<std::size_t>(MessageType::Ping);
     std::size_t response = static_cast<std::size_t>(PingType::Response);
 
     std::size_t totalSize = sizeof(typeOfRequest) + sizeof(response);
-    outMessage.block_size = totalSize;
+    message->block_size = totalSize;
 
     memcpy(startOutPosition, &typeOfRequest, sizeof(typeOfRequest));
     startOutPosition += sizeof(typeOfRequest);
 
     memcpy(startOutPosition, &response, sizeof(response));
     startOutPosition += sizeof(response);
+
+    pingRequestLambda(std::move(message));
 }
