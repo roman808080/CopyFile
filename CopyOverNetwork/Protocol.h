@@ -15,7 +15,7 @@ public:
     Protocol();
 
     void onReceivePackage(Message &inMessage, Message &outMessage);
-    void onReceivePackage(std::function<void(std::unique_ptr<Message>)> lambda);
+    void onPingRequest(std::function<void(std::unique_ptr<Message>)> lambda);
 
 private:
     void handlePing(char *startPosition, Message &outMessage);

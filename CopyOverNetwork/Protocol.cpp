@@ -57,7 +57,7 @@ void Protocol::onReceivePackage(Message &inMessage, Message &outMessage)
     }
 }
 
-void Protocol::onReceivePackage(std::function<void(std::unique_ptr<Message>)> lambda)
+void Protocol::onPingRequest(std::function<void(std::unique_ptr<Message>)> lambda)
 {
     pingRequestLambda = lambda;
 }
