@@ -14,12 +14,12 @@ class Protocol
 public:
     Protocol();
 
-    void onReceivePackage(Message &inMessage, Message &outMessage);
+    void onReceivePackage(Message &inMessage);
     void onPingRequest(std::function<void(std::unique_ptr<Message>)> lambda);
 
 private:
-    void handlePing(char *startPosition, Message &outMessage);
-    void handlePingRequest(char *startPosition, Message &outMessage);
+    void handlePing(char *startPosition);
+    void handlePingRequest(char *startPosition);
 
 private:
     std::function<void(std::unique_ptr<Message>)> pingRequestLambda;

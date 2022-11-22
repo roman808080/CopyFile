@@ -44,7 +44,6 @@ namespace
 
         ////////////////////////read
         Message inMessage{0};
-        Message anotherOutMessage{0};
 
         co_await boost::asio::async_read(server, buffer(inMessage.data, sizeof(inMessage.block_size)), use_awaitable);
         memcpy(&inMessage.block_size, &inMessage.data, sizeof(inMessage.block_size));
@@ -56,7 +55,7 @@ namespace
 
         co_await boost::asio::async_read(server, buffer(inMessage.data, inMessage.block_size), use_awaitable);
         Protocol protocol;
-        protocol.onReceivePackage(inMessage, anotherOutMessage);
+        protocol.onReceivePackage(inMessage);
     }
 }
 

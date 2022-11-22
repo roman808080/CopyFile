@@ -38,7 +38,7 @@ Protocol::Protocol()
     //
 }
 
-void Protocol::onReceivePackage(Message &inMessage, Message &outMessage)
+void Protocol::onReceivePackage(Message &inMessage)
 {
     char *startPosition = inMessage.data.data();
 
@@ -49,7 +49,7 @@ void Protocol::onReceivePackage(Message &inMessage, Message &outMessage)
     switch (static_cast<MessageType>(messageType))
     {
     case MessageType::Ping:
-        handlePing(startPosition, outMessage);
+        handlePing(startPosition);
         break;
 
     default:
@@ -62,7 +62,7 @@ void Protocol::onPingRequest(std::function<void(std::unique_ptr<Message>)> lambd
     pingRequestLambda = lambda;
 }
 
-void Protocol::handlePing(char *startPosition, Message &outMessage)
+void Protocol::handlePing(char *startPosition)
 {
     std::size_t pingType{0};
     memcpy(&pingType, startPosition, sizeof(pingType));
@@ -71,7 +71,7 @@ void Protocol::handlePing(char *startPosition, Message &outMessage)
     switch (static_cast<PingType>(pingType))
     {
     case PingType::Request:
-        handlePingRequest(startPosition, outMessage);
+        handlePingRequest(startPosition);
         break;
     case PingType::Response:
         std::cout << "Received ping response." << std::endl;
@@ -82,7 +82,7 @@ void Protocol::handlePing(char *startPosition, Message &outMessage)
     }
 }
 
-void Protocol::handlePingRequest(char *startPosition, Message &outMessage)
+void Protocol::handlePingRequest(char *startPosition)
 {
     std::cout << "Received ping request." << std::endl;
 

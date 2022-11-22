@@ -57,9 +57,7 @@ namespace
             }
 
             co_await boost::asio::async_read(client, buffer(inMessage.data, inMessage.block_size), use_awaitable);
-
-            Message outMessage{0};
-            protocol.onReceivePackage(inMessage, outMessage);
+            protocol.onReceivePackage(inMessage);
         }
     }
 
