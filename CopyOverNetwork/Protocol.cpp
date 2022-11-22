@@ -32,6 +32,12 @@ namespace
     };
 }
 
+Protocol::Protocol()
+: pingRequestLambda([](std::unique_ptr<Message> message){})
+{
+    //
+}
+
 void Protocol::onReceivePackage(Message &inMessage, Message &outMessage)
 {
     char *startPosition = inMessage.data.data();
@@ -49,6 +55,11 @@ void Protocol::onReceivePackage(Message &inMessage, Message &outMessage)
     default:
         std::runtime_error("Unsupported Message Type");
     }
+}
+
+void Protocol::onReceivePackage(std::function<void(std::unique_ptr<Message>)> lambda)
+{
+    pingRequestLambda = lambda;
 }
 
 void Protocol::handlePing(char *startPosition, Message &outMessage)
