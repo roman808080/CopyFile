@@ -77,8 +77,8 @@ void Protocol::handlePingRequest(char *startPosition, Message &outMessage)
 
     char *startOutPosition = outMessage.data.data();
 
-    std::size_t typeOfRequest = 1;
-    std::size_t response = 2;
+    std::size_t typeOfRequest = static_cast<std::size_t>(MessageType::Ping);
+    std::size_t response = static_cast<std::size_t>(PingType::Response);
 
     std::size_t totalSize = sizeof(typeOfRequest) + sizeof(response);
     outMessage.block_size = totalSize;
