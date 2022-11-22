@@ -2,6 +2,7 @@
 
 #include <boost/asio.hpp>
 #include <boost/asio/read.hpp>
+#include <iostream>
 
 #include "Protocol.h"
 
@@ -41,10 +42,20 @@ namespace
 
         auto onPingRequestLambda = [&client](std::unique_ptr<Message> message)
         {
+            // The message for debugging purposes. TODO: to remove the next line
+            std::cout << "Received ping request." << std::endl;
+
             auto ex = client.get_executor();
             co_spawn(ex, sendMessage(std::move(message), client), detached);
         };
         protocol.onPingRequest(onPingRequestLambda);
+
+        auto onPingResponseLambda = []()
+        {
+            // The message for debugging purposes. TODO: to remove the next line
+            std::cout << "Received ping response." << std::endl;
+        };
+        protocol.onPingResponse(onPingResponseLambda);
 
         while (true)
         {

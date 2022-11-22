@@ -15,7 +15,9 @@ public:
     Protocol();
 
     void onReceivePackage(Message &inMessage);
+
     void onPingRequest(std::function<void(std::unique_ptr<Message>)> lambda);
+    void onPingResponse(std::function<void()> lambda);
 
 private:
     void handlePing(char *startPosition);
@@ -23,4 +25,5 @@ private:
 
 private:
     std::function<void(std::unique_ptr<Message>)> pingRequestLambda;
+    std::function<void()> pingResponseLambda;
 };

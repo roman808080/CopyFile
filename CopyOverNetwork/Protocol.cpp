@@ -1,8 +1,8 @@
 #include "Protocol.h"
 
-#include <iostream>
 #include <cstring>
-
+#include <stdexcept>
+	
 ////////////////////////////////////////////////
 // Protocol
 ////////////////////////////////////////////////
@@ -33,9 +33,9 @@ namespace
 }
 
 Protocol::Protocol()
-: pingRequestLambda([](std::unique_ptr<Message> message){})
+    : pingRequestLambda([](std::unique_ptr<Message> message) {}),
+      pingResponseLambda([]() {})
 {
-    //
 }
 
 void Protocol::onReceivePackage(Message &inMessage)
@@ -62,6 +62,11 @@ void Protocol::onPingRequest(std::function<void(std::unique_ptr<Message>)> lambd
     pingRequestLambda = lambda;
 }
 
+void Protocol::onPingResponse(std::function<void()> lambda)
+{
+    pingResponseLambda = lambda;
+}
+
 void Protocol::handlePing(char *startPosition)
 {
     std::size_t pingType{0};
@@ -74,7 +79,7 @@ void Protocol::handlePing(char *startPosition)
         handlePingRequest(startPosition);
         break;
     case PingType::Response:
-        std::cout << "Received ping response." << std::endl;
+        pingResponseLambda();
         break;
 
     default:
@@ -84,8 +89,6 @@ void Protocol::handlePing(char *startPosition)
 
 void Protocol::handlePingRequest(char *startPosition)
 {
-    std::cout << "Received ping request." << std::endl;
-
     auto message = std::make_unique<Message>();
     char *startOutPosition = message->data.data();
 
