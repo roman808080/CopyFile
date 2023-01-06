@@ -1,5 +1,6 @@
 #!/bin/env bash
 
+rm -r build
 mkdir -p build
 source local_python/bin/activate.fish
 
