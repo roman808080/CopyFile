@@ -1,9 +1,9 @@
 {
-    "C_Cpp.default.includePath": ["~/.conan/data/**"],
     "cmake.configureSettings": {
         "CMAKE_TOOLCHAIN_FILE": "${workspaceFolder}/build/conan_toolchain.cmake"
     },
     "cmake.generator": "Unix Makefiles",
+
     "files.associations": {
         "iostream": "cpp",
         "*.tcc": "cpp",
