@@ -14,6 +14,8 @@ class Protocol
 public:
     Protocol();
 
+    /// @brief handle package
+    /// @param inMessage 
     void onReceivePackage(Message &inMessage);
 
     void onPingRequest(std::function<void(std::unique_ptr<Message>)> lambda);
