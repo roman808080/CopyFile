@@ -5,7 +5,6 @@ class Client
 {
 public:
     Client(const std::string &host, const std::string &port);
-    ~Client();
 
     void run();
 

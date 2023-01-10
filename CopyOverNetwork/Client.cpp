@@ -89,7 +89,3 @@ void Client::run()
 
     ctx.run();
 }
-
-Client::~Client()
-{
-}

@@ -107,7 +107,3 @@ void Server::run()
 
     ctx.run();
 }
-
-Server::~Server()
-{
-}

@@ -5,7 +5,6 @@ class Server
 {
 public:
     Server(const std::string &host, const std::string &port);
-    ~Server();
 
     void run();
 
