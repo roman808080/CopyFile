@@ -35,7 +35,8 @@ namespace
 Protocol::Protocol()
     : pingRequestLambda([](std::unique_ptr<Message> message) -> awaitable<void>
                         { co_return; }),
-      pingResponseLambda([]() {})
+      pingResponseLambda([]() -> awaitable<void>
+                         { co_return; })
 {
 }
 
@@ -65,7 +66,7 @@ void Protocol::onPingRequest(std::function<awaitable<void>(std::unique_ptr<Messa
     pingRequestLambda = lambda;
 }
 
-void Protocol::onPingResponse(std::function<void()> lambda)
+void Protocol::onPingResponse(std::function<awaitable<void>()> lambda)
 {
     pingResponseLambda = lambda;
 }
@@ -82,7 +83,7 @@ awaitable<void> Protocol::handlePing(char *startPosition)
         co_await handlePingRequest(startPosition);
         break;
     case PingType::Response:
-        pingResponseLambda();
+        co_await pingResponseLambda();
         break;
 
     default:

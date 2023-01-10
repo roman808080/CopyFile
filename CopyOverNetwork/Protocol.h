@@ -22,7 +22,7 @@ public:
     awaitable<void> onReceivePackage(Message &inMessage);
 
     void onPingRequest(std::function<awaitable<void>(std::unique_ptr<Message>)> lambda);
-    void onPingResponse(std::function<void()> lambda);
+    void onPingResponse(std::function<awaitable<void>()> lambda);
 
 private:
     awaitable<void> handlePing(char *startPosition);
@@ -30,5 +30,5 @@ private:
 
 private:
     std::function<awaitable<void>(std::unique_ptr<Message>)> pingRequestLambda;
-    std::function<void()> pingResponseLambda;
+    std::function<awaitable<void>()> pingResponseLambda;
 };

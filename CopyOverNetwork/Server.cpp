@@ -52,10 +52,11 @@ namespace
         };
         protocol.onPingRequest(onPingRequestLambda);
 
-        auto onPingResponseLambda = []()
+        auto onPingResponseLambda = []() -> awaitable<void>
         {
             // The message for debugging purposes. TODO: to remove the next line
             std::cout << "Received ping response." << std::endl;
+            co_return;
         };
         protocol.onPingResponse(onPingResponseLambda);
 
