@@ -2,6 +2,9 @@
 #include <array>
 #include <functional>
 #include <memory>
+#include <boost/asio.hpp>
+
+using boost::asio::awaitable;
 
 struct Message
 {
@@ -16,7 +19,7 @@ public:
 
     /// @brief handle package
     /// @param inMessage 
-    void onReceivePackage(Message &inMessage);
+    awaitable<void> onReceivePackage(Message &inMessage);
 
     void onPingRequest(std::function<void(std::unique_ptr<Message>)> lambda);
     void onPingResponse(std::function<void()> lambda);

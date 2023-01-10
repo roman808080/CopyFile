@@ -65,7 +65,7 @@ namespace
         };
         protocol.onPingResponse(onPingResponseLambda);
 
-        protocol.onReceivePackage(inMessage);
+        co_await protocol.onReceivePackage(inMessage);
     }
 }
 

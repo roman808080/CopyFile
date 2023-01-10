@@ -38,7 +38,7 @@ Protocol::Protocol()
 {
 }
 
-void Protocol::onReceivePackage(Message &inMessage)
+awaitable<void> Protocol::onReceivePackage(Message &inMessage)
 {
     char *startPosition = inMessage.data.data();
 
@@ -55,6 +55,8 @@ void Protocol::onReceivePackage(Message &inMessage)
     default:
         std::runtime_error("Unsupported Message Type");
     }
+
+    co_return;
 }
 
 void Protocol::onPingRequest(std::function<void(std::unique_ptr<Message>)> lambda)
