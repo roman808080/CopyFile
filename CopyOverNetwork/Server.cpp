@@ -40,13 +40,15 @@ namespace
         Message inMessage{0};
         Protocol protocol;
 
-        auto onPingRequestLambda = [&client](std::unique_ptr<Message> message)
+        auto onPingRequestLambda = [&client](std::unique_ptr<Message> message) -> awaitable<void>
         {
             // The message for debugging purposes. TODO: to remove the next line
             std::cout << "Received ping request." << std::endl;
 
             auto ex = client.get_executor();
-            co_spawn(ex, sendMessage(std::move(message), client), detached);
+            co_await sendMessage(std::move(message), client);
+
+            co_return;
         };
         protocol.onPingRequest(onPingRequestLambda);
 

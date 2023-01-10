@@ -2,7 +2,7 @@
 
 #include <cstring>
 #include <stdexcept>
-	
+
 ////////////////////////////////////////////////
 // Protocol
 ////////////////////////////////////////////////
@@ -33,7 +33,8 @@ namespace
 }
 
 Protocol::Protocol()
-    : pingRequestLambda([](std::unique_ptr<Message> message) {}),
+    : pingRequestLambda([](std::unique_ptr<Message> message) -> awaitable<void>
+                        { co_return; }),
       pingResponseLambda([]() {})
 {
 }
@@ -59,7 +60,7 @@ awaitable<void> Protocol::onReceivePackage(Message &inMessage)
     co_return;
 }
 
-void Protocol::onPingRequest(std::function<void(std::unique_ptr<Message>)> lambda)
+void Protocol::onPingRequest(std::function<awaitable<void>(std::unique_ptr<Message>)> lambda)
 {
     pingRequestLambda = lambda;
 }
@@ -108,7 +109,6 @@ awaitable<void> Protocol::handlePingRequest(char *startPosition)
     std::memcpy(startOutPosition, &response, sizeof(response));
     startOutPosition += sizeof(response);
 
-    pingRequestLambda(std::move(message));
-
+    co_await pingRequestLambda(std::move(message));
     co_return;
 }
