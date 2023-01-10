@@ -25,8 +25,8 @@ public:
     void onPingResponse(std::function<void()> lambda);
 
 private:
-    void handlePing(char *startPosition);
-    void handlePingRequest(char *startPosition);
+    awaitable<void> handlePing(char *startPosition);
+    awaitable<void> handlePingRequest(char *startPosition);
 
 private:
     std::function<void(std::unique_ptr<Message>)> pingRequestLambda;

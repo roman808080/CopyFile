@@ -49,7 +49,7 @@ awaitable<void> Protocol::onReceivePackage(Message &inMessage)
     switch (static_cast<MessageType>(messageType))
     {
     case MessageType::Ping:
-        handlePing(startPosition);
+        co_await handlePing(startPosition);
         break;
 
     default:
@@ -69,7 +69,7 @@ void Protocol::onPingResponse(std::function<void()> lambda)
     pingResponseLambda = lambda;
 }
 
-void Protocol::handlePing(char *startPosition)
+awaitable<void> Protocol::handlePing(char *startPosition)
 {
     std::size_t pingType{0};
     std::memcpy(&pingType, startPosition, sizeof(pingType));
@@ -78,7 +78,7 @@ void Protocol::handlePing(char *startPosition)
     switch (static_cast<PingType>(pingType))
     {
     case PingType::Request:
-        handlePingRequest(startPosition);
+        co_await handlePingRequest(startPosition);
         break;
     case PingType::Response:
         pingResponseLambda();
@@ -87,9 +87,11 @@ void Protocol::handlePing(char *startPosition)
     default:
         std::runtime_error("Unsupported Ping Type");
     }
+
+    co_return;
 }
 
-void Protocol::handlePingRequest(char *startPosition)
+awaitable<void> Protocol::handlePingRequest(char *startPosition)
 {
     auto message = std::make_unique<Message>();
     char *startOutPosition = message->data.data();
@@ -107,4 +109,6 @@ void Protocol::handlePingRequest(char *startPosition)
     startOutPosition += sizeof(response);
 
     pingRequestLambda(std::move(message));
+
+    co_return;
 }
