@@ -21,6 +21,8 @@ public:
     /// @param inMessage 
     awaitable<void> onReceivePackage(Message &inMessage);
 
+    std::unique_ptr<Message> prepareMessage(const std::size_t typeOfRequest, const std::size_t sizeOfMessage, void *messageSource);
+
     void onPingRequest(std::function<awaitable<void>(std::unique_ptr<Message>)> lambda);
     void onPingResponse(std::function<awaitable<void>()> lambda);
 
