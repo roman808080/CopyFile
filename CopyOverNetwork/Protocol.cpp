@@ -93,23 +93,37 @@ awaitable<void> Protocol::handlePing(char *startPosition)
     co_return;
 }
 
+namespace
+{
+    std::unique_ptr<Message> prepareMessage(const std::size_t typeOfRequest, const std::size_t sizeOfMessage, void *messageSource)
+    {
+        auto message = std::make_unique<Message>();
+
+        // Getting the start position to which we will copy our data
+        char *startOutPosition = message->data.data();
+
+        // Calculating the total size of the message
+        std::size_t totalSize = sizeof(typeOfRequest) + sizeOfMessage;
+        message->block_size = totalSize;
+
+        // Copying the type of request
+        std::memcpy(startOutPosition, &typeOfRequest, sizeof(typeOfRequest));
+
+        // Step over because this position was already used
+        startOutPosition += sizeof(typeOfRequest);
+
+        // Copying the message
+        std::memcpy(startOutPosition, messageSource, sizeOfMessage);
+
+        return std::move(message);
+    }
+}
+
 awaitable<void> Protocol::handlePingRequest()
 {
-    auto message = std::make_unique<Message>();
-    char *startOutPosition = message->data.data();
-
     std::size_t typeOfRequest = static_cast<std::size_t>(MessageType::Ping);
     std::size_t response = static_cast<std::size_t>(PingType::Response);
 
-    std::size_t totalSize = sizeof(typeOfRequest) + sizeof(response);
-    message->block_size = totalSize;
-
-    std::memcpy(startOutPosition, &typeOfRequest, sizeof(typeOfRequest));
-    startOutPosition += sizeof(typeOfRequest);
-
-    std::memcpy(startOutPosition, &response, sizeof(response));
-    startOutPosition += sizeof(response);
-
-    co_await pingRequestLambda(std::move(message));
+    co_await pingRequestLambda(std::move(prepareMessage(typeOfRequest, sizeof(response), &response)));
     co_return;
 }
