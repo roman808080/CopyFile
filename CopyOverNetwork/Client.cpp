@@ -34,9 +34,47 @@ namespace
 
         awaitable<void> start()
         {
-            co_await connect();
+            Protocol protocol;
+            auto onPingResponseLambda = []() -> awaitable<void>
+            {
+                // The message for debugging purposes. TODO: to remove the next line
+                std::cout << "Received ping response." << std::endl;
+                co_return;
+            };
+            protocol.onPingResponse(onPingResponseLambda);
 
-            ////////////////////////write
+            co_await connect();
+            co_await send_ping();
+
+            auto inMessage = co_await get_next_message();
+            co_await protocol.onReceivePackage(inMessage);
+        }
+
+    private:
+        awaitable<void> connect()
+        {
+            auto target = *tcp::resolver(ctx).resolve(host, port);
+            co_await connection.async_connect(target, use_awaitable);
+        }
+
+        awaitable<Message> get_next_message()
+        {
+            Message inMessage{0};
+
+            co_await boost::asio::async_read(connection, buffer(inMessage.data, sizeof(inMessage.block_size)), use_awaitable);
+            std::memcpy(&inMessage.block_size, &inMessage.data, sizeof(inMessage.block_size));
+
+            if (inMessage.block_size > inMessage.data.size())
+            {
+                throw std::runtime_error("Block size is more then 1024 bytes.");
+            }
+
+            co_await boost::asio::async_read(connection, buffer(inMessage.data, inMessage.block_size), use_awaitable);
+            co_return inMessage;
+        }
+
+        awaitable<void> send_ping()
+        {
             Message outMessage{0};
             char *startOutPosition = outMessage.data.data();
 
@@ -56,37 +94,6 @@ namespace
 
             co_await async_write(connection, buffer(sizeArray, sizeof(outMessage.block_size)), use_awaitable);
             co_await async_write(connection, buffer(outMessage.data, outMessage.block_size), use_awaitable);
-
-            ////////////////////////read
-            Message inMessage{0};
-
-            co_await boost::asio::async_read(connection, buffer(inMessage.data, sizeof(inMessage.block_size)), use_awaitable);
-            std::memcpy(&inMessage.block_size, &inMessage.data, sizeof(inMessage.block_size));
-
-            if (inMessage.block_size > inMessage.data.size())
-            {
-                throw std::runtime_error("Block size is more then 1024 bytes.");
-            }
-
-            co_await boost::asio::async_read(connection, buffer(inMessage.data, inMessage.block_size), use_awaitable);
-
-            Protocol protocol;
-            auto onPingResponseLambda = []() -> awaitable<void>
-            {
-                // The message for debugging purposes. TODO: to remove the next line
-                std::cout << "Received ping response." << std::endl;
-                co_return;
-            };
-            protocol.onPingResponse(onPingResponseLambda);
-
-            co_await protocol.onReceivePackage(inMessage);
-        }
-
-    private:
-        awaitable<void> connect()
-        {
-            auto target = *tcp::resolver(ctx).resolve(host, port);
-            co_await connection.async_connect(target, use_awaitable);
         }
 
     private:
