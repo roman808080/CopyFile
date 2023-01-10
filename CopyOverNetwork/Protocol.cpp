@@ -80,7 +80,7 @@ awaitable<void> Protocol::handlePing(char *startPosition)
     switch (static_cast<PingType>(pingType))
     {
     case PingType::Request:
-        co_await handlePingRequest(startPosition);
+        co_await handlePingRequest();
         break;
     case PingType::Response:
         co_await pingResponseLambda();
@@ -93,7 +93,7 @@ awaitable<void> Protocol::handlePing(char *startPosition)
     co_return;
 }
 
-awaitable<void> Protocol::handlePingRequest(char *startPosition)
+awaitable<void> Protocol::handlePingRequest()
 {
     auto message = std::make_unique<Message>();
     char *startOutPosition = message->data.data();

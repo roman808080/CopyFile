@@ -26,7 +26,7 @@ public:
 
 private:
     awaitable<void> handlePing(char *startPosition);
-    awaitable<void> handlePingRequest(char *startPosition);
+    awaitable<void> handlePingRequest();
 
 private:
     std::function<awaitable<void>(std::unique_ptr<Message>)> pingRequestLambda;
