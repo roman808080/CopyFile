@@ -75,25 +75,17 @@ namespace
 
         awaitable<void> send_ping()
         {
-            Message outMessage{0};
-            char *startOutPosition = outMessage.data.data();
-
             std::size_t typeOfRequest = 1;
             std::size_t request = 1;
             std::size_t totalSize = sizeof(typeOfRequest) + sizeof(request);
 
-            std::memcpy(startOutPosition, &typeOfRequest, sizeof(typeOfRequest));
-            startOutPosition += sizeof(typeOfRequest);
-
-            std::memcpy(startOutPosition, &request, sizeof(request));
-            startOutPosition += sizeof(request);
+            auto message(Protocol::prepareMessage(typeOfRequest, sizeof(request), &request));
 
             std::array<char, sizeof(std::size_t)> sizeArray{0};
-            outMessage.block_size = totalSize;
-            std::memcpy(&sizeArray, &outMessage.block_size, sizeof(outMessage.block_size));
+            std::memcpy(&sizeArray, &message->block_size, sizeof(message->block_size));
 
-            co_await async_write(connection, buffer(sizeArray, sizeof(outMessage.block_size)), use_awaitable);
-            co_await async_write(connection, buffer(outMessage.data, outMessage.block_size), use_awaitable);
+            co_await async_write(connection, buffer(sizeArray, sizeof(message->block_size)), use_awaitable);
+            co_await async_write(connection, buffer(message->data, message->block_size), use_awaitable);
         }
 
     private:
