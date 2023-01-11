@@ -116,6 +116,18 @@ std::unique_ptr<Message> Protocol::prepareMessage(const std::size_t typeOfReques
     return std::move(message);
 }
 
+std::unique_ptr<Message> Protocol::preparePingRequest()
+{
+    std::size_t typeOfRequest = static_cast<std::size_t>(MessageType::Ping);
+    std::size_t request = static_cast<std::size_t>(PingType::Request);
+
+    std::size_t totalSize = sizeof(typeOfRequest) + sizeof(request);
+
+    auto message(Protocol::prepareMessage(typeOfRequest, sizeof(request), &request));
+
+    return std::move(message);
+}
+
 awaitable<void> Protocol::handlePingRequest()
 {
     std::size_t typeOfRequest = static_cast<std::size_t>(MessageType::Ping);

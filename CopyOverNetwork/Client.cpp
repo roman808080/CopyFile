@@ -75,11 +75,7 @@ namespace
 
         awaitable<void> send_ping()
         {
-            std::size_t typeOfRequest = 1;
-            std::size_t request = 1;
-            std::size_t totalSize = sizeof(typeOfRequest) + sizeof(request);
-
-            auto message(Protocol::prepareMessage(typeOfRequest, sizeof(request), &request));
+            auto message(Protocol::preparePingRequest());
 
             std::array<char, sizeof(std::size_t)> sizeArray{0};
             std::memcpy(&sizeArray, &message->block_size, sizeof(message->block_size));
