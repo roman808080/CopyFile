@@ -43,8 +43,14 @@ namespace
             };
             protocol.onPingResponse(onPingResponseLambda);
 
+            auto onSendBytesLambda = [&](std::unique_ptr<Message> message) -> awaitable<void>
+            {
+                co_await async_write(connection, buffer(message->data, message->block_size), use_awaitable);
+            };
+            protocol.onSendBytes(onSendBytesLambda);
+
             co_await connect();
-            co_await send_ping();
+            co_await protocol.sendPingRequest();
 
             auto inMessage = co_await get_next_message();
             co_await protocol.onReceivePackage(inMessage);
@@ -71,17 +77,6 @@ namespace
 
             co_await boost::asio::async_read(connection, buffer(inMessage.data, inMessage.block_size), use_awaitable);
             co_return inMessage;
-        }
-
-        awaitable<void> send_ping()
-        {
-            auto message(Protocol::preparePingRequest());
-
-            std::array<char, sizeof(std::size_t)> sizeArray{0};
-            std::memcpy(&sizeArray, &message->block_size, sizeof(message->block_size));
-
-            co_await async_write(connection, buffer(sizeArray, sizeof(message->block_size)), use_awaitable);
-            co_await async_write(connection, buffer(message->data, message->block_size), use_awaitable);
         }
 
     private:

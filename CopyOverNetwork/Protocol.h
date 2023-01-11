@@ -6,9 +6,11 @@
 
 using boost::asio::awaitable;
 
+using MessageBytes = std::array<char, 1024>;
+
 struct Message
 {
-    std::array<char, 1024> data{0};
+    MessageBytes data{0};
     std::size_t block_size{0};
 };
 
@@ -21,11 +23,15 @@ public:
     /// @param inMessage 
     awaitable<void> onReceivePackage(Message &inMessage);
 
+    void onPingRequest(std::function<awaitable<void>(std::unique_ptr<Message>)> lambda);
+    void onPingResponse(std::function<awaitable<void>()> lambda);
+
+    void onSendBytes(std::function<awaitable<void>(std::unique_ptr<Message>)> lambda);
+
     static std::unique_ptr<Message> prepareMessage(const std::size_t typeOfRequest, const std::size_t sizeOfMessage, void *messageSource);
     static std::unique_ptr<Message> preparePingRequest();
 
-    void onPingRequest(std::function<awaitable<void>(std::unique_ptr<Message>)> lambda);
-    void onPingResponse(std::function<awaitable<void>()> lambda);
+    awaitable<void> sendPingRequest();
 
 private:
     awaitable<void> handlePing(char *startPosition);
@@ -34,4 +40,6 @@ private:
 private:
     std::function<awaitable<void>(std::unique_ptr<Message>)> pingRequestLambda;
     std::function<awaitable<void>()> pingResponseLambda;
+
+    std::function<awaitable<void>(std::unique_ptr<Message>)> sendBytesLambda;
 };
