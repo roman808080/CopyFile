@@ -100,6 +100,18 @@ awaitable<void> Protocol::handlePing(char *startPosition)
     co_return;
 }
 
+awaitable<void> Protocol::sendPingRequest()
+{
+    auto message(Protocol::preparePingRequest());
+    auto nextMessageSize(std::make_unique<Message>());
+
+    nextMessageSize->block_size = sizeof(message->block_size);
+    std::memcpy(&nextMessageSize->data, &message->block_size, nextMessageSize->block_size);
+
+    co_await sendBytesLambda(std::move(nextMessageSize));
+    co_await sendBytesLambda(std::move(message));
+}
+
 std::unique_ptr<Message> Protocol::prepareMessage(const std::size_t typeOfRequest, const std::size_t sizeOfMessage, void *messageSource)
 {
     auto message = std::make_unique<Message>();
@@ -133,18 +145,6 @@ std::unique_ptr<Message> Protocol::preparePingRequest()
     auto message(Protocol::prepareMessage(typeOfRequest, sizeof(request), &request));
 
     return std::move(message);
-}
-
-awaitable<void> Protocol::sendPingRequest()
-{
-    auto message(Protocol::preparePingRequest());
-    auto nextMessageSize(std::make_unique<Message>());
-
-    nextMessageSize->block_size = sizeof(message->block_size);
-    std::memcpy(&nextMessageSize->data, &message->block_size, nextMessageSize->block_size);
-
-    co_await sendBytesLambda(std::move(nextMessageSize));
-    co_await sendBytesLambda(std::move(message));
 }
 
 awaitable<void> Protocol::handlePingRequest()

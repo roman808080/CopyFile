@@ -28,12 +28,12 @@ public:
 
     void onSendBytes(std::function<awaitable<void>(std::unique_ptr<Message>)> lambda);
 
-    static std::unique_ptr<Message> prepareMessage(const std::size_t typeOfRequest, const std::size_t sizeOfMessage, void *messageSource);
-    static std::unique_ptr<Message> preparePingRequest();
-
     awaitable<void> sendPingRequest();
 
 private:
+    static std::unique_ptr<Message> prepareMessage(const std::size_t typeOfRequest, const std::size_t sizeOfMessage, void *messageSource);
+    static std::unique_ptr<Message> preparePingRequest();
+
     awaitable<void> handlePing(char *startPosition);
     awaitable<void> handlePingRequest();
 
