@@ -33,7 +33,7 @@ namespace
 }
 
 Protocol::Protocol()
-    : sendBytesLambda([](Message&) -> awaitable<void>
+    : sendBytesLambda([](Message &) -> awaitable<void>
                       { co_return; }),
       pingRequestEvent([]() {}),
       pingResponseEvent([]() {})
@@ -61,7 +61,7 @@ awaitable<void> Protocol::onReceivePackage(Message &inMessage)
     co_return;
 }
 
-void Protocol::onSendBytes(std::function<awaitable<void>(Message&)> lambda)
+void Protocol::onSendBytes(std::function<awaitable<void>(Message &)> lambda)
 {
     sendBytesLambda = lambda;
 }
@@ -91,13 +91,7 @@ awaitable<void> Protocol::handlePing(char *startPosition)
 awaitable<void> Protocol::sendPing()
 {
     auto message(Protocol::preparePingRequest());
-    Message nextMessageSize{};
-
-    nextMessageSize.block_size = sizeof(message.block_size);
-    std::memcpy(&nextMessageSize.data, &message.block_size, nextMessageSize.block_size);
-
-    co_await sendBytesLambda(nextMessageSize);
-    co_await sendBytesLambda(message);
+    co_await sendMessage(message);
 }
 
 void Protocol::onPingRequestEvent(std::function<void()> lambda)
@@ -151,6 +145,11 @@ awaitable<void> Protocol::handlePingRequest()
     std::size_t response = static_cast<std::size_t>(PingType::Response);
 
     auto message(prepareMessage(typeOfRequest, sizeof(response), &response));
+    co_await sendMessage(message);
+}
+
+awaitable<void> Protocol::sendMessage(Message &message)
+{
     Message nextMessageSize{};
 
     nextMessageSize.block_size = sizeof(message.block_size);

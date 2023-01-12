@@ -38,6 +38,8 @@ private:
     awaitable<void> handlePing(char *startPosition);
     awaitable<void> handlePingRequest();
 
+    awaitable<void> sendMessage(Message &message);
+
 private:
     std::function<awaitable<void>(Message&)> sendBytesLambda;
 
