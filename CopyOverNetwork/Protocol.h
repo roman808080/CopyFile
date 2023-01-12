@@ -24,7 +24,6 @@ public:
     awaitable<void> onReceivePackage(Message &inMessage);
 
     void onPingRequest(std::function<awaitable<void>(std::unique_ptr<Message>)> lambda);
-    void onPingResponse(std::function<awaitable<void>()> lambda);
 
     void onSendBytes(std::function<awaitable<void>(std::unique_ptr<Message>)> lambda);
 

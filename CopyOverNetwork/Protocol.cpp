@@ -39,8 +39,8 @@ Protocol::Protocol()
                          { co_return; }),
       sendBytesLambda([](std::unique_ptr<Message>) -> awaitable<void>
                       { co_return; }),
-      pingRequestEvent([](){}),
-      pingResponseEvent([](){})
+      pingRequestEvent([]() {}),
+      pingResponseEvent([]() {})
 {
 }
 
@@ -70,11 +70,6 @@ void Protocol::onPingRequest(std::function<awaitable<void>(std::unique_ptr<Messa
     pingRequestLambda = lambda;
 }
 
-void Protocol::onPingResponse(std::function<awaitable<void>()> lambda)
-{
-    pingResponseLambda = lambda;
-}
-
 void Protocol::onSendBytes(std::function<awaitable<void>(std::unique_ptr<Message>)> lambda)
 {
     sendBytesLambda = lambda;
@@ -89,17 +84,17 @@ awaitable<void> Protocol::handlePing(char *startPosition)
     switch (static_cast<PingType>(pingType))
     {
     case PingType::Request:
+        pingRequestEvent();
         co_await handlePingRequest();
-        break;
+        co_return;
+
     case PingType::Response:
-        co_await pingResponseLambda();
-        break;
+        pingResponseEvent();
+        co_return;
 
     default:
         std::runtime_error("Unsupported Ping Type");
     }
-
-    co_return;
 }
 
 awaitable<void> Protocol::sendPingRequest()
@@ -116,12 +111,12 @@ awaitable<void> Protocol::sendPingRequest()
 
 void Protocol::onPingRequestEvent(std::function<void()> lambda)
 {
-    //
+    pingRequestEvent = lambda;
 }
 
 void Protocol::onPingResponseEvent(std::function<void()> lambda)
 {
-    //
+    pingResponseEvent = lambda;
 }
 
 std::unique_ptr<Message> Protocol::prepareMessage(const std::size_t typeOfRequest, const std::size_t sizeOfMessage, void *messageSource)

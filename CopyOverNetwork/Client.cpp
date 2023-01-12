@@ -35,13 +35,11 @@ namespace
         awaitable<void> start()
         {
             Protocol protocol;
-            auto onPingResponseLambda = []() -> awaitable<void>
+            auto onPingResponseLambda = []()
             {
-                // The message for debugging purposes. TODO: to remove the next line
                 std::cout << "Received ping response." << std::endl;
-                co_return;
             };
-            protocol.onPingResponse(onPingResponseLambda);
+            protocol.onPingResponseEvent(onPingResponseLambda);
 
             auto onSendBytesLambda = [&](std::unique_ptr<Message> message) -> awaitable<void>
             {

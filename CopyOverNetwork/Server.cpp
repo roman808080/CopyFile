@@ -42,9 +42,6 @@ namespace
 
         auto onPingRequestLambda = [&client](std::unique_ptr<Message> message) -> awaitable<void>
         {
-            // The message for debugging purposes. TODO: to remove the next line
-            std::cout << "Received ping request." << std::endl;
-
             auto ex = client.get_executor();
             co_await sendMessage(std::move(message), client);
 
@@ -52,13 +49,17 @@ namespace
         };
         protocol.onPingRequest(onPingRequestLambda);
 
-        auto onPingResponseLambda = []() -> awaitable<void>
+        auto onPingRequestEvent = []()
         {
-            // The message for debugging purposes. TODO: to remove the next line
-            std::cout << "Received ping response." << std::endl;
-            co_return;
+            std::cout << "Received ping request." << std::endl;
         };
-        protocol.onPingResponse(onPingResponseLambda);
+        protocol.onPingRequestEvent(onPingRequestEvent);
+
+        auto onPingResponseLambda = []()
+        {
+            std::cout << "Received ping response." << std::endl;
+        };
+        protocol.onPingResponseEvent(onPingResponseLambda);
 
         while (true)
         {
