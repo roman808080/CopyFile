@@ -25,7 +25,7 @@ public:
 
     void onSendBytes(std::function<awaitable<void>(Message&)> lambda);
 
-    awaitable<void> sendPingRequest();
+    awaitable<void> sendPing();
 
     // events
     void onPingRequestEvent(std::function<void()> lambda);

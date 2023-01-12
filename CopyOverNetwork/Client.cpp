@@ -48,7 +48,7 @@ namespace
             protocol.onSendBytes(onSendBytesLambda);
 
             co_await connect();
-            co_await protocol.sendPingRequest();
+            co_await protocol.sendPing();
 
             auto inMessage = co_await get_next_message();
             co_await protocol.onReceivePackage(inMessage);

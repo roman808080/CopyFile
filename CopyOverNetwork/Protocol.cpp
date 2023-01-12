@@ -88,7 +88,7 @@ awaitable<void> Protocol::handlePing(char *startPosition)
     }
 }
 
-awaitable<void> Protocol::sendPingRequest()
+awaitable<void> Protocol::sendPing()
 {
     auto message(Protocol::preparePingRequest());
     Message nextMessageSize{};
