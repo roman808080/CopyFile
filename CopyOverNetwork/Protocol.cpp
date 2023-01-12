@@ -90,7 +90,11 @@ awaitable<void> Protocol::handlePing(char *startPosition)
 
 awaitable<void> Protocol::sendPing()
 {
-    auto message(Protocol::preparePingRequest());
+    std::size_t typeOfRequest = static_cast<std::size_t>(MessageType::Ping);
+    std::size_t request = static_cast<std::size_t>(PingType::Request);
+    std::size_t totalSize = sizeof(typeOfRequest) + sizeof(request);
+
+    auto message(Protocol::prepareMessage(typeOfRequest, sizeof(request), &request));
     co_await sendMessage(message);
 }
 
@@ -123,18 +127,6 @@ Message Protocol::prepareMessage(const std::size_t typeOfRequest, const std::siz
 
     // Copying the message
     std::memcpy(startOutPosition, messageSource, sizeOfMessage);
-
-    return std::move(message);
-}
-
-Message Protocol::preparePingRequest()
-{
-    std::size_t typeOfRequest = static_cast<std::size_t>(MessageType::Ping);
-    std::size_t request = static_cast<std::size_t>(PingType::Request);
-
-    std::size_t totalSize = sizeof(typeOfRequest) + sizeof(request);
-
-    auto message(Protocol::prepareMessage(typeOfRequest, sizeof(request), &request));
 
     return std::move(message);
 }

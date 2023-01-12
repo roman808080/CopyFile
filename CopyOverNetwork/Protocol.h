@@ -33,7 +33,6 @@ public:
 
 private:
     static Message prepareMessage(const std::size_t typeOfRequest, const std::size_t sizeOfMessage, void *messageSource);
-    static Message preparePingRequest();
 
     awaitable<void> handlePing(char *startPosition);
     awaitable<void> handlePingRequest();
