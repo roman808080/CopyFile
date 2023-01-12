@@ -21,33 +21,16 @@ using boost::asio::ip::tcp;
 
 namespace
 {
-    awaitable<void> sendMessage(std::unique_ptr<Message> message, tcp::socket& client)
-    {
-        if (message->block_size > message->data.size())
-        {
-            throw std::runtime_error("Block size is more then 1024 bytes.");
-        }
-
-        std::array<char, sizeof(std::size_t)> sizeArray{0};
-        std::memcpy(&sizeArray, &message->block_size, sizeof(message->block_size));
-
-        co_await async_write(client, buffer(sizeArray, sizeof(message->block_size)), use_awaitable);
-        co_await async_write(client, buffer(message->data, message->block_size), use_awaitable);
-    }
-
     awaitable<void> handle_client(tcp::socket client)
     {
         Message inMessage{0};
         Protocol protocol;
 
-        auto onPingRequestLambda = [&client](std::unique_ptr<Message> message) -> awaitable<void>
+        auto onSendBytesLambda = [&](std::unique_ptr<Message> message) -> awaitable<void>
         {
-            auto ex = client.get_executor();
-            co_await sendMessage(std::move(message), client);
-
-            co_return;
+            co_await async_write(client, buffer(message->data, message->block_size), use_awaitable);
         };
-        protocol.onPingRequest(onPingRequestLambda);
+        protocol.onSendBytes(onSendBytesLambda);
 
         auto onPingRequestEvent = []()
         {

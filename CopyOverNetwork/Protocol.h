@@ -23,8 +23,6 @@ public:
     /// @param inMessage 
     awaitable<void> onReceivePackage(Message &inMessage);
 
-    void onPingRequest(std::function<awaitable<void>(std::unique_ptr<Message>)> lambda);
-
     void onSendBytes(std::function<awaitable<void>(std::unique_ptr<Message>)> lambda);
 
     awaitable<void> sendPingRequest();
@@ -41,9 +39,6 @@ private:
     awaitable<void> handlePingRequest();
 
 private:
-    std::function<awaitable<void>(std::unique_ptr<Message>)> pingRequestLambda;
-    std::function<awaitable<void>()> pingResponseLambda;
-
     std::function<awaitable<void>(std::unique_ptr<Message>)> sendBytesLambda;
 
     // events lambdas
