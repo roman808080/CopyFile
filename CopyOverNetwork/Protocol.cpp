@@ -38,7 +38,9 @@ Protocol::Protocol()
       pingResponseLambda([]() -> awaitable<void>
                          { co_return; }),
       sendBytesLambda([](std::unique_ptr<Message>) -> awaitable<void>
-                      { co_return; })
+                      { co_return; }),
+      pingRequestEvent([](){}),
+      pingResponseEvent([](){})
 {
 }
 
@@ -110,6 +112,16 @@ awaitable<void> Protocol::sendPingRequest()
 
     co_await sendBytesLambda(std::move(nextMessageSize));
     co_await sendBytesLambda(std::move(message));
+}
+
+void Protocol::onPingRequestEvent(std::function<void()> lambda)
+{
+    //
+}
+
+void Protocol::onPingResponseEvent(std::function<void()> lambda)
+{
+    //
 }
 
 std::unique_ptr<Message> Protocol::prepareMessage(const std::size_t typeOfRequest, const std::size_t sizeOfMessage, void *messageSource)

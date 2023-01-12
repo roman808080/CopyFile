@@ -30,6 +30,10 @@ public:
 
     awaitable<void> sendPingRequest();
 
+    // events
+    void onPingRequestEvent(std::function<void()> lambda);
+    void onPingResponseEvent(std::function<void()> lambda);
+
 private:
     static std::unique_ptr<Message> prepareMessage(const std::size_t typeOfRequest, const std::size_t sizeOfMessage, void *messageSource);
     static std::unique_ptr<Message> preparePingRequest();
@@ -42,4 +46,8 @@ private:
     std::function<awaitable<void>()> pingResponseLambda;
 
     std::function<awaitable<void>(std::unique_ptr<Message>)> sendBytesLambda;
+
+    // events lambdas
+    std::function<void()> pingRequestEvent;
+    std::function<void()> pingResponseEvent;
 };
