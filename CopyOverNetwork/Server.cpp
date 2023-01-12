@@ -26,9 +26,9 @@ namespace
         Message inMessage{0};
         Protocol protocol;
 
-        auto onSendBytesLambda = [&](std::unique_ptr<Message> message) -> awaitable<void>
+        auto onSendBytesLambda = [&](Message& message) -> awaitable<void>
         {
-            co_await async_write(client, buffer(message->data, message->block_size), use_awaitable);
+            co_await async_write(client, buffer(message.data, message.block_size), use_awaitable);
         };
         protocol.onSendBytes(onSendBytesLambda);
 
