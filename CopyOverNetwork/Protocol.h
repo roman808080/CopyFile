@@ -20,15 +20,10 @@ public:
     Protocol();
 
     awaitable<void> waitForPackage();
-
-    /// @brief handle package
-    /// @param inMessage 
-    awaitable<void> onReceivePackage(Message &inMessage);
+    awaitable<void> sendPing();
 
     void onSendBytes(std::function<awaitable<void>(Message&)> lambda);
     void onReceiveBytes(std::function<awaitable<Message>(std::size_t)> lambda);
-
-    awaitable<void> sendPing();
 
     // events
     void onPingRequestEvent(std::function<void()> lambda);
@@ -37,6 +32,7 @@ public:
 private:
     static Message prepareMessage(const std::size_t typeOfRequest, const std::size_t sizeOfMessage, void *messageSource);
 
+    awaitable<void> onReceivePackage(Message &inMessage);
     awaitable<void> handlePing(char *startPosition);
     awaitable<void> handlePingRequest();
 
