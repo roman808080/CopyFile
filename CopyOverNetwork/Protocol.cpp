@@ -36,10 +36,20 @@ Protocol::Protocol()
     : sendBytesLambda([](Message &) -> awaitable<void>
                       { co_return; }),
       receiveBytesLambda([](std::size_t) -> awaitable<Message>
-                      { co_return Message{}; }),
+                         { co_return Message{}; }),
       pingRequestEvent([]() {}),
       pingResponseEvent([]() {})
 {
+}
+
+awaitable<void> Protocol::waitForPackage()
+{
+    std::size_t nextMessageSize{0};
+    auto messageSizeOfNextMessage(co_await receiveBytesLambda(sizeof(nextMessageSize)));
+    std::memcpy(&nextMessageSize, &messageSizeOfNextMessage.data, sizeof(nextMessageSize));
+
+    auto message(co_await receiveBytesLambda(nextMessageSize));
+    co_await onReceivePackage(message);
 }
 
 awaitable<void> Protocol::onReceivePackage(Message &inMessage)

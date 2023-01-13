@@ -19,6 +19,8 @@ class Protocol
 public:
     Protocol();
 
+    awaitable<void> waitForPackage();
+
     /// @brief handle package
     /// @param inMessage 
     awaitable<void> onReceivePackage(Message &inMessage);

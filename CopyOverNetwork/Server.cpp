@@ -56,16 +56,7 @@ namespace
 
         while (true)
         {
-            co_await boost::asio::async_read(client, buffer(inMessage.data, sizeof(inMessage.block_size)), use_awaitable);
-            std::memcpy(&inMessage.block_size, &inMessage.data, sizeof(inMessage.block_size));
-
-            if (inMessage.block_size > inMessage.data.size())
-            {
-                throw std::runtime_error("Block size is more then 1024 bytes.");
-            }
-
-            co_await boost::asio::async_read(client, buffer(inMessage.data, inMessage.block_size), use_awaitable);
-            co_await protocol.onReceivePackage(inMessage);
+            co_await protocol.waitForPackage();
         }
     }
 
