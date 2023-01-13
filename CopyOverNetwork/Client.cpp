@@ -41,7 +41,17 @@ namespace
             };
             protocol.onPingResponseEvent(onPingResponseLambda);
 
-            auto onSendBytesLambda = [&](Message& message) -> awaitable<void>
+            auto onReceiveBytesLambda = [&](std::size_t bytes) -> awaitable<Message>
+            {
+                Message message{};
+                message.block_size = bytes;
+                co_await boost::asio::async_read(connection, buffer(message.data, bytes), use_awaitable);
+
+                co_return std::move(message);
+            };
+
+            protocol.onReceiveBytes(onReceiveBytesLambda);
+            auto onSendBytesLambda = [&](Message &message) -> awaitable<void>
             {
                 co_await async_write(connection, buffer(message.data, message.block_size), use_awaitable);
             };

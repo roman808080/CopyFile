@@ -24,7 +24,7 @@ public:
     awaitable<void> onReceivePackage(Message &inMessage);
 
     void onSendBytes(std::function<awaitable<void>(Message&)> lambda);
-    void onReceiveBytes(std::function<awaitable<Message>()> lambda);
+    void onReceiveBytes(std::function<awaitable<Message>(std::size_t)> lambda);
 
     awaitable<void> sendPing();
 
@@ -42,7 +42,7 @@ private:
 
 private:
     std::function<awaitable<void>(Message&)> sendBytesLambda;
-    std::function<awaitable<Message>()> receiveBytesLambda;
+    std::function<awaitable<Message>(std::size_t)> receiveBytesLambda;
 
     // events lambdas
     std::function<void()> pingRequestEvent;
