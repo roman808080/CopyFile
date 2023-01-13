@@ -35,6 +35,8 @@ namespace
 Protocol::Protocol()
     : sendBytesLambda([](Message &) -> awaitable<void>
                       { co_return; }),
+      receiveBytesLambda([]() -> awaitable<Message>
+                      { co_return Message{}; }),
       pingRequestEvent([]() {}),
       pingResponseEvent([]() {})
 {
@@ -64,6 +66,11 @@ awaitable<void> Protocol::onReceivePackage(Message &inMessage)
 void Protocol::onSendBytes(std::function<awaitable<void>(Message &)> lambda)
 {
     sendBytesLambda = lambda;
+}
+
+void Protocol::onReceiveBytes(std::function<awaitable<Message>()> lambda)
+{
+    receiveBytesLambda = lambda;
 }
 
 awaitable<void> Protocol::handlePing(char *startPosition)
