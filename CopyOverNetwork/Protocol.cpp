@@ -52,6 +52,13 @@ awaitable<void> Protocol::waitForPackage()
     co_await onReceivePackage(message);
 }
 
+awaitable<void> Protocol::sendClientName(const std::string& clientName)
+{
+    std::size_t typeOfRequest = static_cast<std::size_t>(MessageType::ClientName);
+    auto message(Protocol::prepareMessage(typeOfRequest, clientName.size(), clientName.data()));
+    co_await sendMessage(message);
+}
+
 awaitable<void> Protocol::onReceivePackage(Message &inMessage)
 {
     char *startPosition = inMessage.data.data();
@@ -109,7 +116,6 @@ awaitable<void> Protocol::sendPing()
 {
     std::size_t typeOfRequest = static_cast<std::size_t>(MessageType::Ping);
     std::size_t request = static_cast<std::size_t>(PingType::Request);
-    std::size_t totalSize = sizeof(typeOfRequest) + sizeof(request);
 
     auto message(Protocol::prepareMessage(typeOfRequest, sizeof(request), &request));
     co_await sendMessage(message);
@@ -125,7 +131,7 @@ void Protocol::onPingResponseEvent(std::function<void()> lambda)
     pingResponseEvent = lambda;
 }
 
-Message Protocol::prepareMessage(const std::size_t typeOfRequest, const std::size_t sizeOfMessage, void *messageSource)
+Message Protocol::prepareMessage(const std::size_t typeOfRequest, const std::size_t sizeOfMessage, const void *messageSource)
 {
     Message message{};
 

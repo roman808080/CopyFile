@@ -21,6 +21,7 @@ public:
 
     awaitable<void> waitForPackage();
     awaitable<void> sendPing();
+    awaitable<void> sendClientName(const std::string& clientName);
 
     void onSendBytes(std::function<awaitable<void>(Message&)> lambda);
     void onReceiveBytes(std::function<awaitable<Message>(std::size_t)> lambda);
@@ -30,7 +31,7 @@ public:
     void onPingResponseEvent(std::function<void()> lambda);
 
 private:
-    static Message prepareMessage(const std::size_t typeOfRequest, const std::size_t sizeOfMessage, void *messageSource);
+    static Message prepareMessage(const std::size_t typeOfRequest, const std::size_t sizeOfMessage, const void *messageSource);
 
     awaitable<void> onReceivePackage(Message &inMessage);
     awaitable<void> handlePing(char *startPosition);
