@@ -38,7 +38,8 @@ Protocol::Protocol()
       receiveBytesLambda([](std::size_t) -> awaitable<Message>
                          { co_return Message{}; }),
       pingRequestEvent([]() {}),
-      pingResponseEvent([]() {})
+      pingResponseEvent([]() {}),
+      clientNameReceivedEvent([](const std::string& clientName) {})
 {
 }
 
@@ -52,7 +53,7 @@ awaitable<void> Protocol::waitForPackage()
     co_await onReceivePackage(message);
 }
 
-awaitable<void> Protocol::sendClientName(const std::string& clientName)
+awaitable<void> Protocol::sendClientName(const std::string &clientName)
 {
     std::size_t typeOfRequest = static_cast<std::size_t>(MessageType::ClientName);
     auto message(Protocol::prepareMessage(typeOfRequest, clientName.size(), clientName.data()));
@@ -65,12 +66,19 @@ awaitable<void> Protocol::onReceivePackage(Message &inMessage)
 
     std::size_t messageType{0};
     std::memcpy(&messageType, startPosition, sizeof(messageType));
+
+    // Updating the start position and the total size after we have read the first block
     startPosition += sizeof(messageType);
+    std::size_t messageSize = inMessage.block_size - sizeof(messageType);
 
     switch (static_cast<MessageType>(messageType))
     {
     case MessageType::Ping:
         co_await handlePing(startPosition);
+        break;
+
+    case MessageType::ClientName:
+        handleClientName(startPosition, messageSize);
         break;
 
     default:
@@ -90,11 +98,10 @@ void Protocol::onReceiveBytes(std::function<awaitable<Message>(std::size_t)> lam
     receiveBytesLambda = lambda;
 }
 
-awaitable<void> Protocol::handlePing(char *startPosition)
+awaitable<void> Protocol::handlePing(const char *startPosition)
 {
     std::size_t pingType{0};
     std::memcpy(&pingType, startPosition, sizeof(pingType));
-    startPosition += sizeof(pingType);
 
     switch (static_cast<PingType>(pingType))
     {
@@ -110,6 +117,12 @@ awaitable<void> Protocol::handlePing(char *startPosition)
     default:
         std::runtime_error("Unsupported Ping Type");
     }
+}
+
+void Protocol::handleClientName(const char *startPosition, const std::size_t totalSize)
+{
+    std::string clientName(startPosition, totalSize);
+    clientNameReceivedEvent(clientName);
 }
 
 awaitable<void> Protocol::sendPing()
@@ -129,6 +142,11 @@ void Protocol::onPingRequestEvent(std::function<void()> lambda)
 void Protocol::onPingResponseEvent(std::function<void()> lambda)
 {
     pingResponseEvent = lambda;
+}
+
+void Protocol::onClientNameReceivedEvent(std::function<void(const std::string& clientName)> lambda)
+{
+    clientNameReceivedEvent = lambda;
 }
 
 Message Protocol::prepareMessage(const std::size_t typeOfRequest, const std::size_t sizeOfMessage, const void *messageSource)

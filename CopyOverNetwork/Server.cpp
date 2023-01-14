@@ -54,6 +54,12 @@ namespace
         };
         protocol.onPingResponseEvent(onPingResponseLambda);
 
+        auto onReceiveClientNames = [](const std::string& clientName)
+        {
+            std::cout << "Received the client name: " << clientName << std::endl;
+        };
+        protocol.onClientNameReceivedEvent(onReceiveClientNames);
+
         while (true)
         {
             co_await protocol.waitForPackage();
