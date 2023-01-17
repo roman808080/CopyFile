@@ -60,6 +60,18 @@ namespace
         };
         protocol.onClientNameReceivedEvent(onReceiveClientNames);
 
+        auto onReceiveFileInfo = [](const FileInfo& fileInfo)
+        {
+            std::string pathToFile(fileInfo.pathToFile, fileInfo.pathToFileSize);
+
+            std::cout << "Received the file info: " << std::endl;
+            std::cout << "Path to the file: " << pathToFile << std::endl;
+            std::cout << "The file size in bytes: " << fileInfo.fileSizeInBytes << std::endl;
+            std::cout << "Options: " << fileInfo.options << std::endl;
+            std::cout << "Permissions: " << fileInfo.permissions << std::endl;
+        };
+        protocol.onFileInfoEvent(onReceiveFileInfo);
+
         while (true)
         {
             co_await protocol.waitForPackage();

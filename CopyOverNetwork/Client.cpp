@@ -61,6 +61,20 @@ namespace
             co_await protocol.sendPing();
             co_await protocol.waitForPackage();
             co_await protocol.sendClientName("client");
+
+            // Hardcoding file info
+            // TODO: To remove the hardcored values
+            FileInfo fileInfo{0};
+            fileInfo.permissions = 3;
+            fileInfo.fileSizeInBytes = 666;
+            fileInfo.options = 0;
+
+            char pathToFile[512]{'h', 'e', 'l', 'l'};
+            std::memcpy(fileInfo.pathToFile, pathToFile, 4);
+            fileInfo.pathToFileSize = 4;
+            // End hardcoded values
+
+            co_await protocol.sendFileInfo(fileInfo);
         }
 
     private:

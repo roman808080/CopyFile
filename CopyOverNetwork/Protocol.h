@@ -19,7 +19,8 @@ struct Message
 
 struct FileInfo
 {
-    char pathToFile[kMaxMessageSize]{0};
+    char pathToFile[512]{0}; // TODO: Replaced hardcoded value
+    std::size_t pathToFileSize{0};
     std::size_t fileSizeInBytes{0};
     std::size_t options{0};
     Permissions permissions{0};
