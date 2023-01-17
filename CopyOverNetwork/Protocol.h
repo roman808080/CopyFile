@@ -42,6 +42,7 @@ public:
     void onPingRequestEvent(std::function<void()> lambda);
     void onPingResponseEvent(std::function<void()> lambda);
     void onClientNameReceivedEvent(std::function<void(const std::string &clientName)> lambda);
+    void onFileInfoEvent(std::function<void(const FileInfo& fileInfo)> lambda);
 
 private:
     static Message prepareMessage(const std::size_t typeOfRequest, const std::size_t sizeOfMessage, const void *messageSource);
@@ -61,4 +62,5 @@ private:
     std::function<void()> pingRequestEvent;
     std::function<void()> pingResponseEvent;
     std::function<void(const std::string &clientName)> clientNameReceivedEvent;
+    std::function<void(const FileInfo& fileInfo)> fileInfoEvent;
 };

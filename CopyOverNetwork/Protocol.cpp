@@ -156,6 +156,11 @@ void Protocol::onClientNameReceivedEvent(std::function<void(const std::string& c
     clientNameReceivedEvent = lambda;
 }
 
+void Protocol::onFileInfoEvent(std::function<void(const FileInfo& fileInfo)> lambda)
+{
+    fileInfoEvent = lambda;
+}
+
 Message Protocol::prepareMessage(const std::size_t typeOfRequest, const std::size_t sizeOfMessage, const void *messageSource)
 {
     Message message{};
