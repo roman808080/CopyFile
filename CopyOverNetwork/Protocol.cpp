@@ -21,7 +21,7 @@ namespace
     {
         Ping = 1,
         ClientName = 2,
-        FileName = 3,
+        FileInfo = 3,
         FileBlock = 4,
     };
 
@@ -57,6 +57,13 @@ awaitable<void> Protocol::sendClientName(const std::string &clientName)
 {
     std::size_t typeOfRequest = static_cast<std::size_t>(MessageType::ClientName);
     auto message(Protocol::prepareMessage(typeOfRequest, clientName.size(), clientName.data()));
+    co_await sendMessage(message);
+}
+
+awaitable<void> Protocol::sendFileInfo(const FileInfo& fileInfo)
+{
+    std::size_t typeOfRequest = static_cast<std::size_t>(MessageType::FileInfo);
+    auto message(Protocol::prepareMessage(typeOfRequest, sizeof(fileInfo), &fileInfo));
     co_await sendMessage(message);
 }
 

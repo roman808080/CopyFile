@@ -33,6 +33,7 @@ public:
     awaitable<void> waitForPackage();
     awaitable<void> sendPing();
     awaitable<void> sendClientName(const std::string &clientName);
+    awaitable<void> sendFileInfo(const FileInfo& fileInfo);
 
     void onSendBytes(std::function<awaitable<void>(Message &)> lambda);
     void onReceiveBytes(std::function<awaitable<Message>(std::size_t)> lambda);
