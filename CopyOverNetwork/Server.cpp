@@ -54,13 +54,20 @@ namespace
         };
         protocol.onPingResponseEvent(onPingResponseLambda);
 
-        auto onReceiveClientNames = [](const std::string& clientName)
+        auto onReceiveClientNames = [&](const std::string &clientName)
         {
-            std::cout << "Received the client name: " << clientName << std::endl;
+            if (clientName.size() != 0)
+            {
+                std::cout << "Received the client name: " << clientName << std::endl;
+                return;
+            }
+
+            auto remote_ep(client.remote_endpoint());
+            std::cout << "Received an empty name. The ip address will be used instead of the name: " << remote_ep.address() << std::endl;
         };
         protocol.onClientNameReceivedEvent(onReceiveClientNames);
 
-        auto onReceiveFileInfo = [](const FileInfo& fileInfo)
+        auto onReceiveFileInfo = [](const FileInfo &fileInfo)
         {
             std::string pathToFile(fileInfo.pathToFile, fileInfo.pathToFileSize);
 

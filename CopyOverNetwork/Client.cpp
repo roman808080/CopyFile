@@ -60,7 +60,7 @@ namespace
             co_await connect();
             co_await protocol.sendPing();
             co_await protocol.waitForPackage();
-            co_await protocol.sendClientName("client");
+            co_await protocol.sendClientName("");
 
             // Hardcoding file info
             // TODO: To remove the hardcored values
