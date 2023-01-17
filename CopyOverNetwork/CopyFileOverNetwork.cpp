@@ -17,6 +17,7 @@ int main(int argc, char *argv[])
 
 					("server", po::value<std::string>()->implicit_value(""), "specifies whether the program is a client or server. If not specified then client.")
 
+					("name,n", po::value<std::string>(), "set client name")
 					("source,s", po::value<std::string>(), "set source file")
 					("destination,d", po::value<std::string>(), "set destination file");
 
@@ -33,6 +34,12 @@ int main(int argc, char *argv[])
 	}
 
 	NetworkApp app;
+
+	if (variablesMap.count("name"))
+	{
+		const std::string clientName = variablesMap["name"].as<std::string>();
+		app.setClientName(clientName);
+	}
 
 	if (variablesMap.count("source"))
 	{

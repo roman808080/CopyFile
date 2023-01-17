@@ -32,6 +32,11 @@ namespace
             ctx.run();
         }
 
+        void setClientName(const std::string& clientName)
+        {
+            this->clientName = clientName;
+        }
+
         awaitable<void> start()
         {
             Protocol protocol;
@@ -60,7 +65,7 @@ namespace
             co_await connect();
             co_await protocol.sendPing();
             co_await protocol.waitForPackage();
-            co_await protocol.sendClientName("");
+            co_await protocol.sendClientName(clientName);
 
             // Hardcoding file info
             // TODO: To remove the hardcored values
@@ -87,6 +92,7 @@ namespace
     private:
         const std::string host;
         const std::string port;
+        std::string clientName;
 
         boost::asio::io_context ctx;
         tcp::socket connection;
@@ -99,8 +105,15 @@ Client::Client(const std::string &host, const std::string &port)
 {
 }
 
+void Client::setClientName(const std::string& clientName)
+{
+    this->clientName = clientName;
+}
+
 void Client::run()
 {
     IOClient client(host, port);
+
+    client.setClientName(clientName);
     client.run();
 }

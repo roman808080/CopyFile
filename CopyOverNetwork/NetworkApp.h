@@ -11,6 +11,7 @@ public:
 
     void run();
 
+    void setClientName(const std::string &clientName);
     void setInputFile(const std::string &inputFileName);
     void setOutputFile(const std::string &outputFileName);
 
@@ -19,6 +20,7 @@ public:
 private:
 
 private:
+    std::string clientName;
     std::string inputFileName;
     std::string outputFileName;
 

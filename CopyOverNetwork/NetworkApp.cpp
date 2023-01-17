@@ -18,7 +18,13 @@ void NetworkApp::run()
     }
 
     Client client {"0.0.0.0", "5555"};
+    client.setClientName(clientName);
     client.run();
+}
+
+void NetworkApp::setClientName(const std::string &clientName)
+{
+    this->clientName = clientName;
 }
 
 void NetworkApp::setInputFile(const std::string &inputFileName)
