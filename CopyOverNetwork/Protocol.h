@@ -35,8 +35,8 @@ public:
     awaitable<void> sendClientName(const std::string &clientName);
     awaitable<void> sendFileInfo(const FileInfo& fileInfo);
 
-    void onSendBytes(std::function<awaitable<void>(Message &)> lambda);
-    void onReceiveBytes(std::function<awaitable<Message>(std::size_t)> lambda);
+    void onSendBytes(const std::function<awaitable<void>(Message &)>& lambda);
+    void onReceiveBytes(const std::function<awaitable<Message>(std::size_t)>& lambda);
 
     // events
     void onPingRequestEvent(const std::function<void()>& lambda);

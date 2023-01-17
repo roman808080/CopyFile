@@ -95,12 +95,12 @@ awaitable<void> Protocol::onReceivePackage(Message &inMessage)
     co_return;
 }
 
-void Protocol::onSendBytes(std::function<awaitable<void>(Message &)> lambda)
+void Protocol::onSendBytes(const std::function<awaitable<void>(Message &)>& lambda)
 {
     sendBytesLambda = lambda;
 }
 
-void Protocol::onReceiveBytes(std::function<awaitable<Message>(std::size_t)> lambda)
+void Protocol::onReceiveBytes(const std::function<awaitable<Message>(std::size_t)>& lambda)
 {
     receiveBytesLambda = lambda;
 }
