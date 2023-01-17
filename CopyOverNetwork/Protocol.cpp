@@ -141,22 +141,22 @@ awaitable<void> Protocol::sendPing()
     co_await sendMessage(message);
 }
 
-void Protocol::onPingRequestEvent(std::function<void()> lambda)
+void Protocol::onPingRequestEvent(const std::function<void()>& lambda)
 {
     pingRequestEvent = lambda;
 }
 
-void Protocol::onPingResponseEvent(std::function<void()> lambda)
+void Protocol::onPingResponseEvent(const std::function<void()>& lambda)
 {
     pingResponseEvent = lambda;
 }
 
-void Protocol::onClientNameReceivedEvent(std::function<void(const std::string& clientName)> lambda)
+void Protocol::onClientNameReceivedEvent(const std::function<void(const std::string &clientName)>& lambda)
 {
     clientNameReceivedEvent = lambda;
 }
 
-void Protocol::onFileInfoEvent(std::function<void(const FileInfo& fileInfo)> lambda)
+void Protocol::onFileInfoEvent(const std::function<void(const FileInfo& fileInfo)>& lambda)
 {
     fileInfoEvent = lambda;
 }
