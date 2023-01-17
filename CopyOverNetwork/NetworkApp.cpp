@@ -18,7 +18,11 @@ void NetworkApp::run()
     }
 
     Client client {"0.0.0.0", "5555"};
+
     client.setClientName(clientName);
+    client.setSource(inputFileName);
+    client.setDestination(outputFileName);
+
     client.run();
 }
 

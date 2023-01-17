@@ -37,6 +37,16 @@ namespace
             this->clientName = clientName;
         }
 
+        void setSource(const std::string& source)
+        {
+            this->source = source;
+        }
+
+        void setDestination(const std::string& destination)
+        {
+            this->destination = destination;
+        }
+
         awaitable<void> start()
         {
             Protocol protocol;
@@ -74,9 +84,8 @@ namespace
             fileInfo.fileSizeInBytes = 666;
             fileInfo.options = 0;
 
-            char pathToFile[512]{'h', 'e', 'l', 'l'};
-            std::memcpy(fileInfo.pathToFile, pathToFile, 4);
-            fileInfo.pathToFileSize = 4;
+            std::memcpy(fileInfo.pathToFile, destination.data(), destination.size());
+            fileInfo.pathToFileSize = destination.size();
             // End hardcoded values
 
             co_await protocol.sendFileInfo(fileInfo);
@@ -92,7 +101,10 @@ namespace
     private:
         const std::string host;
         const std::string port;
+
         std::string clientName;
+        std::string source;
+        std::string destination;
 
         boost::asio::io_context ctx;
         tcp::socket connection;
@@ -110,10 +122,23 @@ void Client::setClientName(const std::string& clientName)
     this->clientName = clientName;
 }
 
+void Client::setSource(const std::string& source)
+{
+    this->source = source;
+}
+
+void Client::setDestination(const std::string& destination)
+{
+    this->destination = destination;
+}
+
 void Client::run()
 {
     IOClient client(host, port);
 
     client.setClientName(clientName);
+    client.setSource(source);
+    client.setDestination(destination);
+
     client.run();
 }
