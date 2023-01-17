@@ -50,6 +50,7 @@ private:
     awaitable<void> onReceivePackage(Message &inMessage);
     awaitable<void> handlePing(const char *startPosition);
     void handleClientName(const char *startPosition, const std::size_t totalSize);
+    void handleFileInfo(const char *startPosition, const std::size_t totalSize);
     awaitable<void> handlePingRequest();
 
     awaitable<void> sendMessage(Message &message);

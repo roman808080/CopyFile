@@ -39,7 +39,8 @@ Protocol::Protocol()
                          { co_return Message{}; }),
       pingRequestEvent([]() {}),
       pingResponseEvent([]() {}),
-      clientNameReceivedEvent([](const std::string& clientName) {})
+      clientNameReceivedEvent([](const std::string& clientName) {}),
+      fileInfoEvent([](const FileInfo& fileInfo) {})
 {
 }
 
@@ -88,6 +89,10 @@ awaitable<void> Protocol::onReceivePackage(Message &inMessage)
         handleClientName(startPosition, messageSize);
         break;
 
+    case MessageType::FileInfo:
+        handleFileInfo(startPosition, messageSize);
+        break;
+
     default:
         std::runtime_error("Unsupported Message Type");
     }
@@ -130,6 +135,13 @@ void Protocol::handleClientName(const char *startPosition, const std::size_t tot
 {
     std::string clientName(startPosition, totalSize);
     clientNameReceivedEvent(clientName);
+}
+
+void Protocol::handleFileInfo(const char *startPosition, const std::size_t totalSize)
+{
+    FileInfo fileInfo{0};
+    std::memcpy(&fileInfo, startPosition, totalSize);
+    fileInfoEvent(fileInfo);
 }
 
 awaitable<void> Protocol::sendPing()
