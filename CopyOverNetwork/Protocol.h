@@ -9,7 +9,7 @@ using boost::asio::awaitable;
 const std::size_t kMaxMessageSize = 1024;
 
 using MessageBytes = std::array<char, kMaxMessageSize>;
-using Permissions = unsigned short int;
+using Permissions = unsigned;
 
 struct Message
 {

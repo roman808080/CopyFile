@@ -15,6 +15,8 @@ using boost::asio::detached;
 using boost::asio::use_awaitable;
 using boost::asio::ip::tcp;
 
+namespace fs = std::filesystem;
+
 namespace
 {
     class IOClient
@@ -78,18 +80,19 @@ namespace
             co_await protocol.waitForPackage();
             co_await protocol.sendClientName(clientName);
 
-            // Hardcoding file info
-            // TODO: To remove the hardcored values
             FileInfo fileInfo{0};
-            fileInfo.permissions = 3;
 
-            std::filesystem::path pathToSource{source};
-            fileInfo.fileSizeInBytes = std::filesystem::file_size(pathToSource);
+            fs::path pathToSource{source};
+            fileInfo.fileSizeInBytes = fs::file_size(pathToSource);
+
+            // TODO: To add implementation for options
             fileInfo.options = 0;
+
+            fs::perms filePermissions(fs::status(pathToSource).permissions());
+            fileInfo.permissions = static_cast<unsigned>(filePermissions);
 
             std::memcpy(fileInfo.pathToFile, destination.data(), destination.size());
             fileInfo.pathToFileSize = destination.size();
-            // End hardcoded values
 
             co_await protocol.sendFileInfo(fileInfo);
         }

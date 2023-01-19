@@ -37,9 +37,11 @@
             "program": "${workspaceFolder}/build/CopyOverNetwork/CopyFileOverNetwork",
             "args": [
                 "-d",
-                "destination",
+                "${workspaceFolder}/build/Makefile.copy",
                 "-s",
-                "source",
+                "${workspaceFolder}/build/Makefile",
+                "-n",
+                "Me"
             ],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",
