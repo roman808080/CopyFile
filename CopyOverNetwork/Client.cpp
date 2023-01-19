@@ -1,6 +1,7 @@
 #include "Client.h"
 
 #include <iostream>
+#include <filesystem>
 
 #include <boost/asio.hpp>
 #include <boost/asio/read.hpp>
@@ -81,7 +82,9 @@ namespace
             // TODO: To remove the hardcored values
             FileInfo fileInfo{0};
             fileInfo.permissions = 3;
-            fileInfo.fileSizeInBytes = 666;
+
+            std::filesystem::path pathToSource{source};
+            fileInfo.fileSizeInBytes = std::filesystem::file_size(pathToSource);
             fileInfo.options = 0;
 
             std::memcpy(fileInfo.pathToFile, destination.data(), destination.size());
